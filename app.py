@@ -1,4 +1,4 @@
-from flask import Flask, request, redirect
+from flask import Flask, request, redirect, send_from_directory
 
 class Camara:
     def __init__(self, numero_camara, fila):
@@ -74,8 +74,13 @@ camara_chamando = ""
 
 app = Flask(__name__)
 
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    return send_from_directory('static', filename)
+
 @app.route("/")
 def get_recepcao():
+    head = '<head><link rel="stylesheet" href="/static/css/recepcao.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
     tit_recep = '<h1>Recepção das câmaras</h1>'
     tit_adicionar = '<h3>Adicionar nome na fila</h3>'
     form = f'''<form action="/adicionar_atendido">
@@ -101,7 +106,7 @@ def get_recepcao():
     tit_menu = '<h1>Menu</h1>'
     tv = '<a href="/tv">TV</a></p>'
     bt_reiniciar = '<a href="/reiniciar_tudo"><button>Reiniciar tudo</button></a>'
-    return  tit_recep + tit_adicionar + form + filas + html_camaras + tit_menu + tv + bt_reiniciar
+    return  head + '<body>' + tit_recep + tit_adicionar + form + filas + html_camaras + tit_menu + tv + bt_reiniciar + '</body>'
 
 @app.route("/chamar_proximo/<numero_camara>")
 def chamar_proximo_(numero_camara):
