@@ -1,9 +1,10 @@
 from flask import Flask, request, redirect, send_from_directory
 
 class Camara:
-    def __init__(self, numero_camara, fila):
+    def __init__(self, numero_camara, fila, nome_fila):
         self.numero_camara = numero_camara
         self.fila = fila
+        self.nome_fila = nome_fila
         self.pessoa_em_atendimento = 'Nenhum'
         self.numero_de_atendimentos = 0
 
@@ -39,10 +40,13 @@ def ler_camaras(nome_arquivo):
 fila_prece = ler_fila('Fila-prece')
 fila_videncia = ler_fila('Fila-videncia')
 
-camara2 = Camara("2", fila_videncia)
-camara4 = Camara("4", fila_videncia)
-camara3 = Camara("3", fila_prece)
-camara3A = Camara("3A", fila_prece)
+NOME_FILA_VIDENCIA = 'v'
+NOME_FILA_PRECE = 'p'
+
+camara2 = Camara("2", fila_videncia, NOME_FILA_VIDENCIA)
+camara4 = Camara("4", fila_videncia, NOME_FILA_VIDENCIA)
+camara3 = Camara("3", fila_prece, NOME_FILA_PRECE)
+camara3A = Camara("3A", fila_prece, NOME_FILA_PRECE)
 
 atendido_camara2, atendimentos_camara2, atendido_camara4, atendimentos_camara4, atendido_camara3, atendimentos_camara3, atendido_camara3A, atendimentos_camara3A = ler_camaras('Camaras-info')
 camara2.pessoa_em_atendimento = atendido_camara2
@@ -93,20 +97,24 @@ def get_recepcao():
         <label for="videncia">Vidência</label><br>          
         <button>Enviar</button>
         </form>'''
-    filas = f'''
-        <p>Fila prece: {fila_prece}</p>
-        <p>Fila vidência: {fila_videncia}</p>'''
-    html_camaras = ''
+    html_fila_vid = f'<p>Fila vidência: {fila_videncia}</p>'
+    html_fila_pre = f'<p>Fila prece: {fila_prece}</p>'
+    html_camaras_vid = ''
+    html_camaras_pre = ''
     for camara in dict_camaras.values():
-        html_camaras = html_camaras + f'''<p><h3>Câmara {camara.numero_camara}</h3></p>
+        html_camara = f'''<p><h3>Câmara {camara.numero_camara}</h3></p>
         <p>Atendido: {camara.pessoa_em_atendimento}</p>
         <p>Atendimentos: {camara.numero_de_atendimentos}</p>
         <p><a href="/chamar_proximo/{camara.numero_camara}">Chamar próximo</a></p>
         <p><a href="/reabrir_camara/{camara.numero_camara}">Reabrir câmara</a></p>'''
+        if camara.nome_fila == NOME_FILA_VIDENCIA:
+            html_camaras_vid = html_camaras_vid + html_camara
+        elif camara.nome_fila == NOME_FILA_PRECE:
+            html_camaras_pre = html_camaras_pre + html_camara
     tit_menu = '<h1>Menu</h1>'
     tv = '<a href="/tv">TV</a></p>'
     bt_reiniciar = '<a href="/reiniciar_tudo"><button>Reiniciar tudo</button></a>'
-    return  head + '<body>' + tit_recep + tit_adicionar + form + filas + html_camaras + tit_menu + tv + bt_reiniciar + '</body>'
+    return  head + '<body>' + tit_recep + tit_adicionar + form + html_camaras_vid + html_fila_vid + html_camaras_pre + html_fila_pre + tit_menu + tv + bt_reiniciar + '</body>'
 
 @app.route("/chamar_proximo/<numero_camara>")
 def chamar_proximo_(numero_camara):

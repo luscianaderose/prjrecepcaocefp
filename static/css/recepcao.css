@@ -1,6 +1,9 @@
 body {
     background-color: rgb(247, 245, 224);
     font-family: 'Roboto';
+    display: flex;
+    flex-direction: column;
+    align-items:start;
 }
 
 button {
