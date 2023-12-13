@@ -97,20 +97,28 @@ def get_recepcao():
         <label for="videncia">Vidência</label><br>          
         <button>Enviar</button>
         </form>'''
-    html_fila_vid = f'<p>Fila vidência: {fila_videncia}</p>'
-    html_fila_pre = f'<p>Fila prece: {fila_prece}</p>'
-    html_camaras_vid = ''
-    html_camaras_pre = ''
+    html_fila_vid = '<div class="lista">'
+    for nome in fila_videncia:
+        html_fila_vid = html_fila_vid + f'<p>{nome}</p>'
+    html_fila_vid = html_fila_vid + '</div>'
+    html_fila_pre = '<div class="lista">'
+    for nome in fila_prece:
+        html_fila_pre = html_fila_pre + f'<p>{nome}</p>'
+    html_fila_pre = html_fila_pre + '</div>'
+    html_camaras_vid = '<div class="camaras-div">'
+    html_camaras_pre = '<div class="camaras-div">'
     for camara in dict_camaras.values():
-        html_camara = f'''<p><h3>Câmara {camara.numero_camara}</h3></p>
+        html_camara = f'''<div class='camara'><p><h3>Câmara {camara.numero_camara}</h3></p>
         <p>Atendido: {camara.pessoa_em_atendimento}</p>
         <p>Atendimentos: {camara.numero_de_atendimentos}</p>
         <p><a href="/chamar_proximo/{camara.numero_camara}">Chamar próximo</a></p>
-        <p><a href="/reabrir_camara/{camara.numero_camara}">Reabrir câmara</a></p>'''
+        <p><a href="/reabrir_camara/{camara.numero_camara}">Reabrir câmara</a></p></div>'''
         if camara.nome_fila == NOME_FILA_VIDENCIA:
             html_camaras_vid = html_camaras_vid + html_camara
         elif camara.nome_fila == NOME_FILA_PRECE:
             html_camaras_pre = html_camaras_pre + html_camara
+    html_camaras_vid = html_camaras_vid + '</div>'
+    html_camaras_pre = html_camaras_pre + '</div>'
     tit_menu = '<h1>Menu</h1>'
     tv = '<a href="/tv">TV</a></p>'
     bt_reiniciar = '<a href="/reiniciar_tudo"><button>Reiniciar tudo</button></a>'
