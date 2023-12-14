@@ -84,26 +84,25 @@ def serve_static(filename):
 
 @app.route("/")
 def get_recepcao():
-    head = '<head><link rel="stylesheet" href="/static/css/recepcao.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
+    head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
     tit_recep = '<h1>Recepção das câmaras</h1>'
     tit_adicionar = '<h3>Adicionar nome na fila</h3>'
     form = f'''<form action="/adicionar_atendido">
-        <label>Nome</label>
-        <input name="nome_atendido" type="text"><br>
-        <label>Fila</label><br>
-        <input type="radio" id="prece" name="nome_fila" value="prece">
-        <label for="prece">Prece</label><br>
-        <input type="radio" id="videncia" name="nome_fila" value="videncia">
-        <label for="videncia">Vidência</label><br>          
+        <input name="nome_atendido" type="text" placeholder="Digite o nome"><br>
+        <div class="div-radio"> 
+        <input class="radio" type="radio" id="videncia" name="nome_fila" value="videncia" required>
+        <label class="label1" for="videncia"><div class="radio-txt">Vidência</div></label><br>
+        <input class="radio" type="radio" id="prece" name="nome_fila" value="prece">
+        <label class="label2" for="prece"><div class="radio-txt">Prece</div></label></div><br>          
         <button>Enviar</button>
         </form>'''
     html_fila_vid = '<div class="lista">'
     for nome in fila_videncia:
-        html_fila_vid = html_fila_vid + f'<p>{nome}</p>'
+        html_fila_vid = html_fila_vid + f'<p>{nome}<a class="link-remover" href="/remover_atendido?nome_fila=videncia&nome_atendido={nome}"><img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'
     html_fila_vid = html_fila_vid + '</div>'
     html_fila_pre = '<div class="lista">'
     for nome in fila_prece:
-        html_fila_pre = html_fila_pre + f'<p>{nome}</p>'
+        html_fila_pre = html_fila_pre + f'<p>{nome}<a class="link-remover" href="/remover_atendido?nome_fila=prece&nome_atendido={nome}"><img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'
     html_fila_pre = html_fila_pre + '</div>'
     html_camaras_vid = '<div class="camaras-div">'
     html_camaras_pre = '<div class="camaras-div">'
@@ -174,11 +173,26 @@ def reiniciar_tudo_confirmado():
 
 @app.route('/tv')
 def tv():
+    head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/tv.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
     html_camaras = ''
     for camara in dict_camaras.values():
         html_camaras = html_camaras + f'''<p><h3>CÂMARA {camara.numero_camara} CHAMA</h3></p>
         <p><h1>{camara.pessoa_em_atendimento}</h1></p>'''.upper()
     voltar = '<a href="/">Voltar</a>'
-    return html_camaras + voltar
+    return head + '<body>' + html_camaras + voltar + '</body>'
+
+@app.route("/remover_atendido")
+def remover_atendido():
+    nome_fila = request.args.get('nome_fila')
+    nome_atendido = request.args.get('nome_atendido')
+    if nome_fila == 'prece':
+        fila_prece.remove(nome_atendido)
+        salvar_fila(fila_prece, 'Fila-prece')
+    elif nome_fila == 'videncia':
+        fila_videncia.remove(nome_atendido)
+        salvar_fila(fila_videncia, 'Fila-videncia')
+    else: 
+        return 'Fila incorreta!'
+    return redirect('/')
 
 app.run(debug=True)
