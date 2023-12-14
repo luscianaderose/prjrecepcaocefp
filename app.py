@@ -19,6 +19,14 @@ class Camara:
         if len(self.fila) < 1 or self.numero_de_atendimentos >= 5:
             retorno = retorno + f" Avisar que é o último atendido.{self.numero_camara}."
         return retorno
+    
+    def bolinhas(self):
+        bolinhas = []
+        for bola in range(0,self.numero_de_atendimentos):
+            bolinhas.append('&#11044;')
+        for bola in range(0, 5 - self.numero_de_atendimentos):
+            bolinhas.append('&#9711;')
+        return ''.join(bolinhas)
 
 def salvar_fila(fila, nome_arquivo):
     with open(nome_arquivo, 'w') as f:
@@ -96,20 +104,22 @@ def get_recepcao():
         <label class="label2" for="prece"><div class="radio-txt">Prece</div></label></div><br>          
         <button>Enviar</button>
         </form>'''
-    html_fila_vid = '<div class="lista">'
-    for nome in fila_videncia:
-        html_fila_vid = html_fila_vid + f'<p>{nome}<a class="link-remover" href="/remover_atendido?nome_fila=videncia&nome_atendido={nome}"><img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'
+    tit_lista_fila_vid = 'Lista vidência'
+    tit_lista_fila_pre = 'Lista prece'
+    html_fila_vid = '<div class="lista">' + tit_lista_fila_vid
+    for numero, nome in enumerate(fila_videncia):
+        html_fila_vid = html_fila_vid + f'<p>{numero + 1}. {nome}<a class="link-remover" href="/remover_atendido?nome_fila=videncia&nome_atendido={nome}"><img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'
     html_fila_vid = html_fila_vid + '</div>'
-    html_fila_pre = '<div class="lista">'
-    for nome in fila_prece:
-        html_fila_pre = html_fila_pre + f'<p>{nome}<a class="link-remover" href="/remover_atendido?nome_fila=prece&nome_atendido={nome}"><img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'
+    html_fila_pre = '<div class="lista">' + tit_lista_fila_pre
+    for numero, nome in enumerate(fila_prece):
+        html_fila_pre = html_fila_pre + f'<p>{numero + 1}. {nome}<a class="link-remover" href="/remover_atendido?nome_fila=prece&nome_atendido={nome}"><img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'
     html_fila_pre = html_fila_pre + '</div>'
     html_camaras_vid = '<div class="camaras-div">'
     html_camaras_pre = '<div class="camaras-div">'
     for camara in dict_camaras.values():
         html_camara = f'''<div class='camara'><p><h3>Câmara {camara.numero_camara}</h3></p>
-        <p>Atendido: {camara.pessoa_em_atendimento}</p>
-        <p>Atendimentos: {camara.numero_de_atendimentos}</p>
+        <p>Atendido<br>{camara.pessoa_em_atendimento}</p>
+        <p>Atendimentos<br>{camara.bolinhas()}</p>
         <p><a href="/chamar_proximo/{camara.numero_camara}">Chamar próximo</a></p>
         <p><a href="/reabrir_camara/{camara.numero_camara}">Reabrir câmara</a></p></div>'''
         if camara.nome_fila == NOME_FILA_VIDENCIA:
