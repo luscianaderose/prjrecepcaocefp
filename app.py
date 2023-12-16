@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, redirect, send_from_directory
 
 class Camara:
@@ -39,14 +40,25 @@ def ler_fila(nome_arquivo):
 def salvar_camaras(dict_camaras, nome_arquivo):
     with open(nome_arquivo, 'w') as f:
         for camara in dict_camaras.values():
-            f.write(f'{camara.pessoa_em_atendimento}\n{camara.numero_de_atendimentos}\n')
+            f.write(f'{camara.numero_camara},{camara.pessoa_em_atendimento},{camara.numero_de_atendimentos}\n')
 
 def ler_camaras(nome_arquivo):
     with open(nome_arquivo, 'r') as f:
         return f.read().splitlines()
 
-fila_prece = ler_fila('Fila-prece')
-fila_videncia = ler_fila('Fila-videncia')
+PASTA_ARQUIVOS = os.path.join(os.path.expanduser('~'), '.recepcao-camaras')
+if not os.path.exists(PASTA_ARQUIVOS): 
+    os.makedirs(PASTA_ARQUIVOS) 
+ARQUIVO_FILA_VID = os.path.join(PASTA_ARQUIVOS, 'Fila-videncia')
+ARQUIVO_FILA_PRE = os.path.join(PASTA_ARQUIVOS, 'Fila-prece')
+ARQUIVO_CAMARAS = os.path.join(PASTA_ARQUIVOS, 'Camaras-info')
+
+for arquivo in [ARQUIVO_FILA_VID, ARQUIVO_FILA_PRE, ARQUIVO_CAMARAS]:
+    with open(arquivo, 'a+'):
+        pass
+
+fila_videncia = ler_fila(ARQUIVO_FILA_VID)
+fila_prece = ler_fila(ARQUIVO_FILA_PRE)
 
 NOME_FILA_VIDENCIA = 'v'
 NOME_FILA_PRECE = 'p'
@@ -56,15 +68,20 @@ camara4 = Camara("4", fila_videncia, NOME_FILA_VIDENCIA)
 camara3 = Camara("3", fila_prece, NOME_FILA_PRECE)
 camara3A = Camara("3A", fila_prece, NOME_FILA_PRECE)
 
-atendido_camara2, atendimentos_camara2, atendido_camara4, atendimentos_camara4, atendido_camara3, atendimentos_camara3, atendido_camara3A, atendimentos_camara3A = ler_camaras('Camaras-info')
-camara2.pessoa_em_atendimento = atendido_camara2
-camara2.numero_de_atendimentos = int(atendimentos_camara2)
-camara4.pessoa_em_atendimento = atendido_camara4
-camara4.numero_de_atendimentos = int(atendimentos_camara4)
-camara3.pessoa_em_atendimento = atendido_camara3
-camara3.numero_de_atendimentos = int(atendimentos_camara3)
-camara3A.pessoa_em_atendimento = atendido_camara3A
-camara3A.numero_de_atendimentos = int(atendimentos_camara3A)
+dict_camaras = {
+    '2':camara2,
+    '4':camara4,
+    '3':camara3,
+    '3A':camara3A,
+}
+
+dados_camaras = ler_camaras(ARQUIVO_CAMARAS)
+
+for linha in dados_camaras:
+    numero_camara, pessoa_em_atendimento, numero_de_atendimentos = linha.split(',')
+    camara = dict_camaras[numero_camara.strip()]
+    camara.pessoa_em_atendimento = pessoa_em_atendimento.strip()
+    camara.numero_de_atendimentos = int(numero_de_atendimentos.strip())
 
 def registrar_pessoa(nome, fila):
     if fila == "prece":
@@ -75,12 +92,7 @@ def registrar_pessoa(nome, fila):
 print(f"{fila_prece=}")
 print(f"{fila_videncia=}")
 
-dict_camaras = {
-    '2':camara2,
-    '4':camara4,
-    '3':camara3,
-    '3A':camara3A,
-}
+
 
 camara_chamando = ''
 
@@ -168,9 +180,9 @@ def tv():
 def chamar_proximo_(numero_camara):
     camara = dict_camaras[numero_camara]
     camara.chamar_atendido()
-    salvar_camaras(dict_camaras, 'Camaras-info')
-    salvar_fila(fila_prece, 'Fila-prece')
-    salvar_fila(fila_videncia, 'Fila-videncia')
+    salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+    salvar_fila(fila_videncia, ARQUIVO_FILA_VID)
+    salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
     return redirect('/')
 
 @app.route("/adicionar_atendido")
@@ -179,10 +191,10 @@ def adicionar_atendido():
     nome_atendido = request.args.get('nome_atendido')
     if nome_fila == 'prece':
         fila_prece.append(nome_atendido)
-        salvar_fila(fila_prece, 'Fila-prece')
+        salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
     elif nome_fila == 'videncia':
         fila_videncia.append(nome_atendido)
-        salvar_fila(fila_videncia, 'Fila-videncia')
+        salvar_fila(fila_videncia, ARQUIVO_FILA_VID)
     else: 
         return 'Fila incorreta!'
     return redirect('/')
@@ -192,7 +204,7 @@ def reabrir_camara(numero_camara):
     camara = dict_camaras[numero_camara]
     camara.numero_de_atendimentos = 0
     camara.pessoa_em_atendimento = 'Nenhum'
-    salvar_camaras(dict_camaras, 'Camaras-info')
+    salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
     return redirect('/')
 
 @app.route('/reiniciar_tudo')
@@ -206,10 +218,10 @@ def reiniciar_tudo_confirmado():
         camara.numero_de_atendimentos = 0
         camara.pessoa_em_atendimento = 'Nenhum'
     fila_prece.clear()
-    salvar_fila(fila_prece, 'Fila-prece')
+    salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
     fila_videncia.clear()
-    salvar_fila(fila_videncia, 'Fila-videncia')
-    salvar_camaras(dict_camaras, 'Camaras-info')
+    salvar_fila(fila_videncia, ARQUIVO_FILA_VID)
+    salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
     return redirect('/')
 
 @app.route("/remover_atendido")
@@ -218,10 +230,10 @@ def remover_atendido():
     nome_atendido = request.args.get('nome_atendido')
     if nome_fila == 'prece':
         fila_prece.remove(nome_atendido)
-        salvar_fila(fila_prece, 'Fila-prece')
+        salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
     elif nome_fila == 'videncia':
         fila_videncia.remove(nome_atendido)
-        salvar_fila(fila_videncia, 'Fila-videncia')
+        salvar_fila(fila_videncia, ARQUIVO_FILA_VID)
     else: 
         return 'Fila incorreta!'
     return redirect('/')
