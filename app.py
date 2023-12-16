@@ -146,6 +146,24 @@ def get_recepcao():
 
     return  head + '<body>' + tit_recep + tit_adicionar + form + tit_vid + html_camaras_vid + html_fila_vid + tit_pre + html_camaras_pre + html_fila_pre + tit_menu + tv + bt_reiniciar + teste + '</body>'
 
+@app.route('/tv')
+def tv():
+    head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/tv.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
+    html_camaras = ''
+    html_camaras_vid = ''
+    html_camaras_pre = ''
+    for camara in dict_camaras.values():
+        html_camaras = f'''<div class='tv-camara'><p><h3>CÂMARA {camara.numero_camara} CHAMA</h3></p>
+        <p><h3>{camara.pessoa_em_atendimento}</h3></p></div>'''.upper()
+        if camara.nome_fila == NOME_FILA_VIDENCIA:
+            html_camaras_vid = html_camaras_vid + html_camaras
+        elif camara.nome_fila == NOME_FILA_PRECE:
+            html_camaras_pre = html_camaras_pre + html_camaras
+    html_camaras_vid = '<div class="tv-vid">' + html_camaras_vid + '</div>'
+    html_camaras_pre = '<div class="tv-pre">' + html_camaras_pre + '</div>'
+    voltar = '<a href="/">VOLTAR</a>'
+    return head + '<body>' + html_camaras_vid + html_camaras_pre + voltar + '</body>'
+
 @app.route("/chamar_proximo/<numero_camara>")
 def chamar_proximo_(numero_camara):
     camara = dict_camaras[numero_camara]
@@ -208,15 +226,6 @@ def remover_atendido():
         return 'Fila incorreta!'
     return redirect('/')
 
-@app.route('/tv')
-def tv():
-    head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/tv.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
-    html_camaras = ''
-    for camara in dict_camaras.values():
-        html_camaras = html_camaras + f'''<p><h3>CÂMARA {camara.numero_camara} CHAMA</h3></p>
-        <p><h3>{camara.pessoa_em_atendimento}</h3></p>'''.upper()
-    voltar = '<a href="/">Voltar</a>'
-    return head + '<body>' + html_camaras + voltar + '</body>'
 
 @app.route('/teste')
 def teste():

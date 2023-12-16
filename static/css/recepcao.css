@@ -138,7 +138,6 @@ input[type="radio"] {
 .radio-txt {
   display: flex;
   height: 40px;
-  width: 60px;
   justify-content: center;
   align-items: center;
   font-weight: 500;

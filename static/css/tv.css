@@ -1,19 +1,33 @@
 body{
     font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-.div-camara2{
-
-}
-
-.div-camara4{
-
-}
-
-.div-camara3{
-
-}
-
-.div-camara3A{
-    
-}
+.tv-camara{
+    background-color: rgb(255, 248, 219);
+    padding: 20px;
+    border-radius: 4px;
+    width: 150px;
+  }
+  
+  .tv-vid{
+    background-color: rgb(149, 243, 255);
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 400px;
+  }
+  
+  .tv-pre{
+    background-color: rgb(149, 255, 225);
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 400px;
+  }
