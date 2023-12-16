@@ -1,7 +1,9 @@
 .camara{
-  border-style: solid;
-  border-width: 1px;
+  /* border-style: solid; */
+  /* border-width: 1px; */
+  background-color: rgb(255, 248, 219);
   padding: 10px;
+  border-radius: 5px;
 }
 
 .camaras-div{
@@ -12,8 +14,9 @@
 }
 
 .lista{
-  border-style: solid;
-  border-width: 1px;
+  /* border-style: solid; */
+  /* border-width: 1px; */
+  background-color: rgb(255, 248, 219);
   padding: 10px;
   margin-top: 10px;
   margin-bottom: 10px;
@@ -25,10 +28,10 @@
 }
 
 .div-radio{
-  background-color: white;
+  background-color:rgb(255, 248, 219);
   height: 40px;
-  width: 120px;
-  box-shadow: 0 0 30px 0px #d1d1d1;
+  width: 160px;
+  /* box-shadow: 0 0 30px 0px #d1d1d1; */
   display: flex;
   flex-direction: row;
   margin-top: 10px;
@@ -41,7 +44,7 @@ input[type="radio"] {
 .label1,.label2 {
   display: block;
   height: 40px;
-  width: 60px;
+  width: 80px;
   color: #2c2c2c;
   
 }

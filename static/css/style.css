@@ -1,5 +1,5 @@
 body {
-    background-color: rgb(247, 245, 224);
+    background-color: rgb(253, 242, 195);
     font-family: 'Roboto';
     display: flex;
     flex-direction: column;
@@ -7,8 +7,8 @@ body {
 }
 
 button {
-  background-color: rgba(51, 51, 51, 0.2);
-  border-radius: 8px;
+  background-color: rgb(255, 248, 219);
+  border-radius: 5px;
   border-width: 0;
   color: #333333;
   cursor: pointer;

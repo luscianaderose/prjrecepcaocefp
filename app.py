@@ -10,8 +10,8 @@ class Camara:
 
     def chamar_atendido(self):
         if len(self.fila) < 1 or self.numero_de_atendimentos >= 5:
-            self.pessoa_em_atendimento = 'Fechada'
-            return 'Câmara fechada'
+            self.pessoa_em_atendimento = 'FECHADA'
+            return 'CÂMARA FECHADA'
         self.pessoa_em_atendimento = self.fila[0]
         self.fila.pop(0)
         self.numero_de_atendimentos += 1
@@ -93,19 +93,39 @@ def serve_static(filename):
 @app.route('/')
 def get_recepcao():
     head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
-    tit_recep = '<h1>Recepção das câmaras</h1>'
-    tit_adicionar = '<h3>Adicionar nome na fila</h3>'
+    tit_recep = '<h1>RECEPÇÃO DAS CÂMARAS</h1>'
+    tit_adicionar = '<h5>ADICIONAR NOME NA FILA</h4>'
     form = f'''<form action="/adicionar_atendido">
         <input name="nome_atendido" type="text" placeholder="Digite o nome"><br>
         <div class="div-radio"> 
         <input class="radio" type="radio" id="videncia" name="nome_fila" value="videncia" required>
-        <label class="label1" for="videncia"><div class="radio-txt">Vidência</div></label><br>
+        <label class="label1" for="videncia"><div class="radio-txt">VIDÊNCIA</div></label><br>
         <input class="radio" type="radio" id="prece" name="nome_fila" value="prece">
-        <label class="label2" for="prece"><div class="radio-txt">Prece</div></label></div><br>          
-        <button>Enviar</button>
-        </form>'''
-    tit_lista_fila_vid = 'Lista vidência'
-    tit_lista_fila_pre = 'Lista prece'
+        <label class="label2" for="prece"><div class="radio-txt">PRECE</div></label></div><br>          
+        <button>ADICIONAR</button>
+        </form>'''.upper()
+    
+    # CÂMARAS
+    tit_vid = '<h2>VIDÊNCIA</h2>'
+    tit_pre = '<h2>PRECE</h2>'
+    html_camaras_vid = '<div class="camaras-div">'
+    html_camaras_pre = '<div class="camaras-div">'
+    for camara in dict_camaras.values():
+        html_camara = f'''<div class='camara'><p><h3>CÂMARA {camara.numero_camara}</h3></p>
+        <p>ATENDENDO<br><h4>{camara.pessoa_em_atendimento}</h4></p>
+        <p>ATENDIMENTOS<br>{camara.bolinhas()}</p>
+        <p><a href="/chamar_proximo/{camara.numero_camara}">Chamar próximo</a></p>
+        <p><a href="/reabrir_camara/{camara.numero_camara}">Reabrir câmara</a></p></div>'''.upper()
+        if camara.nome_fila == NOME_FILA_VIDENCIA:
+            html_camaras_vid = html_camaras_vid + html_camara
+        elif camara.nome_fila == NOME_FILA_PRECE:
+            html_camaras_pre = html_camaras_pre + html_camara
+    html_camaras_vid = html_camaras_vid + '</div>'
+    html_camaras_pre = html_camaras_pre + '</div>'
+
+    # LISTAS
+    tit_lista_fila_vid = '<h3>LISTA VIDÊNCIA</h3>'
+    tit_lista_fila_pre = '<h3>LISTA PRECE</h3>'
     html_fila_vid = '<div class="lista">' + tit_lista_fila_vid
     for numero, nome in enumerate(fila_videncia):
         html_fila_vid = html_fila_vid + f'<p>{numero + 1}. {nome}<a class="link-remover" href="/remover_atendido?nome_fila=videncia&nome_atendido={nome}"><img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'
@@ -114,25 +134,13 @@ def get_recepcao():
     for numero, nome in enumerate(fila_prece):
         html_fila_pre = html_fila_pre + f'<p>{numero + 1}. {nome}<a class="link-remover" href="/remover_atendido?nome_fila=prece&nome_atendido={nome}"><img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'
     html_fila_pre = html_fila_pre + '</div>'
-    html_camaras_vid = '<div class="camaras-div">'
-    html_camaras_pre = '<div class="camaras-div">'
-    for camara in dict_camaras.values():
-        html_camara = f'''<div class='camara'><p><h3>Câmara {camara.numero_camara}</h3></p>
-        <p>Atendido<br>{camara.pessoa_em_atendimento}</p>
-        <p>Atendimentos<br>{camara.bolinhas()}</p>
-        <p><a href="/chamar_proximo/{camara.numero_camara}">Chamar próximo</a></p>
-        <p><a href="/reabrir_camara/{camara.numero_camara}">Reabrir câmara</a></p></div>'''
-        if camara.nome_fila == NOME_FILA_VIDENCIA:
-            html_camaras_vid = html_camaras_vid + html_camara
-        elif camara.nome_fila == NOME_FILA_PRECE:
-            html_camaras_pre = html_camaras_pre + html_camara
-    html_camaras_vid = html_camaras_vid + '</div>'
-    html_camaras_pre = html_camaras_pre + '</div>'
-    tit_menu = '<h1>Menu</h1>'
+
+    tit_menu = '<h1>MENU</h1>'
     tv = '<a href="/tv">TV</a></p>'
-    bt_reiniciar = '<a href="/reiniciar_tudo"><button>Reiniciar tudo</button></a>'
+    bt_reiniciar = '<a href="/reiniciar_tudo"><button>REINICAR TUDO</button></a>'
     teste = '<br><a href="/teste">teste</a></p>'
-    return  head + '<body>' + tit_recep + tit_adicionar + form + html_camaras_vid + html_fila_vid + html_camaras_pre + html_fila_pre + tit_menu + tv + bt_reiniciar + teste + '</body>'
+
+    return  head + '<body>' + tit_recep + tit_adicionar + form + tit_vid + html_camaras_vid + html_fila_vid + tit_pre + html_camaras_pre + html_fila_pre + tit_menu + tv + bt_reiniciar + teste + '</body>'
 
 @app.route("/chamar_proximo/<numero_camara>")
 def chamar_proximo_(numero_camara):
@@ -188,7 +196,7 @@ def tv():
     html_camaras = ''
     for camara in dict_camaras.values():
         html_camaras = html_camaras + f'''<p><h3>CÂMARA {camara.numero_camara} CHAMA</h3></p>
-        <p><h1>{camara.pessoa_em_atendimento}</h1></p>'''.upper()
+        <p><h3>{camara.pessoa_em_atendimento}</h3></p>'''.upper()
     voltar = '<a href="/">Voltar</a>'
     return head + '<body>' + html_camaras + voltar + '</body>'
 
