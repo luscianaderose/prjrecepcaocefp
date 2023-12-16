@@ -10,22 +10,22 @@ class Camara:
 
     def chamar_atendido(self):
         if len(self.fila) < 1 or self.numero_de_atendimentos >= 5:
-            self.pessoa_em_atendimento = "Fechada"
-            return "Câmara fechada"
+            self.pessoa_em_atendimento = 'Fechada'
+            return 'Câmara fechada'
         self.pessoa_em_atendimento = self.fila[0]
         self.fila.pop(0)
         self.numero_de_atendimentos += 1
-        retorno = f"Câmara {self.numero_camara} chamando {self.pessoa_em_atendimento}."
+        retorno = f'Câmara {self.numero_camara} chamando {self.pessoa_em_atendimento}.'
         if len(self.fila) < 1 or self.numero_de_atendimentos >= 5:
-            retorno = retorno + f" Avisar que é o último atendido.{self.numero_camara}."
+            retorno = retorno + f' Avisar que é o último atendido.{self.numero_camara}.'
         return retorno
     
     def bolinhas(self):
         bolinhas = []
-        for bola in range(0,self.numero_de_atendimentos):
-            bolinhas.append('&#11044;')
+        for bola in range(0, self.numero_de_atendimentos):
+            bolinhas.append('&#9899;')
         for bola in range(0, 5 - self.numero_de_atendimentos):
-            bolinhas.append('&#9711;')
+            bolinhas.append('&#9898;')
         return ''.join(bolinhas)
 
 def salvar_fila(fila, nome_arquivo):
@@ -82,7 +82,7 @@ dict_camaras = {
     '3A':camara3A,
 }
 
-camara_chamando = ""
+camara_chamando = ''
 
 app = Flask(__name__)
 
@@ -90,7 +90,7 @@ app = Flask(__name__)
 def serve_static(filename):
     return send_from_directory('static', filename)
 
-@app.route("/")
+@app.route('/')
 def get_recepcao():
     head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
     tit_recep = '<h1>Recepção das câmaras</h1>'
@@ -131,7 +131,8 @@ def get_recepcao():
     tit_menu = '<h1>Menu</h1>'
     tv = '<a href="/tv">TV</a></p>'
     bt_reiniciar = '<a href="/reiniciar_tudo"><button>Reiniciar tudo</button></a>'
-    return  head + '<body>' + tit_recep + tit_adicionar + form + html_camaras_vid + html_fila_vid + html_camaras_pre + html_fila_pre + tit_menu + tv + bt_reiniciar + '</body>'
+    teste = '<br><a href="/teste">teste</a></p>'
+    return  head + '<body>' + tit_recep + tit_adicionar + form + html_camaras_vid + html_fila_vid + html_camaras_pre + html_fila_pre + tit_menu + tv + bt_reiniciar + teste + '</body>'
 
 @app.route("/chamar_proximo/<numero_camara>")
 def chamar_proximo_(numero_camara):
@@ -204,5 +205,20 @@ def remover_atendido():
     else: 
         return 'Fila incorreta!'
     return redirect('/')
+
+@app.route('/teste')
+def teste():
+    head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
+    teste = '''<br><br><br>  
+    originais &#11044;&#9711; = 11044 9711 <br>
+    1) &#11044; &#x2B24; = 11044 x2B24 <br>
+    2) &#9899;&#x26AB; = 9899 x26AB <br>
+    3) &#9711; = 9711 <br>
+    4) &#9898;&#x26AA;&#x26AB; =  9898  x26AA  x26AB <br>
+    5) &#9675;&#x25CB;○ &#x25CF =  9675 x25CB ○  x25CF <br>
+    6) &#9898;&#9899; = 9898 9899 <br>
+    &#11044;&#9711;&#9675;&#x25CB;&#9898;&#x26AA;&#9899;&#x26AB;&#11044;&#x2B24;○<br><br><br>'''
+    voltar = '<a href="/">Voltar</a>'
+    return head + '<body>' + teste + voltar + '</body>'
 
 app.run(debug=True)
