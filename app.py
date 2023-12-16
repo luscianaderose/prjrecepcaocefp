@@ -103,7 +103,7 @@ def get_recepcao():
         <input class="radio" type="radio" id="prece" name="nome_fila" value="prece">
         <label class="label2" for="prece"><div class="radio-txt">PRECE</div></label></div><br>          
         <button>ADICIONAR</button>
-        </form>'''.upper()
+        </form>'''
     
     # CÂMARAS
     tit_vid = '<h2>VIDÊNCIA</h2>'
@@ -115,7 +115,7 @@ def get_recepcao():
         <p>ATENDENDO<br><h4>{camara.pessoa_em_atendimento}</h4></p>
         <p>ATENDIMENTOS<br>{camara.bolinhas()}</p>
         <p><a href="/chamar_proximo/{camara.numero_camara}">Chamar próximo</a></p>
-        <p><a href="/reabrir_camara/{camara.numero_camara}">Reabrir câmara</a></p></div>'''.upper()
+        <p><a href="/reabrir_camara/{camara.numero_camara}">Reabrir câmara</a></p></div>'''
         if camara.nome_fila == NOME_FILA_VIDENCIA:
             html_camaras_vid = html_camaras_vid + html_camara
         elif camara.nome_fila == NOME_FILA_PRECE:
