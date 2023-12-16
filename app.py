@@ -106,10 +106,12 @@ def get_recepcao():
         </form>'''
     
     # CÂMARAS
-    tit_vid = '<h2>VIDÊNCIA</h2>'
-    tit_pre = '<h2>PRECE</h2>'
-    html_camaras_vid = '<div class="camaras-div">'
-    html_camaras_pre = '<div class="camaras-div">'
+    tit_vid = '<div class="tit-vid-pre"><div class="tit-vid"><h2>VIDÊNCIA</h2></div></div>'
+    tit_pre = '<div class="tit-vid-pre"><div class="tit-pre"><h2>PRECE</h2></div></div>'
+    html_camaras_vid = ''
+    html_camaras_pre = ''
+    # html_camaras_vid = '<div class="camaras-div">'
+    # html_camaras_pre = '<div class="camaras-div">'
     for camara in dict_camaras.values():
         html_camara = f'''<div class='camara'><p><h3>CÂMARA {camara.numero_camara}</h3></p>
         <p>ATENDENDO<br><h4>{camara.pessoa_em_atendimento}</h4></p>
@@ -120,17 +122,19 @@ def get_recepcao():
             html_camaras_vid = html_camaras_vid + html_camara
         elif camara.nome_fila == NOME_FILA_PRECE:
             html_camaras_pre = html_camaras_pre + html_camara
-    html_camaras_vid = html_camaras_vid + '</div>'
-    html_camaras_pre = html_camaras_pre + '</div>'
+    html_camaras_vid = '<div class="camara-vid">' + html_camaras_vid + '</div>'
+    html_camaras_pre = '<div class="camara-pre">' + html_camaras_pre + '</div>'
+    # html_camaras_vid = '<div class="camara-vid">' + html_camaras_vid + '</div></div>'
+    # html_camaras_pre = '<div class="camara-pre">' + html_camaras_pre + '</div></div>'
 
-    # LISTAS
+    # LISTAS/FILAS
     tit_lista_fila_vid = '<h3>LISTA VIDÊNCIA</h3>'
     tit_lista_fila_pre = '<h3>LISTA PRECE</h3>'
-    html_fila_vid = '<div class="lista">' + tit_lista_fila_vid
+    html_fila_vid = '<div class="lista-vid">' + tit_lista_fila_vid
     for numero, nome in enumerate(fila_videncia):
         html_fila_vid = html_fila_vid + f'<p>{numero + 1}. {nome}<a class="link-remover" href="/remover_atendido?nome_fila=videncia&nome_atendido={nome}"><img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'
     html_fila_vid = html_fila_vid + '</div>'
-    html_fila_pre = '<div class="lista">' + tit_lista_fila_pre
+    html_fila_pre = '<div class="lista-pre">' + tit_lista_fila_pre
     for numero, nome in enumerate(fila_prece):
         html_fila_pre = html_fila_pre + f'<p>{numero + 1}. {nome}<a class="link-remover" href="/remover_atendido?nome_fila=prece&nome_atendido={nome}"><img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'
     html_fila_pre = html_fila_pre + '</div>'
@@ -190,16 +194,6 @@ def reiniciar_tudo_confirmado():
     salvar_camaras(dict_camaras, 'Camaras-info')
     return redirect('/')
 
-@app.route('/tv')
-def tv():
-    head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/tv.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
-    html_camaras = ''
-    for camara in dict_camaras.values():
-        html_camaras = html_camaras + f'''<p><h3>CÂMARA {camara.numero_camara} CHAMA</h3></p>
-        <p><h3>{camara.pessoa_em_atendimento}</h3></p>'''.upper()
-    voltar = '<a href="/">Voltar</a>'
-    return head + '<body>' + html_camaras + voltar + '</body>'
-
 @app.route("/remover_atendido")
 def remover_atendido():
     nome_fila = request.args.get('nome_fila')
@@ -213,6 +207,16 @@ def remover_atendido():
     else: 
         return 'Fila incorreta!'
     return redirect('/')
+
+@app.route('/tv')
+def tv():
+    head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/tv.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
+    html_camaras = ''
+    for camara in dict_camaras.values():
+        html_camaras = html_camaras + f'''<p><h3>CÂMARA {camara.numero_camara} CHAMA</h3></p>
+        <p><h3>{camara.pessoa_em_atendimento}</h3></p>'''.upper()
+    voltar = '<a href="/">Voltar</a>'
+    return head + '<body>' + html_camaras + voltar + '</body>'
 
 @app.route('/teste')
 def teste():
