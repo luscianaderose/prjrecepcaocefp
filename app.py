@@ -2,20 +2,21 @@ import os
 from flask import Flask, request, redirect, send_from_directory
 
 class Pessoa:
-    def __init__(self, numero, nome, chamado=0):
+    def __init__(self, numero, nome, chamado=0, camara=None):
         self.nome = nome
         self.numero = numero
         self.chamado = chamado
+        self.camara = camara
 
     def __str__(self):
         return self.nome
     
     def csv(self):
-        return f'{self.numero},{self.nome},{self.chamado}'
+        return f'{self.numero},{self.nome},{self.chamado},{self.camara}'
     
     def nome_exibicao(self):
         if self.chamado == 1:
-            return f'<s>{self.nome}</s>'
+            return f'<s>{self.nome}</s> {self.camara}'
         else:
             return f'{self.nome}'
 
@@ -34,6 +35,7 @@ class Camara:
         for pessoa in self.fila:
             if not pessoa.chamado:
                 self.pessoa_em_atendimento = pessoa
+                self.pessoa_em_atendimento.camara = self.numero_camara
                 break
         else:
             self.pessoa_em_atendimento = 'FECHADA'
@@ -65,8 +67,8 @@ def ler_fila(nome_arquivo):
         for linha in f.read().splitlines():
             if not linha:
                 continue
-            numero, nome, chamado = linha.split(',')
-            pessoa = Pessoa(int(numero), nome, int(chamado))
+            numero, nome, chamado, camara = linha.split(',')
+            pessoa = Pessoa(int(numero), nome, int(chamado), camara)
             lista_pessoas.append(pessoa)
         return lista_pessoas
 
@@ -153,12 +155,12 @@ def get_recepcao():
     tit_pre = '<div class="tit-vid-pre"><div class="tit-pre"><h2>PRECE</h2></div></div>'
     html_camaras_vid = ''
     html_camaras_pre = ''
-    # html_camaras_vid = '<div class="camaras-div">'
-    # html_camaras_pre = '<div class="camaras-div">'
     for camara in dict_camaras.values():
         html_camara = f'''<div class='camara'><p><h3>CÂMARA {camara.numero_camara}</h3></p>
         <p>ATENDENDO<br><h4>{camara.pessoa_em_atendimento}</h4></p>
-        <p>ATENDIMENTOS<br>{camara.bolinhas()}</p>
+        <p>ATENDIMENTOS<br>
+        <a href="/bolinhas?modo=subtracao&numero_camara={camara.numero_camara}">-</a>{camara.bolinhas()}
+        <a href="/bolinhas?modo=adicao&numero_camara={camara.numero_camara}">+</a></p>
         <p><a href="/chamar_proximo/{camara.numero_camara}">Chamar próximo</a></p>
         <p><a href="/reabrir_camara/{camara.numero_camara}">Reabrir câmara</a></p></div>'''
         if camara.nome_fila == NOME_FILA_VIDENCIA:
@@ -167,8 +169,6 @@ def get_recepcao():
             html_camaras_pre = html_camaras_pre + html_camara
     html_camaras_vid = '<div class="camara-vid">' + html_camaras_vid + '</div>'
     html_camaras_pre = '<div class="camara-pre">' + html_camaras_pre + '</div>'
-    # html_camaras_vid = '<div class="camara-vid">' + html_camaras_vid + '</div></div>'
-    # html_camaras_pre = '<div class="camara-pre">' + html_camaras_pre + '</div></div>'
 
     # LISTAS/FILAS
     tit_lista_fila_vid = '<h3>LISTA VIDÊNCIA</h3>'
@@ -193,9 +193,8 @@ def get_recepcao():
     tit_menu = '<h1>MENU</h1>'
     tv = '<a href="/tv">TV</a></p>'
     bt_reiniciar = '<a href="/reiniciar_tudo"><button>REINICAR TUDO</button></a>'
-    teste = '<br><a href="/teste">teste</a></p>'
 
-    return  head + '<body>' + tit_recep + tit_adicionar + form + tit_vid + html_camaras_vid + html_fila_vid + tit_pre + html_camaras_pre + html_fila_pre + tit_menu + tv + bt_reiniciar + teste + '</body>'
+    return  head + '<body>' + tit_recep + tit_adicionar + form + tit_vid + html_camaras_vid + html_fila_vid + tit_pre + html_camaras_pre + html_fila_pre + tit_menu + tv + bt_reiniciar + '</body>'
 
 @app.route('/tv')
 def tv():
@@ -332,19 +331,16 @@ def editar_atendido_confirmado():
                 break
     return redirect('/')
 
-@app.route('/teste')
-def teste():
-    head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
-    teste = '''<br><br><br>  
-    originais &#11044;&#9711; = 11044 9711 <br>
-    1) &#11044; &#x2B24; = 11044 x2B24 <br>
-    2) &#9899;&#x26AB; = 9899 x26AB <br>
-    3) &#9711; = 9711 <br>
-    4) &#9898;&#x26AA;&#x26AB; =  9898  x26AA  x26AB <br>
-    5) &#9675;&#x25CB;○ &#x25CF =  9675 x25CB ○  x25CF <br>
-    6) &#9898;&#9899; = 9898 9899 <br>
-    &#11044;&#9711;&#9675;&#x25CB;&#9898;&#x26AA;&#9899;&#x26AB;&#11044;&#x2B24;○<br><br><br>'''
-    voltar = '<a href="/">Voltar</a>'
-    return head + '<body>' + teste + voltar + '</body>'
+@app.route('/bolinhas')
+def bolinhas():
+    modo = request.args.get('modo')
+    numero_camara = request.args.get('numero_camara')
+    camara = dict_camaras.get(numero_camara)
+    if modo == 'adicao' and camara.numero_de_atendimentos < 5:
+        camara.numero_de_atendimentos += 1
+    elif modo == 'subtracao' and camara.numero_de_atendimentos > 0:
+        camara.numero_de_atendimentos -= 1
+    return redirect('/')
+
 
 app.run(debug=True)
