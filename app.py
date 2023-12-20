@@ -174,16 +174,16 @@ def get_recepcao():
     tit_lista_fila_vid = '<h3>LISTA VIDÊNCIA</h3>'
     tit_lista_fila_pre = '<h3>LISTA PRECE</h3>'
     html_fila_vid = '<div class="lista-vid">' + tit_lista_fila_vid
-    for pessoa in fila_videncia:
-        html_fila_vid = html_fila_vid + f'''<p>{pessoa.numero}. {pessoa.nome_exibicao()}
+    for index, pessoa in enumerate(fila_videncia):
+        html_fila_vid = html_fila_vid + f'''<p>{index + 1}. {pessoa.nome_exibicao()}
         <a class="link-editar" href="/editar_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}">
         <img alt="Editar" src="/static/img/editar.png" width="16" height="16"></a>
         <a class="link-remover" href="/remover_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}">
         <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'''
     html_fila_vid = html_fila_vid + '</div>'
     html_fila_pre = '<div class="lista-pre">' + tit_lista_fila_pre
-    for pessoa in fila_prece:
-        html_fila_pre = html_fila_pre + f'''<p>{pessoa.numero}. {pessoa.nome_exibicao()}
+    for index, pessoa in enumerate(fila_prece):
+        html_fila_pre = html_fila_pre + f'''<p>{index + 1}. {pessoa.nome_exibicao()}
         <a class="link-editar" href="/editar_atendido?nome_fila=prece&numero_atendido={pessoa.numero}">
         <img alt="Editar" src="/static/img/editar.png" width="16" height="16"></a>
         <a class="link-remover" href="/remover_atendido?nome_fila=prece&numero_atendido={pessoa.numero}">
