@@ -1,6 +1,24 @@
 import os
 from flask import Flask, request, redirect, send_from_directory
 
+class Pessoa:
+    def __init__(self, numero, nome, chamado=0):
+        self.nome = nome
+        self.numero = numero
+        self.chamado = chamado
+
+    def __str__(self):
+        return self.nome
+    
+    def csv(self):
+        return f'{self.numero},{self.nome},{self.chamado}'
+    
+    def nome_exibicao(self):
+        if self.chamado == 1:
+            return f'<s>{self.nome}</s>'
+        else:
+            return f'{self.nome}'
+
 class Camara:
     def __init__(self, numero_camara, fila, nome_fila):
         self.numero_camara = numero_camara
@@ -10,16 +28,23 @@ class Camara:
         self.numero_de_atendimentos = 0
 
     def chamar_atendido(self):
-        if len(self.fila) < 1 or self.numero_de_atendimentos >= 5:
+        if self.numero_de_atendimentos >= 5:
             self.pessoa_em_atendimento = 'FECHADA'
             return 'CÂMARA FECHADA'
-        self.pessoa_em_atendimento = self.fila[0]
-        self.fila.pop(0)
+        for pessoa in self.fila:
+            if not pessoa.chamado:
+                self.pessoa_em_atendimento = pessoa
+                break
+        else:
+            self.pessoa_em_atendimento = 'FECHADA'
+            return 'CÂMARA FECHADA'
+        self.pessoa_em_atendimento.chamado = 1
         self.numero_de_atendimentos += 1
         retorno = f'Câmara {self.numero_camara} chamando {self.pessoa_em_atendimento}.'
-        if len(self.fila) < 1 or self.numero_de_atendimentos >= 5:
+        if self.numero_de_atendimentos >= 5:
             retorno = retorno + f' Avisar que é o último atendido.{self.numero_camara}.'
         return retorno
+
     
     def bolinhas(self):
         bolinhas = []
@@ -31,11 +56,19 @@ class Camara:
 
 def salvar_fila(fila, nome_arquivo):
     with open(nome_arquivo, 'w') as f:
-        f.write('\n'.join(fila))
+        for pessoa in fila:
+            f.write(f'{pessoa.csv()}\n')
 
 def ler_fila(nome_arquivo):
+    lista_pessoas = []
     with open(nome_arquivo, 'r') as f:
-        return f.read().splitlines()
+        for linha in f.read().splitlines():
+            if not linha:
+                continue
+            numero, nome, chamado = linha.split(',')
+            pessoa = Pessoa(int(numero), nome, int(chamado))
+            lista_pessoas.append(pessoa)
+        return lista_pessoas
 
 def salvar_camaras(dict_camaras, nome_arquivo):
     with open(nome_arquivo, 'w') as f:
@@ -49,9 +82,9 @@ def ler_camaras(nome_arquivo):
 PASTA_ARQUIVOS = os.path.join(os.path.expanduser('~'), '.recepcao-camaras')
 if not os.path.exists(PASTA_ARQUIVOS): 
     os.makedirs(PASTA_ARQUIVOS) 
-ARQUIVO_FILA_VID = os.path.join(PASTA_ARQUIVOS, 'Fila-videncia')
-ARQUIVO_FILA_PRE = os.path.join(PASTA_ARQUIVOS, 'Fila-prece')
-ARQUIVO_CAMARAS = os.path.join(PASTA_ARQUIVOS, 'Camaras-info')
+ARQUIVO_FILA_VID = os.path.join(PASTA_ARQUIVOS, 'Fila-videncia.csv')
+ARQUIVO_FILA_PRE = os.path.join(PASTA_ARQUIVOS, 'Fila-prece.csv')
+ARQUIVO_CAMARAS = os.path.join(PASTA_ARQUIVOS, 'Camaras-info.csv')
 
 for arquivo in [ARQUIVO_FILA_VID, ARQUIVO_FILA_PRE, ARQUIVO_CAMARAS]:
     with open(arquivo, 'a+'):
@@ -91,8 +124,6 @@ def registrar_pessoa(nome, fila):
 
 print(f"{fila_prece=}")
 print(f"{fila_videncia=}")
-
-
 
 camara_chamando = ''
 
@@ -143,12 +174,20 @@ def get_recepcao():
     tit_lista_fila_vid = '<h3>LISTA VIDÊNCIA</h3>'
     tit_lista_fila_pre = '<h3>LISTA PRECE</h3>'
     html_fila_vid = '<div class="lista-vid">' + tit_lista_fila_vid
-    for numero, nome in enumerate(fila_videncia):
-        html_fila_vid = html_fila_vid + f'<p>{numero + 1}. {nome}<a class="link-remover" href="/remover_atendido?nome_fila=videncia&nome_atendido={nome}"><img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'
+    for pessoa in fila_videncia:
+        html_fila_vid = html_fila_vid + f'''<p>{pessoa.numero}. {pessoa.nome_exibicao()}
+        <a class="link-editar" href="/editar_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}">
+        <img alt="Editar" src="/static/img/editar.png" width="16" height="16"></a>
+        <a class="link-remover" href="/remover_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}">
+        <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'''
     html_fila_vid = html_fila_vid + '</div>'
     html_fila_pre = '<div class="lista-pre">' + tit_lista_fila_pre
-    for numero, nome in enumerate(fila_prece):
-        html_fila_pre = html_fila_pre + f'<p>{numero + 1}. {nome}<a class="link-remover" href="/remover_atendido?nome_fila=prece&nome_atendido={nome}"><img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'
+    for pessoa in fila_prece:
+        html_fila_pre = html_fila_pre + f'''<p>{pessoa.numero}. {pessoa.nome_exibicao()}
+        <a class="link-editar" href="/editar_atendido?nome_fila=prece&numero_atendido={pessoa.numero}">
+        <img alt="Editar" src="/static/img/editar.png" width="16" height="16"></a>
+        <a class="link-remover" href="/remover_atendido?nome_fila=prece&numero_atendido={pessoa.numero}">
+        <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'''
     html_fila_pre = html_fila_pre + '</div>'
 
     tit_menu = '<h1>MENU</h1>'
@@ -190,10 +229,20 @@ def adicionar_atendido():
     nome_fila = request.args.get('nome_fila')
     nome_atendido = request.args.get('nome_atendido')
     if nome_fila == 'prece':
-        fila_prece.append(nome_atendido)
+        if fila_prece:
+            numero = int(fila_prece[-1].numero) + 1
+        else:
+            numero = 1
+        pessoa = Pessoa(numero, nome_atendido)
+        fila_prece.append(pessoa)
         salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
     elif nome_fila == 'videncia':
-        fila_videncia.append(nome_atendido)
+        if fila_videncia:
+            numero = int(fila_videncia[-1].numero) + 1
+        else:
+            numero = 1
+        pessoa = Pessoa(numero, nome_atendido)
+        fila_videncia.append(pessoa)
         salvar_fila(fila_videncia, ARQUIVO_FILA_VID)
     else: 
         return 'Fila incorreta!'
@@ -227,17 +276,61 @@ def reiniciar_tudo_confirmado():
 @app.route("/remover_atendido")
 def remover_atendido():
     nome_fila = request.args.get('nome_fila')
-    nome_atendido = request.args.get('nome_atendido')
+    numero_atendido = int(request.args.get('numero_atendido'))
     if nome_fila == 'prece':
-        fila_prece.remove(nome_atendido)
+        for pessoa in fila_prece:
+            if pessoa.numero == numero_atendido:
+                fila_prece.remove(pessoa)
+                break
         salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
     elif nome_fila == 'videncia':
-        fila_videncia.remove(nome_atendido)
+        for pessoa in fila_videncia:
+            if pessoa.numero == numero_atendido:
+                fila_videncia.remove(pessoa)
+                break
         salvar_fila(fila_videncia, ARQUIVO_FILA_VID)
     else: 
         return 'Fila incorreta!'
     return redirect('/')
 
+@app.route("/editar_atendido")
+def editar_atendido():
+    nome_fila = request.args.get('nome_fila')
+    numero_atendido = int(request.args.get('numero_atendido'))
+    if nome_fila == 'videncia':
+        for pessoa in fila_videncia:
+            if pessoa.numero == numero_atendido:
+                return f'''<form action='/editar_atendido_confirmado'><input type='text' name='nome_atendido' value='{pessoa.nome}'>
+                <input type='hidden' name='nome_fila' value='{nome_fila}'>
+                <input type='hidden' name='numero_atendido' value='{numero_atendido}'>
+                <button type='submit'>Confirmar</button>
+                </form>'''
+    if nome_fila == 'prece':
+        for pessoa in fila_prece:
+            if pessoa.numero == numero_atendido:
+                return f'''<form action='/editar_atendido_confirmado'><input type='text' name='nome_atendido' value='{pessoa.nome}'>
+                <input type='hidden' name='nome_fila' value='{nome_fila}'>
+                <input type='hidden' name='numero_atendido' value='{numero_atendido}'>
+                <button type='submit'>Confirmar</button>
+                </form>'''
+    return redirect('/')
+
+@app.route('/editar_atendido_confirmado')
+def editar_atendido_confirmado():
+    nome_fila = request.args.get('nome_fila')
+    numero_atendido = int(request.args.get('numero_atendido'))
+    nome_atendido = request.args.get('nome_atendido')
+    if nome_fila == 'videncia':
+        for pessoa in fila_videncia:
+            if pessoa.numero == numero_atendido:
+                pessoa.nome = nome_atendido
+                break
+    elif nome_fila == 'prece':
+        for pessoa in fila_prece:
+            if pessoa.numero == numero_atendido:
+                pessoa.nome = nome_atendido
+                break
+    return redirect('/')
 
 @app.route('/teste')
 def teste():
