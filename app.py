@@ -1,5 +1,6 @@
 import os
 from flask import Flask, request, redirect, send_from_directory
+from datetime import datetime, date
 
 class Pessoa:
     def __init__(self, numero, nome, chamado=0, camara=None):
@@ -131,14 +132,23 @@ camara_chamando = ''
 
 app = Flask(__name__)
 
+
+
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory('static', filename)
 
+dia_semana = date.today().weekday()
+nomes = ("Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo")
+data_e_hora_atuais = datetime.now()
+dia_semana_usar = nomes[dia_semana]
+data_e_hora_em_texto = data_e_hora_atuais.strftime('%d/%m/%Y %H:%M')
+data = dia_semana_usar + ' ' + data_e_hora_em_texto + '<br>'
+
 @app.route('/')
 def get_recepcao():
     head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
-    tit_recep = '<h1>RECEPÇÃO DAS CÂMARAS</h1>'
+    tit_recep = 'CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA<br>' + data + '<h1>RECEPÇÃO DAS CÂMARAS</h1>'
     tit_adicionar = '<h5>ADICIONAR NOME NA FILA</h4>'
     form = f'''<form action="/adicionar_atendido">
         <input name="nome_atendido" type="text" placeholder="Digite o nome"><br>
@@ -212,7 +222,7 @@ def tv():
     html_camaras_vid = '<div class="tv-vid">' + html_camaras_vid + '</div>'
     html_camaras_pre = '<div class="tv-pre">' + html_camaras_pre + '</div>'
     voltar = '<a href="/">VOLTAR</a>'
-    return head + '<body>' + html_camaras_vid + html_camaras_pre + voltar + '</body>'
+    return head + '<body>' + data + html_camaras_vid + html_camaras_pre + voltar + '</body>'
 
 @app.route("/chamar_proximo/<numero_camara>")
 def chamar_proximo_(numero_camara):
