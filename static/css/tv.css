@@ -1,15 +1,18 @@
 body{
-    font-size: 14px;
+    font-size: 20px;
     display: flex;
     flex-direction: column;
     gap: 10px;
+    align-items:center;
 }
 
 .tv-camara{
     background-color: rgb(255, 248, 219);
     padding: 20px;
+    padding-left: 5px;
     border-radius: 4px;
-    width: 150px;
+    width: 370px;
+    text-align: center;
   }
   
   .tv-vid{
@@ -19,7 +22,7 @@ body{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: 400px;
+    width: 800px;
   }
   
   .tv-pre{
@@ -29,5 +32,5 @@ body{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: 400px;
+    width: 800px;
   }

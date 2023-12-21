@@ -95,8 +95,8 @@ for arquivo in [ARQUIVO_FILA_VID, ARQUIVO_FILA_PRE, ARQUIVO_CAMARAS]:
 fila_videncia = ler_fila(ARQUIVO_FILA_VID)
 fila_prece = ler_fila(ARQUIVO_FILA_PRE)
 
-NOME_FILA_VIDENCIA = 'v'
-NOME_FILA_PRECE = 'p'
+NOME_FILA_VIDENCIA = 'Vidência'
+NOME_FILA_PRECE = 'Prece'
 
 camara2 = Camara("2", fila_videncia, NOME_FILA_VIDENCIA)
 camara4 = Camara("4", fila_videncia, NOME_FILA_VIDENCIA)
@@ -203,8 +203,8 @@ def tv():
     html_camaras_vid = ''
     html_camaras_pre = ''
     for camara in dict_camaras.values():
-        html_camaras = f'''<div class='tv-camara'><p><h3>CÂMARA {camara.numero_camara} CHAMA</h3></p>
-        <p><h3>{camara.pessoa_em_atendimento}</h3></p></div>'''.upper()
+        html_camaras = f'''<div class='tv-camara'><p>CÂMARA {camara.nome_fila}<br><h1>{camara.numero_camara}</h1><br>CHAMA</p>
+        <p><h2>{camara.pessoa_em_atendimento}</h2></p></div>'''.upper()
         if camara.nome_fila == NOME_FILA_VIDENCIA:
             html_camaras_vid = html_camaras_vid + html_camaras
         elif camara.nome_fila == NOME_FILA_PRECE:
