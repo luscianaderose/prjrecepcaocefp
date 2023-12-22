@@ -148,29 +148,29 @@ data = dia_semana_usar + ' ' + data_e_hora_em_texto + '<br>'
 @app.route('/')
 def get_recepcao():
     head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
-    tit_recep = 'CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA<br>' + data + '<h1>RECEPÇÃO DAS CÂMARAS</h1>'
-    tit_adicionar = '<h5>ADICIONAR NOME NA FILA</h4>'
-    form = f'''<form action="/adicionar_atendido">
-        <input name="nome_atendido" type="text" placeholder="Digite o nome"><br>
-        <div class="div-radio"> 
+    tit_recep = '<p>CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA</p>' + '<h1>RECEPÇÃO DAS CÂMARAS</h1>' + data
+    tit_adicionar = '<div class="div-adicionar-nomes"><div class="dan-tit-form"><h5>ADICIONAR NOME NA FILA</h4></div>'
+    form = f'''<div class="dan-form"><form action="/adicionar_atendido">
+        <input name="nome_atendido" type="text" placeholder="Digite o nome"></div>
+        <div class="dan-bt-vid-pre"><div class="bt-vid-pre-radio"> 
         <input class="radio" type="radio" id="videncia" name="nome_fila" value="videncia" required>
-        <label class="label1" for="videncia"><div class="radio-txt">VIDÊNCIA</div></label><br>
+        <label class="label1" for="videncia"><div class="radio-txt">VIDÊNCIA</div></label>
         <input class="radio" type="radio" id="prece" name="nome_fila" value="prece">
-        <label class="label2" for="prece"><div class="radio-txt">PRECE</div></label></div><br>          
-        <button>ADICIONAR</button>
-        </form>'''
+        <label class="label2" for="prece"><div class="radio-txt">PRECE</div></label></div></div>          
+        <div class="dan-bt-adicionar"><div class="dan-bt-adicionar-centro-vertical"><button>ADICIONAR</button></div></div>
+        </form></div>'''
     
     # CÂMARAS
-    tit_vid = '<div class="tit-vid-pre"><div class="tit-vid"><h2>VIDÊNCIA</h2></div></div>'
-    tit_pre = '<div class="tit-vid-pre"><div class="tit-pre"><h2>PRECE</h2></div></div>'
+    tit_vid = '<div class="div-vid-pre"><div class="div-vid"><div class="tit-vid-pre"><div class="tit-vid"><h2>VIDÊNCIA</h2></div></div>'
+    tit_pre = '<div class="div-pre"><div class="tit-vid-pre"><div class="tit-pre"><h2>PRECE</h2></div></div>'
     html_camaras_vid = ''
     html_camaras_pre = ''
     for camara in dict_camaras.values():
         html_camara = f'''<div class='camara'><p><h3>CÂMARA {camara.numero_camara}</h3></p>
         <p>ATENDENDO<br><h4>{camara.pessoa_em_atendimento}</h4></p>
         <p>ATENDIMENTOS<br>
-        <a href="/bolinhas?modo=subtracao&numero_camara={camara.numero_camara}">-</a>{camara.bolinhas()}
-        <a href="/bolinhas?modo=adicao&numero_camara={camara.numero_camara}">+</a></p>
+        <a href="/bolinhas?modo=subtracao&numero_camara={camara.numero_camara}"><b>-</b></a>{camara.bolinhas()}
+        <a href="/bolinhas?modo=adicao&numero_camara={camara.numero_camara}"><b>+</b></a></p>
         <p><a href="/chamar_proximo/{camara.numero_camara}">Chamar próximo</a></p>
         <p><a href="/reabrir_camara/{camara.numero_camara}">Reabrir câmara</a></p></div>'''
         if camara.nome_fila == NOME_FILA_VIDENCIA:
@@ -190,7 +190,7 @@ def get_recepcao():
         <img alt="Editar" src="/static/img/editar.png" width="16" height="16"></a>
         <a class="link-remover" href="/remover_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}">
         <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'''
-    html_fila_vid = html_fila_vid + '</div>'
+    html_fila_vid = html_fila_vid + '</div></div>' #tirei uma /div
     html_fila_pre = '<div class="lista-pre">' + tit_lista_fila_pre
     for index, pessoa in enumerate(fila_prece):
         html_fila_pre = html_fila_pre + f'''<p>{index + 1}. {pessoa.nome_exibicao()}
@@ -198,13 +198,15 @@ def get_recepcao():
         <img alt="Editar" src="/static/img/editar.png" width="16" height="16"></a>
         <a class="link-remover" href="/remover_atendido?nome_fila=prece&numero_atendido={pessoa.numero}">
         <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'''
-    html_fila_pre = html_fila_pre + '</div>'
+    html_fila_pre = html_fila_pre + '</div></div></div>'
 
-    tit_menu = '<h1>MENU</h1>'
-    tv = '<a href="/tv">TV</a></p>'
-    bt_reiniciar = '<a href="/reiniciar_tudo"><button>REINICAR TUDO</button></a>'
+    espaco = '<div class="div-espaco"> </div>'
 
-    return  head + '<body>' + tit_recep + tit_adicionar + form + tit_vid + html_camaras_vid + html_fila_vid + tit_pre + html_camaras_pre + html_fila_pre + tit_menu + tv + bt_reiniciar + '</body>'
+    tit_menu = '<div class="div-menu"><div class="vertical-center"><div class="dm-tit"><h3>MENU</h3></div></div>'
+    tv = '<div class="dm-bt-tv"><div class="vertical-center"><a href="/tv"><button>TV</button></a></div></div>'
+    bt_reiniciar = '<div class="dm-bt-reiniciar"><div class="vertical-center"><a href="/reiniciar_tudo"><button>REINICAR TUDO</button></a></div></div></div>'
+
+    return  head + '<body>' + tit_recep + tit_adicionar + form + tit_vid + html_camaras_vid + html_fila_vid + espaco + tit_pre + html_camaras_pre + html_fila_pre + tit_menu + tv + bt_reiniciar + '</body>'
 
 @app.route('/tv')
 def tv():

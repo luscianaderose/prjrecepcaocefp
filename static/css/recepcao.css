@@ -1,17 +1,135 @@
-.tit-vid-pre{
-  /* padding: 10px;
-  margin-top: 6px;
-  margin-bottom: 10px;
-  width: 330px; 
-  border-radius: 5px; */
+/* ########## DIVS BASE DA ESTRUTURA ########## */
+.div-adicionar-nomes{
+  background-color: rgb(255, 248, 219);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: row;
+  /* justify-content: space-between; */
+  width: 730px;
+  /* border-style: solid;
+  border-width: 2px;
+  border-color: blue; */
 }
+
+.div-vid-pre{
+  /* border-style: solid;
+  border-width: 2px;
+  border-color: red; */
+  display: flex;
+  flex-direction: row;
+  width: 730px;
+}
+
+.div-menu{
+  background-color: rgb(255, 248, 219);
+  border-radius: 4px;
+  display: flex;
+  justify-content:center;
+  justify-content: space-evenly;
+  /* flex-direction: row; */
+  width: 730px;
+  /* border-style: solid;
+  border-width: 1px;
+  border-color: blue; */
+}
+
+
+/* DENTRO DE ADICIONAR NOMES */
+
+.dan-tit-form{ /* dan = div adicionar nomes*/
+  width: 190px;
+  padding-left: 20px;
+  /* border-style: solid;
+  border-width: 2px;
+  border-color: red; */
+}
+
+.dan-form{
+  width: 200px;
+  padding-top: 20px;
+  /* border-color: red;
+  border-style: solid;
+  border-width: 2px; */
+}
+
+.dan-bt-vid-pre{
+  width: 170px;
+  /* border-style: solid;
+  border-width: 2px;
+  border-color: red; */
+}
+
+.dan-bt-adicionar{
+  width: 110px;
+  position: relative;
+  float: right;
+  /* border-style: solid;
+  border-width: 2px;
+  border-color: red; */
+}
+
+.dan-bt-adicionar-centro-vertical{
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+/* FIM DENTRO DE ADICIONAR NOMES */
+
+
+/* ### DENTRO DE MENU ### */
+.dm-tit{ /*dm = div menu*/
+  /* height: 100px;
+  position: relative; */
+  /* border-style: solid;
+  border-width: 2px;
+  border-color: red; */
+}
+
+.dm-bt-tv{
+  /* height: 200px;
+  position: relative; */
+  padding-top: 10px;
+  /* border-style: solid;
+  border-width: 2px;
+  border-color: red; */
+}
+
+.dm-bt-reiniciar{
+  /* height: 200px;
+  position: relative; */
+  /* float: right; */
+  padding-top: 10px;
+  /* border-style: solid;
+  border-width: 2px;
+  border-color: red; */
+}
+
+.vertical-center {
+  /* margin: 0;
+  position: absolute;
+  top: 50%;
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%); */
+}
+
+/* ### FIM DE DENTRO DE MENU ### */
+
+
+.div-espaco{
+  /* background-color: blueviolet; */
+  width: 20px
+}
+
+/* ### FIM DIVS GRANDES BASE DA ESTRUTURA ### */
 
 .tit-vid{
   background-color: rgb(149, 243, 255);
   padding: 10px;
   margin-top: 6px;
   margin-bottom: 10px;
-  width: 330px;
+  /* width: 330px; */
   border-radius: 5px;
 }
 
@@ -20,7 +138,7 @@
   padding: 10px;
   margin-top: 6px;
   margin-bottom: 10px;
-  width: 330px;
+  /* width: 330px; */
   border-radius: 5px;
 }
 
@@ -39,7 +157,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 330px;
+  /* width: 330px; */
 }
 
 .camara-pre{
@@ -49,7 +167,7 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 330px;
+  /* width: 330px; */
 }
 
 .camaras-div{
@@ -59,22 +177,6 @@
   width: 350px;
 }
 
-/* .camaras-div-vid{
-  background-color: rgb(149, 243, 255);
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 350px;
-}
-
-.camaras-div-pre{
-  background-color: rgb(149, 255, 225);
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  width: 350px;
-} */
-
 .lista{
   /* border-style: solid; */
   /* border-width: 1px; */
@@ -82,7 +184,7 @@
   padding: 10px;
   margin-top: 10px;
   margin-bottom: 10px;
-  width: 330px;
+  /* width: 330px; */
   border-radius: 5px;
 }
 
@@ -91,7 +193,7 @@
   padding: 10px;
   margin-top: 10px;
   margin-bottom: 10px;
-  width: 330px;
+  /* width: 330px; */
   border-radius: 5px;
 }
 
@@ -100,7 +202,7 @@
   padding: 10px;
   margin-top: 10px;
   margin-bottom: 10px;
-  width: 330px;
+  /* width: 330px; */
   border-radius: 5px;
 }
 
@@ -108,7 +210,8 @@
   margin-left: 7px;
 }
 
-.div-radio{
+/* ########## BOTÃO VID-PRE ########## */
+ .bt-vid-pre-radio{/*div-radio */
   background-color:rgb(255, 248, 219);
   height: 40px;
   width: 160px;
@@ -124,10 +227,9 @@ input[type="radio"] {
 
 .label1,.label2 {
   display: block;
-  height: 40px;
-  width: 80px;
+  /* height: 40px; */
+  width: 100px;
   color: #2c2c2c;
-  
 }
 
 .label2 {
@@ -140,11 +242,12 @@ input[type="radio"] {
   height: 40px;
   justify-content: center;
   align-items: center;
-  font-weight: 500;
-  font-size: 14px;
+  /* font-weight: 500; */
+  /* font-size: 14px; */
 }
 
 .radio:checked + label {
   background-color:black;
   color: rgb(255, 255, 255);
 }
+/* FIM BOTÃO VID-PRE */
