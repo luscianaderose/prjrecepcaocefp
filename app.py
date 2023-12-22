@@ -160,6 +160,8 @@ def get_recepcao():
         <div class="dan-bt-adicionar"><div class="dan-bt-adicionar-centro-vertical"><button>ADICIONAR</button></div></div>
         </form></div>'''
     
+    espaco = '<div class="div-espaco"> </div>'
+    
     # CÂMARAS
     tit_vid = '<div class="div-vid-pre"><div class="div-vid"><div class="tit-vid-pre"><div class="tit-vid"><h2>VIDÊNCIA</h2></div></div>'
     tit_pre = '<div class="div-pre"><div class="tit-vid-pre"><div class="tit-pre"><h2>PRECE</h2></div></div>'
@@ -199,8 +201,6 @@ def get_recepcao():
         <a class="link-remover" href="/remover_atendido?nome_fila=prece&numero_atendido={pessoa.numero}">
         <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'''
     html_fila_pre = html_fila_pre + '</div></div></div>'
-
-    espaco = '<div class="div-espaco"> </div>'
 
     tit_menu = '<div class="div-menu"><div class="vertical-center"><div class="dm-tit"><h3>MENU</h3></div></div>'
     tv = '<div class="dm-bt-tv"><div class="vertical-center"><a href="/tv"><button>TV</button></a></div></div>'

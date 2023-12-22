@@ -146,22 +146,24 @@
   /* border-style: solid;
   border-width: 1px; */
   background-color: rgb(255, 248, 219);
-  padding: 20px;
+  padding: 10px;
   border-radius: 4px;
+  min-width: 140px;
 }
 
 .camara-vid{
   background-color: rgb(149, 243, 255);
+  min-width: 330px;
   padding: 10px;
   border-radius: 5px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  /* width: 330px; */
 }
 
 .camara-pre{
   background-color: rgb(149, 255, 225);
+  min-width: 330px;
   padding: 10px;
   border-radius: 5px;
   display: flex;
