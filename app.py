@@ -139,16 +139,19 @@ def serve_static(filename):
     return send_from_directory('static', filename)
 
 dia_semana = date.today().weekday()
-nomes = ("Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo")
+#nomes = ("SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM")
+#nomes = ("Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo")
+nomes = ("SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO", "DOMINGO")
 data_e_hora_atuais = datetime.now()
 dia_semana_usar = nomes[dia_semana]
-data_e_hora_em_texto = data_e_hora_atuais.strftime('%d/%m/%Y %H:%M')
-data = dia_semana_usar + ' ' + data_e_hora_em_texto + '<br>'
+data_e_hora_em_texto = data_e_hora_atuais.strftime('%d/%m %H:%M')
+#data = dia_semana_usar + '<br>' + data_e_hora_em_texto + '<br>'
+data = dia_semana_usar + ' ' + data_e_hora_em_texto
 
 @app.route('/')
 def get_recepcao():
     head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
-    tit_recep = '<p>CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA</p>' + '<h1>RECEPÇÃO DAS CÂMARAS</h1>' + data
+    tit_recep = '<div class="div-cabecalho"><div class="dc-congrega"><p><img alt="CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA" src="/static/img/cefp.png"></p></div>' + '<div class="dc-tit-principal"><h1>RECEPÇÃO DAS CÂMARAS</h1></div>' + '<div class="dc-data">' + data + '</div></div>'
     tit_adicionar = '<div class="div-adicionar-nomes"><div class="dan-tit-form"><h5>ADICIONAR NOME NA FILA</h4></div>'
     form = f'''<div class="dan-form"><form action="/adicionar_atendido">
         <input name="nome_atendido" type="text" placeholder="Digite o nome"></div>
