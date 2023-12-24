@@ -1,4 +1,4 @@
-/* ########## DIVS GRANDES BASE DA ESTRUTURA ########## */
+/* ### DIVS GRANDES BASE DA ESTRUTURA ### */
 .div-cabecalho{
   width: 720px;
   height: 80px;
@@ -43,6 +43,10 @@
   /* border-style: solid;
   border-width: 1px;
   border-color: blue; */
+}
+
+.div-info{
+  
 }
 
 /* ### FIM DIVS GRANDES BASE DA ESTRUTURA ### */
@@ -128,6 +132,7 @@
 
 .tit-vid{
   background-color: rgb(149, 243, 255);
+  text-align: center;
   padding: 10px;
   /* width: 330px; */
   border-radius: 10px;
@@ -136,6 +141,7 @@
 
 .tit-pre{
   background-color: rgb(149, 255, 225);
+  text-align: center;
   padding: 10px;
   /* width: 330px; */
   border-radius: 10px;
@@ -280,6 +286,11 @@ input[type="radio"] {
 }
 /* FIM BOTÃO VID-PRE */
 
+.nobr { 
+  /* white-space: nowrap; */
+  /* display: flex;
+  justify-content: space-between; */
+}
 
 
 

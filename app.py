@@ -185,6 +185,7 @@ def get_recepcao():
     html_camaras_vid = '<div class="camara-vid">' + html_camaras_vid + '</div>'
     html_camaras_pre = '<div class="camara-pre">' + html_camaras_pre + '</div>'
 
+
     # LISTAS/FILAS
     tit_lista_fila_vid = '<h3>LISTA VIDÊNCIA</h3>'
     tit_lista_fila_pre = '<h3>LISTA PRECE</h3>'
@@ -205,11 +206,20 @@ def get_recepcao():
         <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'''
     html_fila_pre = html_fila_pre + '</div></div></div>'
 
-    tit_menu = '<div class="div-menu"><div class="vertical-center"><div class="dm-tit"><h3>MENU</h3></div></div>'
+    camaras = tit_vid + html_camaras_vid + html_fila_vid + espaco + tit_pre + html_camaras_pre + html_fila_pre
+
+    # MENU
+    tit_menu = '<div class="div-menu"><div class="dm-tit"><h3>MENU</h3></div>'
     tv = '<div class="dm-bt-tv"><div class="vertical-center"><a href="/tv"><button>TV</button></a></div></div>'
     bt_reiniciar = '<div class="dm-bt-reiniciar"><div class="vertical-center"><a href="/reiniciar_tudo"><button>REINICAR TUDO</button></a></div></div></div>'
+    menu = tit_menu + tv + bt_reiniciar
 
-    return  head + '<body>' + tit_recep + tit_adicionar + form + tit_vid + html_camaras_vid + html_fila_vid + espaco + tit_pre + html_camaras_pre + html_fila_pre + tit_menu + tv + bt_reiniciar + '</body>'
+    #  INFO
+    tit_info = '<div class="div-info"><div class=""><h3>INFORMAÇÕES</h3></div>'
+    fim = '</div>'
+    info = tit_info + fim
+
+    return  head + '<body>' + tit_recep + tit_adicionar + form + camaras + menu + info + '</body>'
 
 @app.route('/tv')
 def tv():
@@ -227,7 +237,7 @@ def tv():
     html_camaras_vid = '<div class="tv-vid">' + html_camaras_vid + '</div>'
     html_camaras_pre = '<div class="tv-pre">' + html_camaras_pre + '</div>'
     voltar = '<a href="/">VOLTAR</a>'
-    return head + '<body>' + data + html_camaras_vid + html_camaras_pre + voltar + '</body>'
+    return head + '<body>' + html_camaras_vid + html_camaras_pre + '<div class="nobr">' + voltar + ' ' + data + '</div></body>'
 
 @app.route("/chamar_proximo/<numero_camara>")
 def chamar_proximo_(numero_camara):
