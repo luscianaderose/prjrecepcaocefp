@@ -5,8 +5,10 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  /* background-color: white; */
   margin-bottom: 10px;
+  /* border-style: solid;
+  border-width: 2px;
+  border-color: blue; */
 }
 
 .div-adicionar-nomes{
@@ -43,10 +45,15 @@
   /* border-style: solid;
   border-width: 1px;
   border-color: blue; */
+  margin-bottom: 10px;
 }
 
 .div-info{
-  
+  background-color: rgb(255, 248, 219);
+  width: 720px;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 
 /* ### FIM DIVS GRANDES BASE DA ESTRUTURA ### */
@@ -56,8 +63,9 @@
 /* ### DENTRO DE DIV CABEÇALHO ### */
 
 .dc-congrega{/* dc  = div cabeçalho*/
-  height: 70px;
-  align-items: start;
+  /* height: 70px; */
+  /* align-items: start; */
+  padding-top: 0px;
   /* background-color: blue; */
 }
 
@@ -89,7 +97,7 @@
 }
 
 .dan-form{
-  width: 200px;
+  width: 180px;
   padding-top: 20px;
   /* border-color: red;
   border-style: solid;
@@ -97,7 +105,7 @@
 }
 
 .dan-bt-vid-pre{
-  width: 170px;
+  width: 200px;
   /* border-style: solid;
   border-width: 2px;
   border-color: red; */
@@ -238,6 +246,17 @@
 
 /* ### FIM DE DENTRO DE MENU ### */
 
+/* ### DENTRO DE INFO ### */
+.di-calendario{
+  background-color: rgb(255, 248, 219);
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+}
+
+
+/* ### FIM DE DENTRO DE MENU ### */
+
 
 
 .link-remover, .link-editar{
@@ -246,9 +265,13 @@
 
 /* ########## BOTÃO VID-PRE ########## */
  .bt-vid-pre-radio{/*div-radio */
-  background-color:rgb(255, 248, 219);
   height: 40px;
-  width: 160px;
+  width: 180px;
+  background-color:rgb(255, 248, 219);
+  border-style: solid;
+  border-width: 2px;
+  border-color: white;
+  border-radius: 10px;
   /* box-shadow: 0 0 30px 0px #d1d1d1; */
   display: flex;
   flex-direction: row;
@@ -262,13 +285,14 @@ input[type="radio"] {
 .label1,.label2 {
   display: block;
   /* height: 40px; */
-  width: 100px;
+  width: 120px;
   color: #2c2c2c;
 }
 
 .label2 {
   right: 0;
-  border-left: solid 1px;
+  border-left: solid 2px;
+  border-color: white;
 }
 
 .radio-txt {
@@ -283,6 +307,7 @@ input[type="radio"] {
 .radio:checked + label {
   background-color:black;
   color: rgb(255, 255, 255);
+  border-radius: 10px;
 }
 /* FIM BOTÃO VID-PRE */
 
@@ -301,3 +326,12 @@ input[type="radio"] {
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
 } */
+
+
+.linkbolinhas {
+  text-decoration: none;
+}
+
+.btcamara {
+  text-decoration: none;
+}

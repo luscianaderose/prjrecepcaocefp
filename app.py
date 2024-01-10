@@ -1,6 +1,9 @@
 import os
 from flask import Flask, request, redirect, send_from_directory
 from datetime import datetime, date
+import calendar  
+    
+
 
 class Pessoa:
     def __init__(self, numero, nome, chamado=0, camara=None):
@@ -17,7 +20,7 @@ class Pessoa:
     
     def nome_exibicao(self):
         if self.chamado == 1:
-            return f'<s>{self.nome}</s> {self.camara}'
+            return f'<s>{self.nome}</s> - {self.camara}'
         else:
             return f'{self.nome}'
 
@@ -133,11 +136,11 @@ camara_chamando = ''
 app = Flask(__name__)
 
 
-
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory('static', filename)
 
+# DATA E HORA
 dia_semana = date.today().weekday()
 #nomes = ("SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM")
 #nomes = ("Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo")
@@ -145,13 +148,19 @@ nomes = ("SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO", "DOMINGO")
 data_e_hora_atuais = datetime.now()
 dia_semana_usar = nomes[dia_semana]
 data_e_hora_em_texto = data_e_hora_atuais.strftime('%d/%m %H:%M')
-#data = dia_semana_usar + '<br>' + data_e_hora_em_texto + '<br>'
 data = dia_semana_usar + ' ' + data_e_hora_em_texto
+
+# CALENDARIO
+ano = data_e_hora_atuais.year
+mes = data_e_hora_atuais.month
+calendario = '<div class="di-calendario"><pre>' + (calendar.month(ano, mes)) + '</pre></div>'
+
+
 
 @app.route('/')
 def get_recepcao():
     head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
-    tit_recep = '<div class="div-cabecalho"><div class="dc-congrega"><p><img alt="CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA" src="/static/img/cefp.png"></p></div>' + '<div class="dc-tit-principal"><h1>RECEPÇÃO DAS CÂMARAS</h1></div>' + '<div class="dc-data">' + data + '</div></div>'
+    tit_recep = '<div class="div-cabecalho"><div class="dc-congrega"><img alt="CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA" src="/static/img/cefp.png"></div>' + '<div class="dc-tit-principal"><h1>RECEPÇÃO DAS CÂMARAS</h1></div>' + '<div class="dc-data">' + data + '</div></div>'
     tit_adicionar = '<div class="div-adicionar-nomes"><div class="dan-tit-form"><h5>ADICIONAR NOME NA FILA</h4></div>'
     form = f'''<div class="dan-form"><form action="/adicionar_atendido">
         <input name="nome_atendido" type="text" placeholder="Digite o nome"></div>
@@ -174,10 +183,10 @@ def get_recepcao():
         html_camara = f'''<div class='camara'><p><h3>CÂMARA {camara.numero_camara}</h3></p>
         <p>ATENDENDO<br><h4>{camara.pessoa_em_atendimento}</h4></p>
         <p>ATENDIMENTOS<br>
-        <a href="/bolinhas?modo=subtracao&numero_camara={camara.numero_camara}"><b>-</b></a>{camara.bolinhas()}
-        <a href="/bolinhas?modo=adicao&numero_camara={camara.numero_camara}"><b>+</b></a></p>
-        <p><a href="/chamar_proximo/{camara.numero_camara}">Chamar próximo</a></p>
-        <p><a href="/reabrir_camara/{camara.numero_camara}">Reabrir câmara</a></p></div>'''
+        <a class="linkbolinhas" href="/bolinhas?modo=subtracao&numero_camara={camara.numero_camara}"><b>-</b></a>{camara.bolinhas()}
+        <a class="linkbolinhas" href="/bolinhas?modo=adicao&numero_camara={camara.numero_camara}"><b>+</b></a></p>
+        <p><button type="button"><a class="btcamara" href="/chamar_proximo/{camara.numero_camara}">Chamar próximo</a></button></p>
+        <p><button type="button"><a class="btcamara" href="/reabrir_camara/{camara.numero_camara}">Reabrir câmara</a></button></p></div>'''
         if camara.nome_fila == NOME_FILA_VIDENCIA:
             html_camaras_vid = html_camaras_vid + html_camara
         elif camara.nome_fila == NOME_FILA_PRECE:
@@ -187,8 +196,8 @@ def get_recepcao():
 
 
     # LISTAS/FILAS
-    tit_lista_fila_vid = '<h3>LISTA VIDÊNCIA</h3>'
-    tit_lista_fila_pre = '<h3>LISTA PRECE</h3>'
+    tit_lista_fila_vid = '<h3>FILA VIDÊNCIA</h3>Nome - câmara'
+    tit_lista_fila_pre = '<h3>FILA PRECE</h3>Nome - câmara'
     html_fila_vid = '<div class="lista-vid">' + tit_lista_fila_vid
     for index, pessoa in enumerate(fila_videncia):
         html_fila_vid = html_fila_vid + f'''<p>{index + 1}. {pessoa.nome_exibicao()}
@@ -214,10 +223,16 @@ def get_recepcao():
     bt_reiniciar = '<div class="dm-bt-reiniciar"><div class="vertical-center"><a href="/reiniciar_tudo"><button>REINICAR TUDO</button></a></div></div></div>'
     menu = tit_menu + tv + bt_reiniciar
 
-    #  INFO
+    # INFO
     tit_info = '<div class="div-info"><div class=""><h3>INFORMAÇÕES</h3></div>'
     fim = '</div>'
-    info = tit_info + fim
+    texto = '''1. Verificar no cartão da pessoa se data da marcação é a data de hoje.<br>
+    2. Adicionar o nome na fila correspondente.<br>
+    3. Carimbar o cartão.<br>
+    4. Pedir para sentar no lugar correto.<br>
+    5. Quando a câmara chamar, clicar em 'chamar próximo' e chamar o próximo nome. O nome é riscado, a câmara que chamou fica registrada, e uma bolinha branca fica preenchida, tudo automaticamente.<br>
+    6. Quando atingir o limite de atendimentos das câmaras que é representado por cinco bolinhas cheias, avisar que a câmara fechou.<br><br><br>'''
+    info = tit_info + texto + calendario + fim
 
     return  head + '<body>' + tit_recep + tit_adicionar + form + camaras + menu + info + '</body>'
 
@@ -237,7 +252,7 @@ def tv():
     html_camaras_vid = '<div class="tv-vid">' + html_camaras_vid + '</div>'
     html_camaras_pre = '<div class="tv-pre">' + html_camaras_pre + '</div>'
     voltar = '<a href="/">VOLTAR</a>'
-    return head + '<body>' + html_camaras_vid + html_camaras_pre + '<div class="nobr">' + voltar + ' ' + data + '</div></body>'
+    return head + '<body>' + html_camaras_vid + html_camaras_pre + '<div class="nobr">' + voltar + ' ' + data + '</div></body>' + calendario
 
 @app.route("/chamar_proximo/<numero_camara>")
 def chamar_proximo_(numero_camara):
@@ -324,20 +339,23 @@ def editar_atendido():
     if nome_fila == 'videncia':
         for pessoa in fila_videncia:
             if pessoa.numero == numero_atendido:
-                return f'''<form action='/editar_atendido_confirmado'><input type='text' name='nome_atendido' value='{pessoa.nome}'>
-                <input type='hidden' name='nome_fila' value='{nome_fila}'>
-                <input type='hidden' name='numero_atendido' value='{numero_atendido}'>
+                return f'''<form action='/editar_atendido_confirmado'>
+                <input type='text' name='nome_atendido' value='{pessoa.nome}'>
+                <input type='text' name='nome_fila' value='{nome_fila}'>
+                <input type='text' name='numero_atendido' value='{numero_atendido}'>
                 <button type='submit'>Confirmar</button>
                 </form>'''
     if nome_fila == 'prece':
         for pessoa in fila_prece:
             if pessoa.numero == numero_atendido:
-                return f'''<form action='/editar_atendido_confirmado'><input type='text' name='nome_atendido' value='{pessoa.nome}'>
-                <input type='hidden' name='nome_fila' value='{nome_fila}'>
-                <input type='hidden' name='numero_atendido' value='{numero_atendido}'>
+                return f'''<form action='/editar_atendido_confirmado'>
+                <input type='text' name='nome_atendido' value='{pessoa.nome}'>
+                <input type='text' name='nome_fila' value='{nome_fila}'>
+                <input type='text' name='numero_atendido' value='{numero_atendido}'>
                 <button type='submit'>Confirmar</button>
                 </form>'''
-    return redirect('/')
+    cancelar = '<a href="/">CANCELAR</a>'
+    return cancelar
 
 @app.route('/editar_atendido_confirmado')
 def editar_atendido_confirmado():
@@ -354,6 +372,7 @@ def editar_atendido_confirmado():
             if pessoa.numero == numero_atendido:
                 pessoa.nome = nome_atendido
                 break
+    cancelar = '<a href="/">CANCELAR</a>'
     return redirect('/')
 
 @app.route('/bolinhas')
