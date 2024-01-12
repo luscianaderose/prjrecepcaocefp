@@ -6,11 +6,12 @@ import calendar
 
 
 class Pessoa:
-    def __init__(self, numero, nome, chamado=0, camara=None):
+    def __init__(self, numero, nome, chamado=0, camara=None, dupla=None):
         self.nome = nome
         self.numero = numero
         self.chamado = chamado
         self.camara = camara
+        self.dupla = dupla
 
     def __str__(self):
         return self.nome
@@ -23,6 +24,56 @@ class Pessoa:
             return f'<s>{self.nome}</s> - {self.camara}'
         else:
             return f'{self.nome}'
+        
+    def __repr__(self):
+        return self.nome
+    
+class Fila():
+    def __init__(self, atividade):
+        self.atividade = atividade
+        self.fila = {}
+        self.proximo_numero = 1
+    
+    def __contains__(self, numero):
+        return numero in self.fila
+    
+    def adicionar_pessoa(self, pessoa, numero):
+        for p in self.fila.values():
+            if p.nome == pessoa.nome:
+                raise Exception('Não foi possível registrar porque o nome já existe.')
+        if numero in self.fila:
+            raise Exception('Não foi possível registrar porque o número já existe.')
+        self.fila[numero] = pessoa
+        self.proximo_numero += 1
+
+    def remover_pessoa(self, numero):
+        if numero not in self.fila:
+            raise Exception('Não foi possível remover porque a pessoa não existe.')
+        del self.fila[numero]
+
+    def editar_pessoa(self, numero, nome):
+        for p in self.fila.values():
+            if p.nome == nome:
+                raise Exception('Não foi possível registrar porque o nome já existe.')
+        if numero not in self.fila:
+            raise Exception('Não foi possível registrar porque o número não existe.')
+        self.fila[numero].nome = nome
+
+    def values(self):
+        return sorted(self.fila.values(), key=lambda p: p.numero)
+    
+    def clear(self):
+        self.fila.clear()
+
+    def get(self, numero):
+        if numero in self.fila:
+            return self.fila[numero]
+        return None
+
+class Dupla:
+    def __init__(self, pessoa1, pessoa2):
+        self.pessoa1 = pessoa1
+        self.pessoa2 = pessoa2
 
 class Camara:
     def __init__(self, numero_camara, fila, nome_fila):
@@ -36,7 +87,7 @@ class Camara:
         if self.numero_de_atendimentos >= 5:
             self.pessoa_em_atendimento = 'FECHADA'
             return 'CÂMARA FECHADA'
-        for pessoa in self.fila:
+        for pessoa in self.fila.values():
             if not pessoa.chamado:
                 self.pessoa_em_atendimento = pessoa
                 self.pessoa_em_atendimento.camara = self.numero_camara
@@ -60,9 +111,9 @@ class Camara:
             bolinhas.append('&#9898;')
         return ''.join(bolinhas)
 
-def salvar_fila(fila, nome_arquivo):
+def salvar_fila(fila: Fila, nome_arquivo: str):
     with open(nome_arquivo, 'w') as f:
-        for pessoa in fila:
+        for pessoa in fila.values():
             f.write(f'{pessoa.csv()}\n')
 
 def ler_fila(nome_arquivo):
@@ -96,11 +147,25 @@ for arquivo in [ARQUIVO_FILA_VID, ARQUIVO_FILA_PRE, ARQUIVO_CAMARAS]:
     with open(arquivo, 'a+'):
         pass
 
-fila_videncia = ler_fila(ARQUIVO_FILA_VID)
-fila_prece = ler_fila(ARQUIVO_FILA_PRE)
+# fila_videncia = ler_fila(ARQUIVO_FILA_VID)
+# fila_prece = ler_fila(ARQUIVO_FILA_PRE)
 
 NOME_FILA_VIDENCIA = 'Vidência'
 NOME_FILA_PRECE = 'Prece'
+
+fila_videncia = Fila(NOME_FILA_VIDENCIA)
+fila_prece = Fila(NOME_FILA_PRECE)
+
+for pessoa in ler_fila(ARQUIVO_FILA_VID):
+    fila_videncia.adicionar_pessoa(pessoa, pessoa.numero)
+
+for pessoa in ler_fila(ARQUIVO_FILA_PRE):
+    fila_prece.adicionar_pessoa(pessoa, pessoa.numero)
+
+if fila_videncia.fila:
+    fila_videncia.proximo_numero = fila_videncia.values()[-1].numero + 1
+if fila_prece.fila:
+    fila_prece.proximo_numero = fila_prece.values()[-1].numero + 1
 
 camara2 = Camara("2", fila_videncia, NOME_FILA_VIDENCIA)
 camara4 = Camara("4", fila_videncia, NOME_FILA_VIDENCIA)
@@ -122,16 +187,6 @@ for linha in dados_camaras:
     camara.pessoa_em_atendimento = pessoa_em_atendimento.strip()
     camara.numero_de_atendimentos = int(numero_de_atendimentos.strip())
 
-def registrar_pessoa(nome, fila):
-    if fila == "prece":
-        fila_prece.append(nome)
-    elif fila == "videncia":
-        fila_videncia.append(nome)
-
-print(f"{fila_prece=}")
-print(f"{fila_videncia=}")
-
-camara_chamando = ''
 
 app = Flask(__name__)
 
@@ -155,7 +210,7 @@ ano = data_e_hora_atuais.year
 mes = data_e_hora_atuais.month
 calendario = '<div class="di-calendario"><pre>' + (calendar.month(ano, mes)) + '</pre></div>'
 
-
+voltar = '<a href="/">VOLTAR</a>'
 
 @app.route('/')
 def get_recepcao():
@@ -199,7 +254,7 @@ def get_recepcao():
     tit_lista_fila_vid = '<h3>FILA VIDÊNCIA</h3>Nome - câmara'
     tit_lista_fila_pre = '<h3>FILA PRECE</h3>Nome - câmara'
     html_fila_vid = '<div class="lista-vid">' + tit_lista_fila_vid
-    for index, pessoa in enumerate(fila_videncia):
+    for index, pessoa in enumerate(fila_videncia.values()):
         html_fila_vid = html_fila_vid + f'''<p>{index + 1}. {pessoa.nome_exibicao()}
         <a class="link-editar" href="/editar_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}">
         <img alt="Editar" src="/static/img/editar.png" width="16" height="16"></a>
@@ -207,7 +262,7 @@ def get_recepcao():
         <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'''
     html_fila_vid = html_fila_vid + '</div></div>' #tirei uma /div
     html_fila_pre = '<div class="lista-pre">' + tit_lista_fila_pre
-    for index, pessoa in enumerate(fila_prece):
+    for index, pessoa in enumerate(fila_prece.values()):
         html_fila_pre = html_fila_pre + f'''<p>{index + 1}. {pessoa.nome_exibicao()}
         <a class="link-editar" href="/editar_atendido?nome_fila=prece&numero_atendido={pessoa.numero}">
         <img alt="Editar" src="/static/img/editar.png" width="16" height="16"></a>
@@ -234,7 +289,7 @@ def get_recepcao():
     6. Quando atingir o limite de atendimentos das câmaras que é representado por cinco bolinhas cheias, avisar que a câmara fechou.<br><br><br>'''
     info = tit_info + texto + calendario + fim
 
-    return  head + '<body>' + tit_recep + tit_adicionar + form + camaras + menu + info + '</body>'
+    return  head + '<body>' + tit_recep + tit_adicionar + form + camaras + menu + info + str(fila_videncia.fila) + str(fila_prece.fila) + '</body>'
 
 @app.route('/tv')
 def tv():
@@ -267,24 +322,24 @@ def chamar_proximo_(numero_camara):
 def adicionar_atendido():
     nome_fila = request.args.get('nome_fila')
     nome_atendido = request.args.get('nome_atendido')
-    if nome_fila == 'prece':
-        if fila_prece:
-            numero = int(fila_prece[-1].numero) + 1
-        else:
-            numero = 1
+    if nome_fila == 'videncia':
+        numero = fila_videncia.proximo_numero
         pessoa = Pessoa(numero, nome_atendido)
-        fila_prece.append(pessoa)
-        salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
-    elif nome_fila == 'videncia':
-        if fila_videncia:
-            numero = int(fila_videncia[-1].numero) + 1
-        else:
-            numero = 1
-        pessoa = Pessoa(numero, nome_atendido)
-        fila_videncia.append(pessoa)
+        try:
+            fila_videncia.adicionar_pessoa(pessoa, numero)
+        except Exception as exc:
+            return str(exc) + voltar
         salvar_fila(fila_videncia, ARQUIVO_FILA_VID)
+    elif nome_fila == 'prece':
+        numero = fila_prece.proximo_numero
+        pessoa = Pessoa(numero, nome_atendido)
+        try:
+            fila_prece.adicionar_pessoa(pessoa, numero)
+        except Exception as exc:
+            return str(exc) + voltar
+        salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
     else: 
-        return 'Fila incorreta!'
+        return 'Fila incorreta!' + voltar
     return redirect('/')
 
 @app.route('/reabrir_camara/<numero_camara>')
@@ -316,18 +371,12 @@ def reiniciar_tudo_confirmado():
 def remover_atendido():
     nome_fila = request.args.get('nome_fila')
     numero_atendido = int(request.args.get('numero_atendido'))
-    if nome_fila == 'prece':
-        for pessoa in fila_prece:
-            if pessoa.numero == numero_atendido:
-                fila_prece.remove(pessoa)
-                break
-        salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
-    elif nome_fila == 'videncia':
-        for pessoa in fila_videncia:
-            if pessoa.numero == numero_atendido:
-                fila_videncia.remove(pessoa)
-                break
+    if nome_fila == 'videncia':
+        fila_videncia.remover_pessoa(numero_atendido)
         salvar_fila(fila_videncia, ARQUIVO_FILA_VID)
+    elif nome_fila == 'prece':
+        fila_prece.remover_pessoa(numero_atendido)
+        salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
     else: 
         return 'Fila incorreta!'
     return redirect('/')
@@ -337,23 +386,21 @@ def editar_atendido():
     nome_fila = request.args.get('nome_fila')
     numero_atendido = int(request.args.get('numero_atendido'))
     if nome_fila == 'videncia':
-        for pessoa in fila_videncia:
-            if pessoa.numero == numero_atendido:
-                return f'''<form action='/editar_atendido_confirmado'>
-                <input type='text' name='nome_atendido' value='{pessoa.nome}'>
-                <input type='text' name='nome_fila' value='{nome_fila}'>
-                <input type='text' name='numero_atendido' value='{numero_atendido}'>
-                <button type='submit'>Confirmar</button>
-                </form>'''
+        if numero_atendido in fila_videncia:
+            return f'''<form action='/editar_atendido_confirmado'>
+            <input type='text' name='nome_atendido' value='{fila_videncia.get(numero_atendido)}'>
+            <input type='text' name='nome_fila' value='{nome_fila}'>
+            <input type='text' name='numero_atendido' value='{numero_atendido}'>
+            <button type='submit'>Confirmar</button>
+            </form>'''
     if nome_fila == 'prece':
-        for pessoa in fila_prece:
-            if pessoa.numero == numero_atendido:
-                return f'''<form action='/editar_atendido_confirmado'>
-                <input type='text' name='nome_atendido' value='{pessoa.nome}'>
-                <input type='text' name='nome_fila' value='{nome_fila}'>
-                <input type='text' name='numero_atendido' value='{numero_atendido}'>
-                <button type='submit'>Confirmar</button>
-                </form>'''
+        if numero_atendido in fila_prece:
+            return f'''<form action='/editar_atendido_confirmado'>
+            <input type='text' name='nome_atendido' value='{fila_prece.get(numero_atendido)}'>
+            <input type='text' name='nome_fila' value='{nome_fila}'>
+            <input type='text' name='numero_atendido' value='{numero_atendido}'>
+            <button type='submit'>Confirmar</button>
+            </form>'''
     cancelar = '<a href="/">CANCELAR</a>'
     return cancelar
 
@@ -363,16 +410,9 @@ def editar_atendido_confirmado():
     numero_atendido = int(request.args.get('numero_atendido'))
     nome_atendido = request.args.get('nome_atendido')
     if nome_fila == 'videncia':
-        for pessoa in fila_videncia:
-            if pessoa.numero == numero_atendido:
-                pessoa.nome = nome_atendido
-                break
+        fila_videncia.editar_pessoa(numero_atendido, nome_atendido)
     elif nome_fila == 'prece':
-        for pessoa in fila_prece:
-            if pessoa.numero == numero_atendido:
-                pessoa.nome = nome_atendido
-                break
-    cancelar = '<a href="/">CANCELAR</a>'
+        fila_prece.editar_pessoa(numero_atendido, nome_atendido)
     return redirect('/')
 
 @app.route('/bolinhas')
