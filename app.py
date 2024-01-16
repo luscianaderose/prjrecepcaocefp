@@ -2,6 +2,9 @@ import os
 from flask import Flask, request, redirect, send_from_directory
 from datetime import datetime, date
 import calendar  
+import locale
+
+locale.setlocale(locale.LC_ALL,'pt_BR')
     
 
 
@@ -208,7 +211,7 @@ data = dia_semana_usar + ' ' + data_e_hora_em_texto
 # CALENDARIO
 ano = data_e_hora_atuais.year
 mes = data_e_hora_atuais.month
-calendario = '<div class="di-calendario"><pre>' + (calendar.month(ano, mes)) + '</pre></div>'
+calendario = '<div class="di-calendario"><pre>' + (calendar.calendar(ano, mes)) + '</pre></div>'
 
 voltar = '<a href="/">VOLTAR</a>'
 
@@ -259,7 +262,11 @@ def get_recepcao():
         <a class="link-editar" href="/editar_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}">
         <img alt="Editar" src="/static/img/editar.png" width="16" height="16"></a>
         <a class="link-remover" href="/remover_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}">
-        <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'''
+        <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a>
+        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}">
+        <img alt="Reposicionar" src="/static/img/seta-cima.png" width="16" height="16"></a>
+        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}">
+        <img alt="Reposicionar" src="/static/img/seta-baixo.png" width="16" height="16"></a></p>'''
     html_fila_vid = html_fila_vid + '</div></div>' #tirei uma /div
     html_fila_pre = '<div class="lista-pre">' + tit_lista_fila_pre
     for index, pessoa in enumerate(fila_prece.values()):
@@ -267,7 +274,11 @@ def get_recepcao():
         <a class="link-editar" href="/editar_atendido?nome_fila=prece&numero_atendido={pessoa.numero}">
         <img alt="Editar" src="/static/img/editar.png" width="16" height="16"></a>
         <a class="link-remover" href="/remover_atendido?nome_fila=prece&numero_atendido={pessoa.numero}">
-        <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a></p>'''
+        <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a>
+        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila=prece&numero_atendido={pessoa.numero}">
+        <img alt="Reposicionar" src="/static/img/seta-cima.png" width="16" height="16"></a>
+        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila=prece&numero_atendido={pessoa.numero}">
+        <img alt="Reposicionar" src="/static/img/seta-baixo.png" width="16" height="16"></a></p>'''
     html_fila_pre = html_fila_pre + '</div></div></div>'
 
     camaras = tit_vid + html_camaras_vid + html_fila_vid + espaco + tit_pre + html_camaras_pre + html_fila_pre
@@ -289,7 +300,7 @@ def get_recepcao():
     6. Quando atingir o limite de atendimentos das câmaras que é representado por cinco bolinhas cheias, avisar que a câmara fechou.<br><br><br>'''
     info = tit_info + texto + calendario + fim
 
-    return  head + '<body>' + tit_recep + tit_adicionar + form + camaras + menu + info + str(fila_videncia.fila) + str(fila_prece.fila) + '</body>'
+    return  head + '<body>' + tit_recep + tit_adicionar + form + camaras + menu + info + '</body>' # + str(fila_videncia.fila) + str(fila_prece.fila)
 
 @app.route('/tv')
 def tv():
@@ -369,6 +380,11 @@ def reiniciar_tudo_confirmado():
 
 @app.route("/remover_atendido")
 def remover_atendido():
+    return '''<p>Tem certeza que deseja deletar?</p>
+            <a href='/remover_atendido_confirmado'>Sim</a><a href='/' style='margin-left:20px'>Cancelar</a>'''
+
+@app.route("/remover_atendido_confirmado")
+def remover_atendido_confirmado():
     nome_fila = request.args.get('nome_fila')
     numero_atendido = int(request.args.get('numero_atendido'))
     if nome_fila == 'videncia':
@@ -376,6 +392,20 @@ def remover_atendido():
         salvar_fila(fila_videncia, ARQUIVO_FILA_VID)
     elif nome_fila == 'prece':
         fila_prece.remover_pessoa(numero_atendido)
+        salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
+    else: 
+        return 'Fila incorreta!'
+    return redirect('/')
+
+@app.route("/reposicionar_atendido")
+def reposicionar_atendido():
+    nome_fila = request.args.get('nome_fila')
+    numero_atendido = int(request.args.get('numero_atendido'))
+    if nome_fila == 'videncia':
+        #fila_videncia.remover_pessoa(numero_atendido)
+        salvar_fila(fila_videncia, ARQUIVO_FILA_VID)
+    elif nome_fila == 'prece':
+        #fila_prece.remover_pessoa(numero_atendido)
         salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
     else: 
         return 'Fila incorreta!'
@@ -389,16 +419,16 @@ def editar_atendido():
         if numero_atendido in fila_videncia:
             return f'''<form action='/editar_atendido_confirmado'>
             <input type='text' name='nome_atendido' value='{fila_videncia.get(numero_atendido)}'>
-            <input type='text' name='nome_fila' value='{nome_fila}'>
-            <input type='text' name='numero_atendido' value='{numero_atendido}'>
+            <input type='hidden' name='nome_fila' value='{nome_fila}'>
+            <input type='hidden' name='numero_atendido' value='{numero_atendido}'>
             <button type='submit'>Confirmar</button>
             </form>'''
     if nome_fila == 'prece':
         if numero_atendido in fila_prece:
             return f'''<form action='/editar_atendido_confirmado'>
             <input type='text' name='nome_atendido' value='{fila_prece.get(numero_atendido)}'>
-            <input type='text' name='nome_fila' value='{nome_fila}'>
-            <input type='text' name='numero_atendido' value='{numero_atendido}'>
+            <input type='hidden' name='nome_fila' value='{nome_fila}'>
+            <input type='hidden' name='numero_atendido' value='{numero_atendido}'>
             <button type='submit'>Confirmar</button>
             </form>'''
     cancelar = '<a href="/">CANCELAR</a>'
@@ -425,6 +455,8 @@ def bolinhas():
     elif modo == 'subtracao' and camara.numero_de_atendimentos > 0:
         camara.numero_de_atendimentos -= 1
     return redirect('/')
+
+
 
 
 app.run(debug=True)
