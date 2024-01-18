@@ -72,6 +72,20 @@ class Fila():
         if numero in self.fila:
             return self.fila[numero]
         return None
+    
+    def trocar_posicao(self, n1, n2):
+        if n1 not in self.fila or n2 not in self.fila:
+            raise Exception('Não foi possível mover!')
+        pessoa1 = self.fila[n1]
+        pessoa2 = self.fila[n2]
+        pessoa1.numero = n2
+        pessoa2.numero = n1
+        self.fila[n1] = pessoa2
+        self.fila[n2] = pessoa1
+
+    def keys(self):
+        return sorted(self.fila.keys())
+
 
 class Dupla:
     def __init__(self, pessoa1, pessoa2):
@@ -263,9 +277,9 @@ def get_recepcao():
         <img alt="Editar" src="/static/img/editar.png" width="16" height="16"></a>
         <a class="link-remover" href="/remover_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}">
         <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a>
-        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}">
+        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}&moverpara=cima">
         <img alt="Reposicionar" src="/static/img/seta-cima.png" width="16" height="16"></a>
-        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}">
+        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}&moverpara=baixo">
         <img alt="Reposicionar" src="/static/img/seta-baixo.png" width="16" height="16"></a></p>'''
     html_fila_vid = html_fila_vid + '</div></div>' #tirei uma /div
     html_fila_pre = '<div class="lista-pre">' + tit_lista_fila_pre
@@ -275,9 +289,9 @@ def get_recepcao():
         <img alt="Editar" src="/static/img/editar.png" width="16" height="16"></a>
         <a class="link-remover" href="/remover_atendido?nome_fila=prece&numero_atendido={pessoa.numero}">
         <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a>
-        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila=prece&numero_atendido={pessoa.numero}">
+        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila=prece&numero_atendido={pessoa.numero}&moverpara=cima">
         <img alt="Reposicionar" src="/static/img/seta-cima.png" width="16" height="16"></a>
-        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila=prece&numero_atendido={pessoa.numero}">
+        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila=prece&numero_atendido={pessoa.numero}&moverpara=baixo">
         <img alt="Reposicionar" src="/static/img/seta-baixo.png" width="16" height="16"></a></p>'''
     html_fila_pre = html_fila_pre + '</div></div></div>'
 
@@ -401,11 +415,30 @@ def remover_atendido_confirmado():
 def reposicionar_atendido():
     nome_fila = request.args.get('nome_fila')
     numero_atendido = int(request.args.get('numero_atendido'))
+    moverpara = request.args.get('moverpara')
     if nome_fila == 'videncia':
-        #fila_videncia.remover_pessoa(numero_atendido)
+        keys = fila_videncia.keys()
+        indice = keys.index(numero_atendido)
+        if moverpara == 'cima':
+            if indice == 0:
+                return 'Não é possível subir a posição do primeiro nome da lista.' + voltar
+            fila_videncia.trocar_posicao(numero_atendido, keys[indice - 1])
+        elif moverpara == 'baixo':
+            if indice == len(keys) - 1:
+                return 'Não é possível descer a posição do último nome da lista.' + voltar
+            fila_videncia.trocar_posicao(numero_atendido, keys[indice + 1])
         salvar_fila(fila_videncia, ARQUIVO_FILA_VID)
     elif nome_fila == 'prece':
-        #fila_prece.remover_pessoa(numero_atendido)
+        keys = fila_prece.keys()
+        indice = keys.index(numero_atendido)
+        if moverpara == 'cima':
+            if indice == 0:
+                return 'Não é possível subir a posição do primeiro nome da lista.' + voltar
+            fila_prece.trocar_posicao(numero_atendido, keys[indice - 1])
+        elif moverpara == 'baixo':
+            if indice == len(keys) - 1:
+                return 'Não é possível descer a posição do último nome da lista.' + voltar
+            fila_prece.trocar_posicao(numero_atendido, keys[indice + 1])
         salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
     else: 
         return 'Fila incorreta!'
