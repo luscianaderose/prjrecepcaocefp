@@ -9,7 +9,7 @@ locale.setlocale(locale.LC_ALL,'pt_BR')
 
 
 class Pessoa:
-    def __init__(self, numero, nome, chamado=0, camara=None, dupla=None):
+    def __init__(self, numero, nome, chamado=0, camara=None, dupla=-1):
         self.nome = nome
         self.numero = numero
         self.chamado = chamado
@@ -18,9 +18,9 @@ class Pessoa:
 
     def __str__(self):
         return self.nome
-    
+     
     def csv(self):
-        return f'{self.numero},{self.nome},{self.chamado},{self.camara}'
+        return f'{self.numero},{self.nome},{self.chamado},{self.camara},{self.dupla}'
     
     def nome_exibicao(self):
         if self.chamado == 1:
@@ -52,6 +52,9 @@ class Fila():
     def remover_pessoa(self, numero):
         if numero not in self.fila:
             raise Exception('Não foi possível remover porque a pessoa não existe.')
+        pessoa = self.fila[numero]
+        if pessoa.dupla != - 1:
+            self.fila[pessoa.dupla].dupla = -1
         del self.fila[numero]
 
     def editar_pessoa(self, numero, nome):
@@ -85,6 +88,16 @@ class Fila():
 
     def keys(self):
         return sorted(self.fila.keys())
+    
+    def criar_dupla(self, n1, n2):
+        if n1 not in self.fila or n2 not in self.fila:
+            raise Exception('Não foi possível criar dupla!')
+        pessoa1 = self.fila[n1]
+        pessoa2 = self.fila[n2]
+        if pessoa1.dupla != -1 or pessoa2.dupla != -1:
+            raise Exception ('Não é possível criar dupla uma pessoa de outra dupla!')
+        pessoa1.dupla = n2
+        pessoa2.dupla = n1
 
 
 class Dupla:
@@ -139,8 +152,8 @@ def ler_fila(nome_arquivo):
         for linha in f.read().splitlines():
             if not linha:
                 continue
-            numero, nome, chamado, camara = linha.split(',')
-            pessoa = Pessoa(int(numero), nome, int(chamado), camara)
+            numero, nome, chamado, camara, dupla = linha.split(',')
+            pessoa = Pessoa(int(numero), nome, int(chamado), camara, int(dupla))
             lista_pessoas.append(pessoa)
         return lista_pessoas
 
@@ -229,6 +242,40 @@ calendario = '<div class="di-calendario"><pre>' + (calendar.calendar(ano, mes)) 
 
 voltar = '<a href="/">VOLTAR</a>'
 
+
+def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
+    tit_lista_fila = f'<h3>FILA {nome_fila.upper()}</h3>Nome - câmara - editar - remover - subir - descer - entrar juntos'
+    html_fila = f'<div class="lista-{nome_fila}">' + tit_lista_fila
+    for index, pessoa in enumerate(fila.values()):
+        html_fila = html_fila + f'''<p>{index + 1}. {pessoa.nome_exibicao()}
+        <a class="link-editar" href="/editar_atendido?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
+        <img alt="Editar" src="/static/img/editar.png" width="16" height="16"></a>
+        <a class="link-remover" href="/remover_atendido?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
+        <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a>
+        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila={nome_fila}&numero_atendido={pessoa.numero}&mover_para=cima">
+        <img alt="Reposicionar" src="/static/img/seta-cima.png" width="16" height="16"></a>
+        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila={nome_fila}&numero_atendido={pessoa.numero}&mover_para=baixo">
+        <img alt="Reposicionar" src="/static/img/seta-baixo.png" width="16" height="16"></a>'''
+        if pessoa.dupla != -1:
+            html_fila = html_fila + f'''<a class="link-dupla" href="/">
+                <img alt="dupla" src="/static/img/dupla_cancelar.png" width="16" height="16"></a>'''
+            if pessoa.numero < pessoa.dupla:
+                html_fila = html_fila + f'<img alt="dupla de cima" src="/static/img/dupla_cima.png" width="16" height="16">'
+            else:
+                html_fila = html_fila + f'<img alt="dupla de baixo" src="/static/img/dupla_baixo.png" width="16" height="16">'
+        elif dupla == '1' and nome_fila_dupla == nome_fila:
+            html_fila = html_fila + f'<a class="link-dupla" href="/criar_dupla?nome_fila_dupla={nome_fila}&numero_atendido={pessoa.numero}&numero_dupla={numero_dupla}">'
+            if pessoa.numero == int(numero_dupla):
+                html_fila = html_fila + '<img alt="dupla" src="/static/img/cancelar.png" width="16" height="16"></a>'
+            else:
+                html_fila = html_fila + '<img alt="dupla" src="/static/img/dupla.png" width="16" height="16"></a>'
+        else:
+            html_fila = html_fila + f'''<a class="link-dupla" href="/?nome_fila_dupla={nome_fila}&numero_dupla={pessoa.numero}&dupla=1">
+        <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"></a>'''
+        html_fila = html_fila + '</p>'
+    html_fila = html_fila + '</div></div>'
+    return html_fila
+
 @app.route('/')
 def get_recepcao():
     head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
@@ -259,7 +306,7 @@ def get_recepcao():
         <a class="linkbolinhas" href="/bolinhas?modo=adicao&numero_camara={camara.numero_camara}"><b>+</b></a></p>
         <p><button type="button"><a class="btcamara" href="/chamar_proximo/{camara.numero_camara}">Chamar próximo</a></button></p>
         <p><button type="button"><a class="btcamara" href="/reabrir_camara/{camara.numero_camara}">Reabrir câmara</a></button></p></div>'''
-        if camara.nome_fila == NOME_FILA_VIDENCIA:
+        if camara.nome_fila :
             html_camaras_vid = html_camaras_vid + html_camara
         elif camara.nome_fila == NOME_FILA_PRECE:
             html_camaras_pre = html_camaras_pre + html_camara
@@ -268,32 +315,12 @@ def get_recepcao():
 
 
     # LISTAS/FILAS
-    tit_lista_fila_vid = '<h3>FILA VIDÊNCIA</h3>Nome - câmara'
-    tit_lista_fila_pre = '<h3>FILA PRECE</h3>Nome - câmara'
-    html_fila_vid = '<div class="lista-vid">' + tit_lista_fila_vid
-    for index, pessoa in enumerate(fila_videncia.values()):
-        html_fila_vid = html_fila_vid + f'''<p>{index + 1}. {pessoa.nome_exibicao()}
-        <a class="link-editar" href="/editar_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}">
-        <img alt="Editar" src="/static/img/editar.png" width="16" height="16"></a>
-        <a class="link-remover" href="/remover_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}">
-        <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a>
-        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}&moverpara=cima">
-        <img alt="Reposicionar" src="/static/img/seta-cima.png" width="16" height="16"></a>
-        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila=videncia&numero_atendido={pessoa.numero}&moverpara=baixo">
-        <img alt="Reposicionar" src="/static/img/seta-baixo.png" width="16" height="16"></a></p>'''
-    html_fila_vid = html_fila_vid + '</div></div>' #tirei uma /div
-    html_fila_pre = '<div class="lista-pre">' + tit_lista_fila_pre
-    for index, pessoa in enumerate(fila_prece.values()):
-        html_fila_pre = html_fila_pre + f'''<p>{index + 1}. {pessoa.nome_exibicao()}
-        <a class="link-editar" href="/editar_atendido?nome_fila=prece&numero_atendido={pessoa.numero}">
-        <img alt="Editar" src="/static/img/editar.png" width="16" height="16"></a>
-        <a class="link-remover" href="/remover_atendido?nome_fila=prece&numero_atendido={pessoa.numero}">
-        <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a>
-        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila=prece&numero_atendido={pessoa.numero}&moverpara=cima">
-        <img alt="Reposicionar" src="/static/img/seta-cima.png" width="16" height="16"></a>
-        <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila=prece&numero_atendido={pessoa.numero}&moverpara=baixo">
-        <img alt="Reposicionar" src="/static/img/seta-baixo.png" width="16" height="16"></a></p>'''
-    html_fila_pre = html_fila_pre + '</div></div></div>'
+    dupla = request.args.get('dupla')
+    nome_fila_dupla = request.args.get('nome_fila_dupla')
+    numero_dupla = request.args.get('numero_dupla')
+
+    html_fila_vid = gerar_html_fila(fila_videncia, 'videncia', dupla, nome_fila_dupla, numero_dupla)
+    html_fila_pre = gerar_html_fila(fila_prece, 'prece', dupla, nome_fila_dupla, numero_dupla)
 
     camaras = tit_vid + html_camaras_vid + html_fila_vid + espaco + tit_pre + html_camaras_pre + html_fila_pre
 
@@ -415,15 +442,15 @@ def remover_atendido_confirmado():
 def reposicionar_atendido():
     nome_fila = request.args.get('nome_fila')
     numero_atendido = int(request.args.get('numero_atendido'))
-    moverpara = request.args.get('moverpara')
+    mover_para = request.args.get('mover_para')
     if nome_fila == 'videncia':
         keys = fila_videncia.keys()
         indice = keys.index(numero_atendido)
-        if moverpara == 'cima':
+        if mover_para == 'cima':
             if indice == 0:
                 return 'Não é possível subir a posição do primeiro nome da lista.' + voltar
             fila_videncia.trocar_posicao(numero_atendido, keys[indice - 1])
-        elif moverpara == 'baixo':
+        elif mover_para == 'baixo':
             if indice == len(keys) - 1:
                 return 'Não é possível descer a posição do último nome da lista.' + voltar
             fila_videncia.trocar_posicao(numero_atendido, keys[indice + 1])
@@ -431,11 +458,11 @@ def reposicionar_atendido():
     elif nome_fila == 'prece':
         keys = fila_prece.keys()
         indice = keys.index(numero_atendido)
-        if moverpara == 'cima':
+        if mover_para == 'cima':
             if indice == 0:
                 return 'Não é possível subir a posição do primeiro nome da lista.' + voltar
             fila_prece.trocar_posicao(numero_atendido, keys[indice - 1])
-        elif moverpara == 'baixo':
+        elif mover_para == 'baixo':
             if indice == len(keys) - 1:
                 return 'Não é possível descer a posição do último nome da lista.' + voltar
             fila_prece.trocar_posicao(numero_atendido, keys[indice + 1])
@@ -489,7 +516,25 @@ def bolinhas():
         camara.numero_de_atendimentos -= 1
     return redirect('/')
 
-
+@app.route('/criar_dupla')
+def criar_dupla():
+    nome_fila_dupla = request.args.get('nome_fila_dupla')
+    numero_dupla = int(request.args.get('numero_dupla'))
+    numero_atendido = int(request.args.get('numero_atendido'))
+    if nome_fila_dupla == 'videncia':
+        fila = fila_videncia
+        arquivo_fila = ARQUIVO_FILA_VID
+    elif nome_fila_dupla == 'prece':
+        fila = fila_prece
+        arquivo_fila = ARQUIVO_FILA_PRE
+    keys = fila.keys()
+    indice = keys.index(numero_atendido)
+    indice_dupla = keys.index(numero_dupla)
+    if not (indice_dupla == indice + 1 or indice_dupla == indice - 1):
+        return 'Não é possível criar dupla.' + voltar
+    fila.criar_dupla(numero_atendido, numero_dupla)
+    salvar_fila(fila, arquivo_fila)
+    return redirect('/')
 
 
 app.run(debug=True)

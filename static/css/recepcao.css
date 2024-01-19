@@ -198,14 +198,14 @@
   border-radius: 10px;
 }
 
-.lista-vid{
+.lista-videncia{
   background-color: rgb(149, 243, 255);
   padding: 10px;
   /* width: 330px; */
   border-radius: 10px;
 }
 
-.lista-pre{
+.lista-prece{
   background-color: rgb(149, 255, 225);
   padding: 10px;
   /* width: 330px; */
@@ -259,8 +259,9 @@
 
 
 
-.link-remover, .link-editar, .link-reposicionar{
+.link-remover, .link-editar, .link-reposicionar, .link-dupla{
   margin-left: 7px;
+  text-decoration: none;
 }
 
 /* ########## BOTÃO VID-PRE ########## */
