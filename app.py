@@ -32,8 +32,9 @@ class Pessoa:
         return self.nome
     
 class Fila():
-    def __init__(self, atividade):
+    def __init__(self, atividade, nome_display):
         self.atividade = atividade
+        self.nome_display = nome_display
         self.fila = {}
         self.proximo_numero = 1
     
@@ -119,12 +120,12 @@ class Camara:
             return 'CÂMARA FECHADA'
         for pessoa in self.fila.values():
             if not pessoa.chamado:
-                self.pessoa_em_atendimento = pessoa
-                self.pessoa_em_atendimento.camara = self.numero_camara
                 break
         else:
             self.pessoa_em_atendimento = 'FECHADA'
             return 'CÂMARA FECHADA'
+        self.pessoa_em_atendimento = pessoa
+        self.pessoa_em_atendimento.camara = self.numero_camara
         self.pessoa_em_atendimento.chamado = 1
         self.numero_de_atendimentos += 1
         retorno = f'Câmara {self.numero_camara} chamando {self.pessoa_em_atendimento}.'
@@ -169,27 +170,24 @@ def ler_camaras(nome_arquivo):
 PASTA_ARQUIVOS = os.path.join(os.path.expanduser('~'), '.recepcao-camaras')
 if not os.path.exists(PASTA_ARQUIVOS): 
     os.makedirs(PASTA_ARQUIVOS) 
-ARQUIVO_FILA_VID = os.path.join(PASTA_ARQUIVOS, 'Fila-videncia.csv')
-ARQUIVO_FILA_PRE = os.path.join(PASTA_ARQUIVOS, 'Fila-prece.csv')
+ARQUIVO_FILA_VIDENCIA = os.path.join(PASTA_ARQUIVOS, 'Fila-videncia.csv')
+ARQUIVO_FILA_PRECE = os.path.join(PASTA_ARQUIVOS, 'Fila-prece.csv')
 ARQUIVO_CAMARAS = os.path.join(PASTA_ARQUIVOS, 'Camaras-info.csv')
 
-for arquivo in [ARQUIVO_FILA_VID, ARQUIVO_FILA_PRE, ARQUIVO_CAMARAS]:
+for arquivo in [ARQUIVO_FILA_VIDENCIA, ARQUIVO_FILA_PRECE, ARQUIVO_CAMARAS]:
     with open(arquivo, 'a+'):
         pass
 
-# fila_videncia = ler_fila(ARQUIVO_FILA_VID)
-# fila_prece = ler_fila(ARQUIVO_FILA_PRE)
+# fila_videncia = ler_fila(ARQUIVO_FILA_VIDENCIA)
+# fila_prece = ler_fila(ARQUIVO_FILA_PRECE)
 
-NOME_FILA_VIDENCIA = 'Vidência'
-NOME_FILA_PRECE = 'Prece'
+fila_videncia = Fila('videncia', 'Vidência')
+fila_prece = Fila('prece', 'Prece')
 
-fila_videncia = Fila(NOME_FILA_VIDENCIA)
-fila_prece = Fila(NOME_FILA_PRECE)
-
-for pessoa in ler_fila(ARQUIVO_FILA_VID):
+for pessoa in ler_fila(ARQUIVO_FILA_VIDENCIA):
     fila_videncia.adicionar_pessoa(pessoa, pessoa.numero)
 
-for pessoa in ler_fila(ARQUIVO_FILA_PRE):
+for pessoa in ler_fila(ARQUIVO_FILA_PRECE):
     fila_prece.adicionar_pessoa(pessoa, pessoa.numero)
 
 if fila_videncia.fila:
@@ -197,10 +195,10 @@ if fila_videncia.fila:
 if fila_prece.fila:
     fila_prece.proximo_numero = fila_prece.values()[-1].numero + 1
 
-camara2 = Camara("2", fila_videncia, NOME_FILA_VIDENCIA)
-camara4 = Camara("4", fila_videncia, NOME_FILA_VIDENCIA)
-camara3 = Camara("3", fila_prece, NOME_FILA_PRECE)
-camara3A = Camara("3A", fila_prece, NOME_FILA_PRECE)
+camara2 = Camara("2", fila_videncia, fila_videncia.atividade)
+camara4 = Camara("4", fila_videncia, fila_videncia.atividade)
+camara3 = Camara("3", fila_prece, fila_prece.atividade)
+camara3A = Camara("3A", fila_prece, fila_prece.atividade)
 
 dict_camaras = {
     '2':camara2,
@@ -244,7 +242,7 @@ voltar = '<a href="/">VOLTAR</a>'
 
 
 def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
-    tit_lista_fila = f'<h3>FILA {nome_fila.upper()}</h3>Nome - câmara - editar - remover - subir - descer - entrar juntos'
+    tit_lista_fila = f'<h3>FILA {fila.nome_display.upper()}</h3><h6>nome - câmara - editar - remover - subir - descer - entrar juntos</h6>'#NOME - CÂMARA - EDITAR - REMOVER - SUBIR - DESCER - ENTRAR JUNTOS
     html_fila = f'<div class="lista-{nome_fila}">' + tit_lista_fila
     for index, pessoa in enumerate(fila.values()):
         html_fila = html_fila + f'''<p>{index + 1}. {pessoa.nome_exibicao()}
@@ -264,40 +262,43 @@ def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
             else:
                 html_fila = html_fila + f'<img alt="dupla de baixo" src="/static/img/dupla_baixo.png" width="16" height="16">'
         elif dupla == '1' and nome_fila_dupla == nome_fila:
-            html_fila = html_fila + f'<a class="link-dupla" href="/criar_dupla?nome_fila_dupla={nome_fila}&numero_atendido={pessoa.numero}&numero_dupla={numero_dupla}">'
             if pessoa.numero == int(numero_dupla):
-                html_fila = html_fila + '<img alt="dupla" src="/static/img/cancelar.png" width="16" height="16"></a>'
+                html_fila = html_fila + '<a class="link-dupla" href="/"><img alt="dupla" src="/static/img/cancelar.png" width="16" height="16"></a>'
             else:
-                html_fila = html_fila + '<img alt="dupla" src="/static/img/dupla.png" width="16" height="16"></a>'
+                html_fila = html_fila + f'''<a class="link-dupla" href="/criar_dupla?nome_fila_dupla={nome_fila}&numero_atendido={pessoa.numero}&numero_dupla={numero_dupla}">
+                <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"></a>'''
         else:
             html_fila = html_fila + f'''<a class="link-dupla" href="/?nome_fila_dupla={nome_fila}&numero_dupla={pessoa.numero}&dupla=1">
         <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"></a>'''
         html_fila = html_fila + '</p>'
-    html_fila = html_fila + '</div></div>'
+    html_fila = html_fila + '</div>'
     return html_fila
 
 @app.route('/')
 def get_recepcao():
     head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
     tit_recep = '<div class="div-cabecalho"><div class="dc-congrega"><img alt="CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA" src="/static/img/cefp.png"></div>' + '<div class="dc-tit-principal"><h1>RECEPÇÃO DAS CÂMARAS</h1></div>' + '<div class="dc-data">' + data + '</div></div>'
-    tit_adicionar = '<div class="div-adicionar-nomes"><div class="dan-tit-form"><h5>ADICIONAR NOME NA FILA</h4></div>'
+    tit_adicionar = '<div class="div-adicionar-nomes"><div class="dan-tit-form"><h5>ADICIONAR NOME NA FILA</h5></div>' #div-adicionar-nomes abrindo
     form = f'''<div class="dan-form"><form action="/adicionar_atendido">
-        <input name="nome_atendido" type="text" placeholder="Digite o nome"></div>
-        <div class="dan-bt-vid-pre"><div class="bt-vid-pre-radio"> 
+        <div  class="dan-input-nome"><input name="nome_atendido" type="text" placeholder="Digite o nome"></div>
+        <div class="dan-bt-videncia-prece"><div class="bt-videncia-prece-radio"> 
         <input class="radio" type="radio" id="videncia" name="nome_fila" value="videncia" required>
         <label class="label1" for="videncia"><div class="radio-txt">VIDÊNCIA</div></label>
         <input class="radio" type="radio" id="prece" name="nome_fila" value="prece">
-        <label class="label2" for="prece"><div class="radio-txt">PRECE</div></label></div></div>          
+        <label class="label2" for="prece"><div class="radio-txt">PRECE</div></label>
         <div class="dan-bt-adicionar"><div class="dan-bt-adicionar-centro-vertical"><button>ADICIONAR</button></div></div>
-        </form></div>'''
+        </div></div>
+        </form>
+        </div></div>'''
     
     espaco = '<div class="div-espaco"> </div>'
     
+    tit_videncia = '<div class="tit-videncia-prece"><div class="tit-videncia"><h2>VIDÊNCIA</h2></div></div>'
+    tit_prece = '<div class="tit-videncia-prece"><div class="tit-prece"><h2>PRECE</h2></div></div>'
+
     # CÂMARAS
-    tit_vid = '<div class="div-vid-pre"><div class="div-vid"><div class="tit-vid-pre"><div class="tit-vid"><h2>VIDÊNCIA</h2></div></div>'
-    tit_pre = '<div class="div-pre"><div class="tit-vid-pre"><div class="tit-pre"><h2>PRECE</h2></div></div>'
-    html_camaras_vid = ''
-    html_camaras_pre = ''
+    html_camaras_videncia = ''
+    html_camaras_prece = ''
     for camara in dict_camaras.values():
         html_camara = f'''<div class='camara'><p><h3>CÂMARA {camara.numero_camara}</h3></p>
         <p>ATENDENDO<br><h4>{camara.pessoa_em_atendimento}</h4></p>
@@ -305,13 +306,14 @@ def get_recepcao():
         <a class="linkbolinhas" href="/bolinhas?modo=subtracao&numero_camara={camara.numero_camara}"><b>-</b></a>{camara.bolinhas()}
         <a class="linkbolinhas" href="/bolinhas?modo=adicao&numero_camara={camara.numero_camara}"><b>+</b></a></p>
         <p><button type="button"><a class="btcamara" href="/chamar_proximo/{camara.numero_camara}">Chamar próximo</a></button></p>
-        <p><button type="button"><a class="btcamara" href="/reabrir_camara/{camara.numero_camara}">Reabrir câmara</a></button></p></div>'''
-        if camara.nome_fila :
-            html_camaras_vid = html_camaras_vid + html_camara
-        elif camara.nome_fila == NOME_FILA_PRECE:
-            html_camaras_pre = html_camaras_pre + html_camara
-    html_camaras_vid = '<div class="camara-vid">' + html_camaras_vid + '</div>'
-    html_camaras_pre = '<div class="camara-pre">' + html_camaras_pre + '</div>'
+        <p><button type="button"><a class="btcamara" href="/reabrir_camara/{camara.numero_camara}">Reabrir câmara</a></button></p>
+        </div>'''
+        if camara.nome_fila == fila_videncia.atividade:
+            html_camaras_videncia = html_camaras_videncia + html_camara
+        elif camara.nome_fila == fila_prece.atividade:
+            html_camaras_prece = html_camaras_prece + html_camara
+    html_camaras_videncia = '<div class="camara-videncia">' + html_camaras_videncia + '</div>'
+    html_camaras_prece = '<div class="camara-prece">' + html_camaras_prece + '</div>'
 
 
     # LISTAS/FILAS
@@ -319,77 +321,76 @@ def get_recepcao():
     nome_fila_dupla = request.args.get('nome_fila_dupla')
     numero_dupla = request.args.get('numero_dupla')
 
-    html_fila_vid = gerar_html_fila(fila_videncia, 'videncia', dupla, nome_fila_dupla, numero_dupla)
-    html_fila_pre = gerar_html_fila(fila_prece, 'prece', dupla, nome_fila_dupla, numero_dupla)
+    html_fila_videncia = gerar_html_fila(fila_videncia, fila_videncia.atividade, dupla, nome_fila_dupla, numero_dupla)
+    html_fila_prece = gerar_html_fila(fila_prece, fila_prece.atividade, dupla, nome_fila_dupla, numero_dupla)
 
-    camaras = tit_vid + html_camaras_vid + html_fila_vid + espaco + tit_pre + html_camaras_pre + html_fila_pre
+    camaras = '<div class="div-videncia-prece">' + '<div class="div-videncia">' + tit_videncia + html_camaras_videncia + html_fila_videncia + '</div>' + espaco + '<div class="div-prece">' + tit_prece + html_camaras_prece + html_fila_prece + '</div></div>' #div-videncia-prece abrindo
 
     # MENU
-    tit_menu = '<div class="div-menu"><div class="dm-tit"><h3>MENU</h3></div>'
+    tit_menu = '<div class="dm-tit"><h3>MENU</h3></div>'
     tv = '<div class="dm-bt-tv"><div class="vertical-center"><a href="/tv"><button>TV</button></a></div></div>'
-    bt_reiniciar = '<div class="dm-bt-reiniciar"><div class="vertical-center"><a href="/reiniciar_tudo"><button>REINICAR TUDO</button></a></div></div></div>'
-    menu = tit_menu + tv + bt_reiniciar
+    bt_reiniciar = '<div class="dm-bt-reiniciar"><div class="vertical-center"><a href="/reiniciar_tudo"><button>REINICAR TUDO</button></a></div></div>'
+    menu = '<div class="div-menu">' + tit_menu + tv + bt_reiniciar + '</div>'
 
     # INFO
-    tit_info = '<div class="div-info"><div class=""><h3>INFORMAÇÕES</h3></div>'
-    fim = '</div>'
+    tit_info = '<div class=""><h3>INFORMAÇÕES</h3></div>'
     texto = '''1. Verificar no cartão da pessoa se data da marcação é a data de hoje.<br>
     2. Adicionar o nome na fila correspondente.<br>
     3. Carimbar o cartão.<br>
     4. Pedir para sentar no lugar correto.<br>
     5. Quando a câmara chamar, clicar em 'chamar próximo' e chamar o próximo nome. O nome é riscado, a câmara que chamou fica registrada, e uma bolinha branca fica preenchida, tudo automaticamente.<br>
     6. Quando atingir o limite de atendimentos das câmaras que é representado por cinco bolinhas cheias, avisar que a câmara fechou.<br><br><br>'''
-    info = tit_info + texto + calendario + fim
+    info = '<div class="div-info">' + tit_info + texto + calendario + '</div>'
 
-    return  head + '<body>' + tit_recep + tit_adicionar + form + camaras + menu + info + '</body>' # + str(fila_videncia.fila) + str(fila_prece.fila)
+    return  head + '<body>' + tit_recep + tit_adicionar + form + camaras + menu + info + '</body>' 
 
 @app.route('/tv')
 def tv():
     head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/tv.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
     html_camaras = ''
-    html_camaras_vid = ''
-    html_camaras_pre = ''
+    html_camaras_videncia = ''
+    html_camaras_prece = ''
     for camara in dict_camaras.values():
         html_camaras = f'''<div class='tv-camara'><p>CÂMARA {camara.nome_fila}<br><h1>{camara.numero_camara}</h1><br>CHAMA</p>
         <p><h2>{camara.pessoa_em_atendimento}</h2></p></div>'''.upper()
-        if camara.nome_fila == NOME_FILA_VIDENCIA:
-            html_camaras_vid = html_camaras_vid + html_camaras
-        elif camara.nome_fila == NOME_FILA_PRECE:
-            html_camaras_pre = html_camaras_pre + html_camaras
-    html_camaras_vid = '<div class="tv-vid">' + html_camaras_vid + '</div>'
-    html_camaras_pre = '<div class="tv-pre">' + html_camaras_pre + '</div>'
+        if camara.nome_fila == fila_videncia.atividade:
+            html_camaras_videncia = html_camaras_videncia + html_camaras
+        elif camara.nome_fila == fila_prece.atividade:
+            html_camaras_prece = html_camaras_prece + html_camaras
+    html_camaras_videncia = '<div class="tv-videncia">' + html_camaras_videncia + '</div>'
+    html_camaras_prece = '<div class="tv-prece">' + html_camaras_prece + '</div>'
     voltar = '<a href="/">VOLTAR</a>'
-    return head + '<body>' + html_camaras_vid + html_camaras_pre + '<div class="nobr">' + voltar + ' ' + data + '</div></body>' + calendario
+    return head + '<body>' + html_camaras_videncia + html_camaras_prece + '<div class="nobr">' + voltar + ' ' + data + '</div></body>' + calendario
 
 @app.route("/chamar_proximo/<numero_camara>")
 def chamar_proximo_(numero_camara):
     camara = dict_camaras[numero_camara]
     camara.chamar_atendido()
     salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
-    salvar_fila(fila_videncia, ARQUIVO_FILA_VID)
-    salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
+    salvar_fila(fila_videncia, ARQUIVO_FILA_VIDENCIA)
+    salvar_fila(fila_prece, ARQUIVO_FILA_PRECE)
     return redirect('/')
 
 @app.route("/adicionar_atendido")
 def adicionar_atendido():
     nome_fila = request.args.get('nome_fila')
     nome_atendido = request.args.get('nome_atendido')
-    if nome_fila == 'videncia':
+    if nome_fila == fila_videncia.atividade:
         numero = fila_videncia.proximo_numero
         pessoa = Pessoa(numero, nome_atendido)
         try:
             fila_videncia.adicionar_pessoa(pessoa, numero)
         except Exception as exc:
             return str(exc) + voltar
-        salvar_fila(fila_videncia, ARQUIVO_FILA_VID)
-    elif nome_fila == 'prece':
+        salvar_fila(fila_videncia, ARQUIVO_FILA_VIDENCIA)
+    elif nome_fila == fila_prece.atividade:
         numero = fila_prece.proximo_numero
         pessoa = Pessoa(numero, nome_atendido)
         try:
             fila_prece.adicionar_pessoa(pessoa, numero)
         except Exception as exc:
             return str(exc) + voltar
-        salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
+        salvar_fila(fila_prece, ARQUIVO_FILA_PRECE)
     else: 
         return 'Fila incorreta!' + voltar
     return redirect('/')
@@ -413,27 +414,29 @@ def reiniciar_tudo_confirmado():
         camara.numero_de_atendimentos = 0
         camara.pessoa_em_atendimento = 'Nenhum'
     fila_prece.clear()
-    salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
+    salvar_fila(fila_prece, ARQUIVO_FILA_PRECE)
     fila_videncia.clear()
-    salvar_fila(fila_videncia, ARQUIVO_FILA_VID)
+    salvar_fila(fila_videncia, ARQUIVO_FILA_VIDENCIA)
     salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
     return redirect('/')
 
 @app.route("/remover_atendido")
 def remover_atendido():
-    return '''<p>Tem certeza que deseja deletar?</p>
-            <a href='/remover_atendido_confirmado'>Sim</a><a href='/' style='margin-left:20px'>Cancelar</a>'''
+    nome_fila = request.args.get('nome_fila')
+    numero_atendido = int(request.args.get('numero_atendido'))
+    return f'''<p>Tem certeza que deseja deletar?</p>
+            <a href='/remover_atendido_confirmado?nome_fila={nome_fila}&numero_atendido={numero_atendido}'>Sim</a><a href='/' style='margin-left:20px'>Cancelar</a>'''
 
 @app.route("/remover_atendido_confirmado")
 def remover_atendido_confirmado():
     nome_fila = request.args.get('nome_fila')
     numero_atendido = int(request.args.get('numero_atendido'))
-    if nome_fila == 'videncia':
+    if nome_fila == fila_videncia.atividade:
         fila_videncia.remover_pessoa(numero_atendido)
-        salvar_fila(fila_videncia, ARQUIVO_FILA_VID)
-    elif nome_fila == 'prece':
+        salvar_fila(fila_videncia, ARQUIVO_FILA_VIDENCIA)
+    elif nome_fila == fila_prece.atividade:
         fila_prece.remover_pessoa(numero_atendido)
-        salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
+        salvar_fila(fila_prece, ARQUIVO_FILA_PRECE)
     else: 
         return 'Fila incorreta!'
     return redirect('/')
@@ -443,7 +446,7 @@ def reposicionar_atendido():
     nome_fila = request.args.get('nome_fila')
     numero_atendido = int(request.args.get('numero_atendido'))
     mover_para = request.args.get('mover_para')
-    if nome_fila == 'videncia':
+    if nome_fila == fila_videncia.atividade:
         keys = fila_videncia.keys()
         indice = keys.index(numero_atendido)
         if mover_para == 'cima':
@@ -454,8 +457,8 @@ def reposicionar_atendido():
             if indice == len(keys) - 1:
                 return 'Não é possível descer a posição do último nome da lista.' + voltar
             fila_videncia.trocar_posicao(numero_atendido, keys[indice + 1])
-        salvar_fila(fila_videncia, ARQUIVO_FILA_VID)
-    elif nome_fila == 'prece':
+        salvar_fila(fila_videncia, ARQUIVO_FILA_VIDENCIA)
+    elif nome_fila == fila_prece.atividade:
         keys = fila_prece.keys()
         indice = keys.index(numero_atendido)
         if mover_para == 'cima':
@@ -466,7 +469,7 @@ def reposicionar_atendido():
             if indice == len(keys) - 1:
                 return 'Não é possível descer a posição do último nome da lista.' + voltar
             fila_prece.trocar_posicao(numero_atendido, keys[indice + 1])
-        salvar_fila(fila_prece, ARQUIVO_FILA_PRE)
+        salvar_fila(fila_prece, ARQUIVO_FILA_PRECE)
     else: 
         return 'Fila incorreta!'
     return redirect('/')
@@ -475,7 +478,7 @@ def reposicionar_atendido():
 def editar_atendido():
     nome_fila = request.args.get('nome_fila')
     numero_atendido = int(request.args.get('numero_atendido'))
-    if nome_fila == 'videncia':
+    if nome_fila == fila_videncia.atividade:
         if numero_atendido in fila_videncia:
             return f'''<form action='/editar_atendido_confirmado'>
             <input type='text' name='nome_atendido' value='{fila_videncia.get(numero_atendido)}'>
@@ -483,7 +486,7 @@ def editar_atendido():
             <input type='hidden' name='numero_atendido' value='{numero_atendido}'>
             <button type='submit'>Confirmar</button>
             </form>'''
-    if nome_fila == 'prece':
+    elif nome_fila == fila_prece.atividade:
         if numero_atendido in fila_prece:
             return f'''<form action='/editar_atendido_confirmado'>
             <input type='text' name='nome_atendido' value='{fila_prece.get(numero_atendido)}'>
@@ -499,9 +502,9 @@ def editar_atendido_confirmado():
     nome_fila = request.args.get('nome_fila')
     numero_atendido = int(request.args.get('numero_atendido'))
     nome_atendido = request.args.get('nome_atendido')
-    if nome_fila == 'videncia':
+    if nome_fila == fila_videncia.atividade:
         fila_videncia.editar_pessoa(numero_atendido, nome_atendido)
-    elif nome_fila == 'prece':
+    elif nome_fila == fila_prece.atividade:
         fila_prece.editar_pessoa(numero_atendido, nome_atendido)
     return redirect('/')
 
@@ -521,12 +524,12 @@ def criar_dupla():
     nome_fila_dupla = request.args.get('nome_fila_dupla')
     numero_dupla = int(request.args.get('numero_dupla'))
     numero_atendido = int(request.args.get('numero_atendido'))
-    if nome_fila_dupla == 'videncia':
+    if nome_fila_dupla == fila_videncia.atividade:
         fila = fila_videncia
-        arquivo_fila = ARQUIVO_FILA_VID
-    elif nome_fila_dupla == 'prece':
+        arquivo_fila = ARQUIVO_FILA_VIDENCIA
+    elif nome_fila_dupla == fila_prece.atividade:
         fila = fila_prece
-        arquivo_fila = ARQUIVO_FILA_PRE
+        arquivo_fila = ARQUIVO_FILA_PRECE
     keys = fila.keys()
     indice = keys.index(numero_atendido)
     indice_dupla = keys.index(numero_dupla)

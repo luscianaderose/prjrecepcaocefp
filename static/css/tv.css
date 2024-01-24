@@ -15,7 +15,7 @@ body{
     text-align: center;
   }
   
-  .tv-vid{
+  .tv-videncia{
     background-color: rgb(149, 243, 255);
     padding: 10px;
     border-radius: 5px;
@@ -25,7 +25,7 @@ body{
     width: 800px;
   }
   
-  .tv-pre{
+  .tv-prece{
     background-color: rgb(149, 255, 225);
     padding: 10px;
     border-radius: 5px;
