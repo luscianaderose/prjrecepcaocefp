@@ -128,6 +128,12 @@ class Camara:
         self.pessoa_em_atendimento.camara = self.numero_camara
         self.pessoa_em_atendimento.chamado = 1
         self.numero_de_atendimentos += 1
+        if self.pessoa_em_atendimento.dupla != -1:
+            dupla = self.fila.get(self.pessoa_em_atendimento.dupla)
+            dupla.camara = self.numero_camara
+            dupla.chamado = 1
+            self.numero_de_atendimentos += 1
+
         retorno = f'Câmara {self.numero_camara} chamando {self.pessoa_em_atendimento}.'
         if self.numero_de_atendimentos >= 5:
             retorno = retorno + f' Avisar que é o último atendido.{self.numero_camara}.'
@@ -300,8 +306,12 @@ def get_recepcao():
     html_camaras_videncia = ''
     html_camaras_prece = ''
     for camara in dict_camaras.values():
+        nome_chamado = str(camara.pessoa_em_atendimento)
+        if isinstance(camara.pessoa_em_atendimento, Pessoa) and camara.pessoa_em_atendimento.dupla != -1:
+            nome_chamado = nome_chamado + ' & ' + camara.fila.get(camara.pessoa_em_atendimento.dupla).nome
+
         html_camara = f'''<div class='camara'><p><h3>CÂMARA {camara.numero_camara}</h3></p>
-        <p>ATENDENDO<br><h4>{camara.pessoa_em_atendimento}</h4></p>
+        <p>ATENDENDO<br><h4>{nome_chamado}</h4></p>
         <p>ATENDIMENTOS<br>
         <a class="linkbolinhas" href="/bolinhas?modo=subtracao&numero_camara={camara.numero_camara}"><b>-</b></a>{camara.bolinhas()}
         <a class="linkbolinhas" href="/bolinhas?modo=adicao&numero_camara={camara.numero_camara}"><b>+</b></a></p>
@@ -351,8 +361,11 @@ def tv():
     html_camaras_videncia = ''
     html_camaras_prece = ''
     for camara in dict_camaras.values():
+        nome_chamado = str(camara.pessoa_em_atendimento)
+        if isinstance(camara.pessoa_em_atendimento, Pessoa) and camara.pessoa_em_atendimento.dupla != -1:
+            nome_chamado = nome_chamado + ' & ' + camara.fila.get(camara.pessoa_em_atendimento.dupla).nome
         html_camaras = f'''<div class='tv-camara'><p>CÂMARA {camara.nome_fila}<br><h1>{camara.numero_camara}</h1><br>CHAMA</p>
-        <p><h2>{camara.pessoa_em_atendimento}</h2></p></div>'''.upper()
+        <p><h2>{nome_chamado}</h2></p></div>'''.upper()
         if camara.nome_fila == fila_videncia.atividade:
             html_camaras_videncia = html_camaras_videncia + html_camaras
         elif camara.nome_fila == fila_prece.atividade:
