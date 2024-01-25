@@ -9,18 +9,19 @@ locale.setlocale(locale.LC_ALL,'pt_BR')
 
 
 class Pessoa:
-    def __init__(self, numero, nome, chamado=0, camara=None, dupla=-1):
+    def __init__(self, numero, nome, chamado=0, camara=None, dupla=-1, asterisco=0):
         self.nome = nome
         self.numero = numero
         self.chamado = chamado
         self.camara = camara
         self.dupla = dupla
+        self.asterisco = asterisco
 
     def __str__(self):
         return self.nome
      
     def csv(self):
-        return f'{self.numero},{self.nome},{self.chamado},{self.camara},{self.dupla}'
+        return f'{self.numero},{self.nome},{self.chamado},{self.camara},{self.dupla},{self.asterisco}'
     
     def nome_exibicao(self):
         if self.chamado == 1:
@@ -186,8 +187,8 @@ def ler_fila(nome_arquivo):
         for linha in f.read().splitlines():
             if not linha:
                 continue
-            numero, nome, chamado, camara, dupla = linha.split(',')
-            pessoa = Pessoa(int(numero), nome, int(chamado), camara, int(dupla))
+            numero, nome, chamado, camara, dupla, asterisco = linha.split(',')
+            pessoa = Pessoa(int(numero), nome, int(chamado), camara, int(dupla), int(asterisco))
             lista_pessoas.append(pessoa)
         return lista_pessoas
 
@@ -303,6 +304,12 @@ def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
         else:
             html_fila = html_fila + f'''<a class="link-dupla" href="/?nome_fila_dupla={nome_fila}&numero_dupla={pessoa.numero}&dupla=1">
         <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"></a>'''
+        if pessoa.asterisco:
+            html_fila = html_fila + f'''<a class="link-asterisco" href="/asterisco?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
+        <img alt="Asterisco" src="/static/img/asterisco-selecionado.png" width="16" height="16"></a>'''
+        else:
+            html_fila = html_fila + f'''<a class="link-asterisco" href="/asterisco?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
+        <img alt="Asterisco" src="/static/img/asterisco.png" width="16" height="16"></a>'''
         html_fila = html_fila + '</p>'
     html_fila = html_fila + '</div>'
     return html_fila
@@ -588,6 +595,21 @@ def cancelar_dupla():
         fila = fila_prece
         arquivo_fila = ARQUIVO_FILA_PRECE
     fila.cancelar_dupla(numero_atendido)
+    salvar_fila(fila, arquivo_fila)
+    return redirect('/')
+
+@app.route('/asterisco')
+def asterisco():
+    nome_fila = request.args.get('nome_fila')
+    numero_atendido = int(request.args.get('numero_atendido'))
+    if nome_fila == fila_videncia.atividade:
+        fila = fila_videncia
+        arquivo_fila = ARQUIVO_FILA_VIDENCIA
+    elif nome_fila == fila_prece.atividade:
+        fila = fila_prece
+        arquivo_fila = ARQUIVO_FILA_PRECE
+    pessoa = fila.get(numero_atendido)
+    pessoa.asterisco = 0 if pessoa.asterisco else 1
     salvar_fila(fila, arquivo_fila)
     return redirect('/')
    

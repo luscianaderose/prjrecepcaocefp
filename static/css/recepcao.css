@@ -294,7 +294,7 @@
 
 
 
-.link-remover, .link-editar, .link-reposicionar, .link-dupla{
+.link-remover, .link-editar, .link-reposicionar, .link-dupla, .link-asterisco{
   margin-left: 7px;
   text-decoration: none;
 }
