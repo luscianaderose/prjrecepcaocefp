@@ -77,11 +77,30 @@ class Fila():
             return self.fila[numero]
         return None
     
-    def trocar_posicao(self, n1, n2):
+    def trocar_posicao(self, n1, n2, ignorar_duplas=False):
         if n1 not in self.fila or n2 not in self.fila:
             raise Exception('Não foi possível mover!')
+        if n2 < n1:
+            return self.trocar_posicao(n2, n1, ignorar_duplas)
         pessoa1 = self.fila[n1]
         pessoa2 = self.fila[n2]
+        if ignorar_duplas == False and pessoa1.dupla != n2:
+            if pessoa1.dupla != -1 and pessoa2.dupla != -1: #p1+p2 tem dupla. Se tiver dupla e se for trocar com alguem que nao é a propria dupla
+                self.trocar_posicao(n1, pessoa2.dupla, ignorar_duplas=True)
+                self.trocar_posicao(pessoa1.dupla, n2, ignorar_duplas=True)
+            elif pessoa1.dupla != -1: #somente a p1 tem dupla
+                self.trocar_posicao(n1, n2, ignorar_duplas=True)
+                self.trocar_posicao(n1, pessoa1.dupla, ignorar_duplas=True)
+            elif pessoa2.dupla != -1: #somente a p2 tem dupla
+                self.trocar_posicao(n1, n2, ignorar_duplas=True)
+                self.trocar_posicao(n2, pessoa2.dupla, ignorar_duplas=True)
+            return 
+        if pessoa1.dupla != -1:
+            dupla = self.fila[pessoa1.dupla]
+            dupla.dupla = n2
+        if pessoa2.dupla != -1:
+            dupla = self.fila[pessoa2.dupla]
+            dupla.dupla = n1
         pessoa1.numero = n2
         pessoa2.numero = n1
         self.fila[n1] = pessoa2
@@ -460,31 +479,24 @@ def reposicionar_atendido():
     numero_atendido = int(request.args.get('numero_atendido'))
     mover_para = request.args.get('mover_para')
     if nome_fila == fila_videncia.atividade:
-        keys = fila_videncia.keys()
-        indice = keys.index(numero_atendido)
-        if mover_para == 'cima':
-            if indice == 0:
-                return 'Não é possível subir a posição do primeiro nome da lista.' + voltar
-            fila_videncia.trocar_posicao(numero_atendido, keys[indice - 1])
-        elif mover_para == 'baixo':
-            if indice == len(keys) - 1:
-                return 'Não é possível descer a posição do último nome da lista.' + voltar
-            fila_videncia.trocar_posicao(numero_atendido, keys[indice + 1])
-        salvar_fila(fila_videncia, ARQUIVO_FILA_VIDENCIA)
+        fila = fila_videncia
+        arquivo_fila = ARQUIVO_FILA_VIDENCIA
     elif nome_fila == fila_prece.atividade:
-        keys = fila_prece.keys()
-        indice = keys.index(numero_atendido)
-        if mover_para == 'cima':
-            if indice == 0:
-                return 'Não é possível subir a posição do primeiro nome da lista.' + voltar
-            fila_prece.trocar_posicao(numero_atendido, keys[indice - 1])
-        elif mover_para == 'baixo':
-            if indice == len(keys) - 1:
-                return 'Não é possível descer a posição do último nome da lista.' + voltar
-            fila_prece.trocar_posicao(numero_atendido, keys[indice + 1])
-        salvar_fila(fila_prece, ARQUIVO_FILA_PRECE)
+        fila = fila_prece
+        arquivo_fila = ARQUIVO_FILA_PRECE
     else: 
         return 'Fila incorreta!'
+    keys = fila.keys()
+    indice = keys.index(numero_atendido)
+    if mover_para == 'cima':
+        if indice == 0:
+            return 'Não é possível subir a posição do primeiro nome da lista.' + voltar
+        fila.trocar_posicao(numero_atendido, keys[indice - 1])
+    elif mover_para == 'baixo':
+        if indice == len(keys) - 1:
+            return 'Não é possível descer a posição do último nome da lista.' + voltar
+        fila.trocar_posicao(numero_atendido, keys[indice + 1])
+    salvar_fila(fila, arquivo_fila)
     return redirect('/')
 
 @app.route("/editar_atendido")
