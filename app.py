@@ -119,6 +119,14 @@ class Fila():
         pessoa1.dupla = n2
         pessoa2.dupla = n1
 
+    def cancelar_dupla(self, n1):
+        if n1 not in self.fila:
+            raise Exception ('Não foi possível cancelar a dupla!')
+        pessoa1 = self.get(n1)
+        pessoa2 = self.get(pessoa1.dupla)
+        pessoa1.dupla = -1
+        pessoa2.dupla = -1
+
 
 class Dupla:
     def __init__(self, pessoa1, pessoa2):
@@ -280,7 +288,7 @@ def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
         <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila={nome_fila}&numero_atendido={pessoa.numero}&mover_para=baixo">
         <img alt="Reposicionar" src="/static/img/seta-baixo.png" width="16" height="16"></a>'''
         if pessoa.dupla != -1:
-            html_fila = html_fila + f'''<a class="link-dupla" href="/">
+            html_fila = html_fila + f'''<a class="link-dupla" href="/cancelar_dupla?numero_atendido={pessoa.numero}&nome_fila={nome_fila}">
                 <img alt="dupla" src="/static/img/dupla_cancelar.png" width="16" height="16"></a>'''
             if pessoa.numero < pessoa.dupla:
                 html_fila = html_fila + f'<img alt="dupla de cima" src="/static/img/dupla_cima.png" width="16" height="16">'
@@ -528,9 +536,14 @@ def editar_atendido_confirmado():
     numero_atendido = int(request.args.get('numero_atendido'))
     nome_atendido = request.args.get('nome_atendido')
     if nome_fila == fila_videncia.atividade:
-        fila_videncia.editar_pessoa(numero_atendido, nome_atendido)
+        fila = fila_videncia
+        arquivo_fila = ARQUIVO_FILA_VIDENCIA
     elif nome_fila == fila_prece.atividade:
-        fila_prece.editar_pessoa(numero_atendido, nome_atendido)
+        fila = fila_prece
+        arquivo_fila = ARQUIVO_FILA_PRECE
+    fila.editar_pessoa(numero_atendido, nome_atendido)
+    salvar_fila(fila, arquivo_fila)
+
     return redirect('/')
 
 @app.route('/bolinhas')
@@ -563,6 +576,21 @@ def criar_dupla():
     fila.criar_dupla(numero_atendido, numero_dupla)
     salvar_fila(fila, arquivo_fila)
     return redirect('/')
+
+@app.route('/cancelar_dupla')
+def cancelar_dupla():
+    nome_fila = request.args.get('nome_fila')
+    numero_atendido = int(request.args.get('numero_atendido'))
+    if nome_fila == fila_videncia.atividade:
+        fila = fila_videncia
+        arquivo_fila = ARQUIVO_FILA_VIDENCIA
+    elif nome_fila == fila_prece.atividade:
+        fila = fila_prece
+        arquivo_fila = ARQUIVO_FILA_PRECE
+    fila.cancelar_dupla(numero_atendido)
+    salvar_fila(fila, arquivo_fila)
+    return redirect('/')
+   
 
 
 app.run(debug=True)
