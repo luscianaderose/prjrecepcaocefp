@@ -9,19 +9,20 @@ locale.setlocale(locale.LC_ALL,'pt_BR')
 
 
 class Pessoa:
-    def __init__(self, numero, nome, chamado=0, camara=None, dupla=-1, asterisco=0):
+    def __init__(self, numero, nome, chamado=0, camara=None, dupla=-1, asterisco=0, observacao=0):
         self.nome = nome
         self.numero = numero
         self.chamado = chamado
         self.camara = camara
         self.dupla = dupla
         self.asterisco = asterisco
+        self.observacao = observacao
 
     def __str__(self):
         return self.nome
      
     def csv(self):
-        return f'{self.numero},{self.nome},{self.chamado},{self.camara},{self.dupla},{self.asterisco}'
+        return f'{self.numero},{self.nome},{self.chamado},{self.camara},{self.dupla},{self.asterisco},{self.observacao}'
     
     def nome_exibicao(self):
         if self.chamado == 1:
@@ -33,9 +34,10 @@ class Pessoa:
         return self.nome
     
 class Fila():
-    def __init__(self, atividade, nome_display):
+    def __init__(self, atividade, nome_arquivo, nome_display):
         self.atividade = atividade
         self.nome_display = nome_display
+        self.nome_arquivo = nome_arquivo
         self.fila = {}
         self.proximo_numero = 1
     
@@ -128,6 +130,20 @@ class Fila():
         pessoa1.dupla = -1
         pessoa2.dupla = -1
 
+    def salvar_fila(self):
+        with open(self.nome_arquivo, 'w') as f:
+            for pessoa in self.values():
+                f.write(f'{pessoa.csv()}\n')
+
+    def ler_fila(self):
+        with open(self.nome_arquivo, 'r') as f:
+            for linha in f.read().splitlines():
+                if not linha:
+                    continue
+                numero, nome, chamado, camara, dupla, asterisco, observacao = linha.split(',', 6)
+                pessoa = Pessoa(int(numero), nome, int(chamado), camara, int(dupla), int(asterisco), observacao)
+                self.adicionar_pessoa(pessoa, pessoa.numero)
+
 
 class Dupla:
     def __init__(self, pessoa1, pessoa2):
@@ -139,7 +155,7 @@ class Camara:
         self.numero_camara = numero_camara
         self.fila = fila
         self.nome_fila = nome_fila
-        self.pessoa_em_atendimento = 'Nenhum'
+        self.pessoa_em_atendimento = 'Ninguém'
         self.numero_de_atendimentos = 0
 
     def chamar_atendido(self):
@@ -166,7 +182,6 @@ class Camara:
         if self.numero_de_atendimentos >= 5:
             retorno = retorno + f' Avisar que é o último atendido.{self.numero_camara}.'
         return retorno
-
     
     def bolinhas(self):
         bolinhas = []
@@ -175,23 +190,7 @@ class Camara:
         for bola in range(0, 5 - self.numero_de_atendimentos):
             bolinhas.append('&#9898;')
         return ''.join(bolinhas)
-
-def salvar_fila(fila: Fila, nome_arquivo: str):
-    with open(nome_arquivo, 'w') as f:
-        for pessoa in fila.values():
-            f.write(f'{pessoa.csv()}\n')
-
-def ler_fila(nome_arquivo):
-    lista_pessoas = []
-    with open(nome_arquivo, 'r') as f:
-        for linha in f.read().splitlines():
-            if not linha:
-                continue
-            numero, nome, chamado, camara, dupla, asterisco = linha.split(',')
-            pessoa = Pessoa(int(numero), nome, int(chamado), camara, int(dupla), int(asterisco))
-            lista_pessoas.append(pessoa)
-        return lista_pessoas
-
+    
 def salvar_camaras(dict_camaras, nome_arquivo):
     with open(nome_arquivo, 'w') as f:
         for camara in dict_camaras.values():
@@ -200,6 +199,8 @@ def salvar_camaras(dict_camaras, nome_arquivo):
 def ler_camaras(nome_arquivo):
     with open(nome_arquivo, 'r') as f:
         return f.read().splitlines()
+
+
 
 PASTA_ARQUIVOS = os.path.join(os.path.expanduser('~'), '.recepcao-camaras')
 if not os.path.exists(PASTA_ARQUIVOS): 
@@ -212,17 +213,11 @@ for arquivo in [ARQUIVO_FILA_VIDENCIA, ARQUIVO_FILA_PRECE, ARQUIVO_CAMARAS]:
     with open(arquivo, 'a+'):
         pass
 
-# fila_videncia = ler_fila(ARQUIVO_FILA_VIDENCIA)
-# fila_prece = ler_fila(ARQUIVO_FILA_PRECE)
+fila_videncia = Fila('videncia', ARQUIVO_FILA_VIDENCIA, 'Vidência')
+fila_prece = Fila('prece', ARQUIVO_FILA_PRECE, 'Prece')
 
-fila_videncia = Fila('videncia', 'Vidência')
-fila_prece = Fila('prece', 'Prece')
-
-for pessoa in ler_fila(ARQUIVO_FILA_VIDENCIA):
-    fila_videncia.adicionar_pessoa(pessoa, pessoa.numero)
-
-for pessoa in ler_fila(ARQUIVO_FILA_PRECE):
-    fila_prece.adicionar_pessoa(pessoa, pessoa.numero)
+fila_videncia.ler_fila()
+fila_prece.ler_fila()
 
 if fila_videncia.fila:
     fila_videncia.proximo_numero = fila_videncia.values()[-1].numero + 1
@@ -274,11 +269,13 @@ calendario = '<div class="di-calendario"><pre>' + (calendar.calendar(ano, mes)) 
 
 voltar = '<a href="/">VOLTAR</a>'
 
+vazio = '§'
 
 def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
     tit_lista_fila = f'<h3>FILA {fila.nome_display.upper()}</h3><h6>nome - câmara - editar - remover - subir - descer - entrar juntos</h6>'#NOME - CÂMARA - EDITAR - REMOVER - SUBIR - DESCER - ENTRAR JUNTOS
     html_fila = f'<div class="lista-{nome_fila}">' + tit_lista_fila
     for index, pessoa in enumerate(fila.values()):
+        # EDITAR / REMOVER / REPOSICIONAR P CIMA / REPOSICIONAR P BAIXO
         html_fila = html_fila + f'''<p>{index + 1}. {pessoa.nome_exibicao()}
         <a class="link-editar" href="/editar_atendido?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
         <img alt="Editar" src="/static/img/editar.png" width="16" height="16"></a>
@@ -288,6 +285,7 @@ def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
         <img alt="Reposicionar" src="/static/img/seta-cima.png" width="16" height="16"></a>
         <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila={nome_fila}&numero_atendido={pessoa.numero}&mover_para=baixo">
         <img alt="Reposicionar" src="/static/img/seta-baixo.png" width="16" height="16"></a>'''
+        # DUPLA / CANCELAR DUPLA
         if pessoa.dupla != -1:
             html_fila = html_fila + f'''<a class="link-dupla" href="/cancelar_dupla?numero_atendido={pessoa.numero}&nome_fila={nome_fila}">
                 <img alt="dupla" src="/static/img/dupla_cancelar.png" width="16" height="16"></a>'''
@@ -304,13 +302,30 @@ def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
         else:
             html_fila = html_fila + f'''<a class="link-dupla" href="/?nome_fila_dupla={nome_fila}&numero_dupla={pessoa.numero}&dupla=1">
         <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"></a>'''
+        # ASTERISCO
         if pessoa.asterisco:
             html_fila = html_fila + f'''<a class="link-asterisco" href="/asterisco?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
         <img alt="Asterisco" src="/static/img/asterisco-selecionado.png" width="16" height="16"></a>'''
         else:
             html_fila = html_fila + f'''<a class="link-asterisco" href="/asterisco?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
         <img alt="Asterisco" src="/static/img/asterisco.png" width="16" height="16"></a>'''
+        # OBSERVAÇÃO
+        if pessoa.observacao == vazio:
+            html_fila = html_fila + f'''<a class="link-observacao" href="/observacao?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
+        <img alt="Observação" src="/static/img/observacao-cancelar.png" width="16" height="16"></a>'''
+        else:
+            html_fila = html_fila + f'''<a class="link-observacao" href="/observacao?nome_fila={nome_fila}&numero_atendido={pessoa.numero}&observacao={vazio}">
+        <img alt="Observação" src="/static/img/observacao.png" width="16" height="16"></a>'''
+
         html_fila = html_fila + '</p>'
+
+        if pessoa.observacao:
+            html_fila = html_fila + f'''<form action="/observacao">
+            <input type="text" name="observacao" value="{pessoa.observacao if pessoa.observacao != vazio else ''}" placeholder="Digite a observação">
+            <input type="hidden" name="numero_atendido" value="{pessoa.numero}">
+            <input type="hidden" name="nome_fila" value="{nome_fila}">
+            <button type="submit">OK</button></form>'''
+
     html_fila = html_fila + '</div>'
     return html_fila
 
@@ -414,14 +429,16 @@ def chamar_proximo_(numero_camara):
     camara = dict_camaras[numero_camara]
     camara.chamar_atendido()
     salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
-    salvar_fila(fila_videncia, ARQUIVO_FILA_VIDENCIA)
-    salvar_fila(fila_prece, ARQUIVO_FILA_PRECE)
+    fila_videncia.salvar_fila()
+    fila_prece.salvar_fila()
     return redirect('/')
 
 @app.route("/adicionar_atendido")
 def adicionar_atendido():
     nome_fila = request.args.get('nome_fila')
     nome_atendido = request.args.get('nome_atendido')
+    if not nome_atendido:
+        return 'Não é possível adicionar nome vazio!' + '<br><br>' + voltar
     if nome_fila == fila_videncia.atividade:
         numero = fila_videncia.proximo_numero
         pessoa = Pessoa(numero, nome_atendido)
@@ -429,7 +446,7 @@ def adicionar_atendido():
             fila_videncia.adicionar_pessoa(pessoa, numero)
         except Exception as exc:
             return str(exc) + voltar
-        salvar_fila(fila_videncia, ARQUIVO_FILA_VIDENCIA)
+        fila_videncia.salvar_fila()
     elif nome_fila == fila_prece.atividade:
         numero = fila_prece.proximo_numero
         pessoa = Pessoa(numero, nome_atendido)
@@ -437,7 +454,7 @@ def adicionar_atendido():
             fila_prece.adicionar_pessoa(pessoa, numero)
         except Exception as exc:
             return str(exc) + voltar
-        salvar_fila(fila_prece, ARQUIVO_FILA_PRECE)
+        fila_prece.salvar_fila()
     else: 
         return 'Fila incorreta!' + voltar
     return redirect('/')
@@ -446,7 +463,7 @@ def adicionar_atendido():
 def reabrir_camara(numero_camara):
     camara = dict_camaras[numero_camara]
     camara.numero_de_atendimentos = 0
-    camara.pessoa_em_atendimento = 'Nenhum'
+    camara.pessoa_em_atendimento = 'Ninguém'
     salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
     return redirect('/')
 
@@ -459,11 +476,11 @@ def reiniciar_tudo():
 def reiniciar_tudo_confirmado():
     for camara in dict_camaras.values():
         camara.numero_de_atendimentos = 0
-        camara.pessoa_em_atendimento = 'Nenhum'
+        camara.pessoa_em_atendimento = 'Ninguém'
     fila_prece.clear()
-    salvar_fila(fila_prece, ARQUIVO_FILA_PRECE)
+    fila_prece.salvar_fila()
     fila_videncia.clear()
-    salvar_fila(fila_videncia, ARQUIVO_FILA_VIDENCIA)
+    fila_videncia.salvar_fila()
     salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
     return redirect('/')
 
@@ -480,10 +497,10 @@ def remover_atendido_confirmado():
     numero_atendido = int(request.args.get('numero_atendido'))
     if nome_fila == fila_videncia.atividade:
         fila_videncia.remover_pessoa(numero_atendido)
-        salvar_fila(fila_videncia, ARQUIVO_FILA_VIDENCIA)
+        fila_videncia.salvar_fila()
     elif nome_fila == fila_prece.atividade:
         fila_prece.remover_pessoa(numero_atendido)
-        salvar_fila(fila_prece, ARQUIVO_FILA_PRECE)
+        fila_prece.salvar_fila()
     else: 
         return 'Fila incorreta!'
     return redirect('/')
@@ -495,10 +512,10 @@ def reposicionar_atendido():
     mover_para = request.args.get('mover_para')
     if nome_fila == fila_videncia.atividade:
         fila = fila_videncia
-        arquivo_fila = ARQUIVO_FILA_VIDENCIA
+        
     elif nome_fila == fila_prece.atividade:
         fila = fila_prece
-        arquivo_fila = ARQUIVO_FILA_PRECE
+        
     else: 
         return 'Fila incorreta!'
     keys = fila.keys()
@@ -511,7 +528,7 @@ def reposicionar_atendido():
         if indice == len(keys) - 1:
             return 'Não é possível descer a posição do último nome da lista.' + voltar
         fila.trocar_posicao(numero_atendido, keys[indice + 1])
-    salvar_fila(fila, arquivo_fila)
+    fila.salvar_fila()
     return redirect('/')
 
 @app.route("/editar_atendido")
@@ -544,12 +561,10 @@ def editar_atendido_confirmado():
     nome_atendido = request.args.get('nome_atendido')
     if nome_fila == fila_videncia.atividade:
         fila = fila_videncia
-        arquivo_fila = ARQUIVO_FILA_VIDENCIA
     elif nome_fila == fila_prece.atividade:
         fila = fila_prece
-        arquivo_fila = ARQUIVO_FILA_PRECE
     fila.editar_pessoa(numero_atendido, nome_atendido)
-    salvar_fila(fila, arquivo_fila)
+    fila.salvar_fila()
 
     return redirect('/')
 
@@ -571,17 +586,15 @@ def criar_dupla():
     numero_atendido = int(request.args.get('numero_atendido'))
     if nome_fila_dupla == fila_videncia.atividade:
         fila = fila_videncia
-        arquivo_fila = ARQUIVO_FILA_VIDENCIA
     elif nome_fila_dupla == fila_prece.atividade:
         fila = fila_prece
-        arquivo_fila = ARQUIVO_FILA_PRECE
     keys = fila.keys()
     indice = keys.index(numero_atendido)
     indice_dupla = keys.index(numero_dupla)
     if not (indice_dupla == indice + 1 or indice_dupla == indice - 1):
         return 'Não é possível criar dupla.' + voltar
     fila.criar_dupla(numero_atendido, numero_dupla)
-    salvar_fila(fila, arquivo_fila)
+    fila.salvar_fila()
     return redirect('/')
 
 @app.route('/cancelar_dupla')
@@ -590,12 +603,10 @@ def cancelar_dupla():
     numero_atendido = int(request.args.get('numero_atendido'))
     if nome_fila == fila_videncia.atividade:
         fila = fila_videncia
-        arquivo_fila = ARQUIVO_FILA_VIDENCIA
     elif nome_fila == fila_prece.atividade:
         fila = fila_prece
-        arquivo_fila = ARQUIVO_FILA_PRECE
     fila.cancelar_dupla(numero_atendido)
-    salvar_fila(fila, arquivo_fila)
+    fila.salvar_fila()
     return redirect('/')
 
 @app.route('/asterisco')
@@ -604,15 +615,27 @@ def asterisco():
     numero_atendido = int(request.args.get('numero_atendido'))
     if nome_fila == fila_videncia.atividade:
         fila = fila_videncia
-        arquivo_fila = ARQUIVO_FILA_VIDENCIA
     elif nome_fila == fila_prece.atividade:
         fila = fila_prece
-        arquivo_fila = ARQUIVO_FILA_PRECE
     pessoa = fila.get(numero_atendido)
     pessoa.asterisco = 0 if pessoa.asterisco else 1
-    salvar_fila(fila, arquivo_fila)
+    fila.salvar_fila()
     return redirect('/')
    
+@app.route('/observacao')
+def observacao():
+    nome_fila = request.args.get('nome_fila')
+    numero_atendido = int(request.args.get('numero_atendido'))
+    observacao = request.args.get('observacao')
+    if nome_fila == fila_videncia.atividade:
+        fila = fila_videncia
+    elif nome_fila == fila_prece.atividade:
+        fila = fila_prece
+    pessoa = fila.get(numero_atendido)
+    pessoa.observacao = observacao
+    fila.salvar_fila()
+    return redirect('/')
+
 
 
 app.run(debug=True)
