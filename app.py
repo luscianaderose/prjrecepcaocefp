@@ -393,15 +393,18 @@ def get_recepcao():
             bt_camara = f'''<p><button type="button"><a class="btcamara" href="/chamar_proximo/{camara.numero_camara}">
                             Chamar próximo</a></button></p>'''
         elif camara.estado == camara.avisar:
-            bt_camara = f'''<p><button type="button"><a class="btcamara" href="/chamar_proximo/{camara.numero_camara}">
-                            Avisar que é o último!</a></button></p>'''
+            bt_camara = f'''<p><button type="button"><a class="btcamara" href="/avisado/{camara.numero_camara}">
+                            Avisei que é o último!</a></button></p>'''
         elif camara.estado == camara.fechada:
-            bt_camara = f'''<p><button type="button"><a class="btcamara" href="/abrir_camara/{camara.numero_camara}">Abrir câmara</a></button></p>'''
+            bt_camara = f'''<p><button type="button"><a class="btcamara" href="/abrir_camara/{camara.numero_camara}">Câmara abriu</a></button></p>'''
+        elif camara.estado == camara.avisado:
+            bt_camara = f'''<p><button type="button"><a class="btcamara" href="/fechar_camara/{camara.numero_camara}">
+                            Câmara fechou</a></button></p>'''
         else:
             return 'Erro'
 
         html_camara = f'''<div class='camara'><p><h3>CÂMARA {camara.numero_camara}</h3></p>
-        <p>{camara.estado}<br><h4>{nome_chamado}</h4></p>
+        <p>{camara.estado}<br><h4>{nome_chamado if nome_chamado != 'None' else 'Câmara vazia'}</h4></p>
         <p>ATENDIMENTOS<br>
         <a class="linkbolinhas" href="/bolinhas?modo=subtracao&numero_camara={camara.numero_camara}"><b>-</b></a>{camara.bolinhas()}
         <a class="linkbolinhas" href="/bolinhas?modo=adicao&numero_camara={camara.numero_camara}"><b>+</b></a></p>
@@ -465,10 +468,27 @@ def tv():
     return head + '<body>' + html_camaras_videncia + html_camaras_prece + '<div class="nobr">' + voltar + ' ' + data + '</div></body>' + calendario
 
 @app.route("/chamar_proximo/<numero_camara>")
-def chamar_proximo_(numero_camara):
+def chamar_proximo(numero_camara):
     camara = dict_camaras[numero_camara]
     if camara.estado == camara.atendendo:
         camara.chamar_atendido()
+        salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+    return redirect('/')
+
+@app.route("/avisado/<numero_camara>")
+def avisado(numero_camara):
+    camara = dict_camaras[numero_camara]
+    if camara.estado == camara.avisar:
+        camara.estado = camara.avisado
+        salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+    return redirect('/')
+
+@app.route("/fechar_camara/<numero_camara>")
+def fechar_camara(numero_camara):
+    camara = dict_camaras[numero_camara]
+    if camara.estado == camara.avisado:
+        camara.estado = camara.fechada
+        camara.pessoa_em_atendimento = None
         salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
     return redirect('/')
 
