@@ -135,6 +135,7 @@
 .dan-bt-videncia-prece{
   width: 300px;
   height: 40px;
+  padding-top: 10px;
   /* border-style: solid;
   border-width: 2px;
   border-color: orange; */
@@ -263,7 +264,7 @@
 .dm-bt-tv{
   /* height: 200px;
   position: relative; */
-  padding-top: 10px;
+  padding-top: 20px;
   /* border-style: solid;
   border-width: 2px;
   border-color: red; */
@@ -273,7 +274,7 @@
   /* height: 200px;
   position: relative; */
   /* float: right; */
-  padding-top: 10px;
+  padding-top: 20px;
   /* border-style: solid;
   border-width: 2px;
   border-color: red; */
@@ -370,4 +371,37 @@ input[type="radio"] {
 
 .btcamara {
   text-decoration: none;
+}
+
+.icone-fechada {
+  height: 15px;
+  width: 15px;
+  background-color: #ff0000;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.icone-atendendo {
+  height: 15px;
+  width: 15px;
+  background-color: green;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+
+.icone-avisar {
+  height: 15px;
+  width: 15px;
+  background-color: yellow;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.icone-avisado {
+  height: 15px;
+  width: 15px;
+  background-color: blue;
+  border-radius: 50%;
+  display: inline-block;
 }

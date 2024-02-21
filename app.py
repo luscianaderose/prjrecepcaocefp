@@ -163,27 +163,40 @@ class Fila():
 
 
 class Camara:
-    def __init__(self, numero_camara, fila, nome_fila, estado='Fechada'):
+    fechada = '<span class="icone-fechada"></span> FECHADA'
+    atendendo = '<span class="icone-atendendo"></span> ATENDENDO'
+    avisar = '<span class="icone-avisar"></span> AVISAR ÚLTIMO'
+    avisado = '<span class="icone-avisado"></span> FOI AVISADO'
+
+    def __init__(self, numero_camara, fila, nome_fila, estado=fechada):
         self.numero_camara = numero_camara
         self.fila = fila
         self.nome_fila = nome_fila
-        self.pessoa_em_atendimento = 'Ninguém'
+        self.pessoa_em_atendimento = None
         self.numero_de_atendimentos = 0
         self.estado = estado
+
+    def fechar(self):
+        self.pessoa_em_atendimento = None
+        self.estado = self.fechada
+
+    def abrir(self):
+        self.numero_de_atendimentos = 0
+        self.estado = self.atendendo
+
 
     def chamar_atendido(self):
         '''Encontra a primeira pessoa da fila que não foi chamada, marca como chamada 
         e adiciona a self.pessoa_em_atendimento. Caso a pessoa tenha uma dupla, 
         a sua dupla também será marcada.'''
-        if self.numero_de_atendimentos >= 5:
-            self.pessoa_em_atendimento = 'FECHADA'
-            return 'CÂMARA FECHADA'
+        if self.estado != self.atendendo:
+            return self.estado
         for pessoa in self.fila.values():
             if not pessoa.chamado:
                 break
         else:
-            self.pessoa_em_atendimento = 'FECHADA'
-            return 'CÂMARA FECHADA'
+            self.estado = self.avisar
+            return self.estado
         self.pessoa_em_atendimento = pessoa
         self.pessoa_em_atendimento.camara = self.numero_camara
         self.pessoa_em_atendimento.chamado = 1
@@ -196,7 +209,7 @@ class Camara:
 
         retorno = f'Câmara {self.numero_camara} chamando {self.pessoa_em_atendimento}.'
         if self.numero_de_atendimentos >= 5:
-            retorno = retorno + f' Avisar que é o último atendido.{self.numero_camara}.'
+            self.estado = self.avisar
         self.fila.salvar_fila()
         return retorno
     
@@ -256,10 +269,11 @@ dict_camaras = {
 dados_camaras = ler_camaras(ARQUIVO_CAMARAS)
 
 for linha in dados_camaras:
-    numero_camara, pessoa_em_atendimento, numero_de_atendimentos = linha.split(',')
+    numero_camara, pessoa_em_atendimento, numero_de_atendimentos, estado = linha.split(',')
     camara = dict_camaras[numero_camara.strip()]
     camara.pessoa_em_atendimento = pessoa_em_atendimento.strip()
     camara.numero_de_atendimentos = int(numero_de_atendimentos.strip())
+    camara.estado = estado.strip()
 
 
 app = Flask(__name__)
@@ -374,13 +388,24 @@ def get_recepcao():
         if isinstance(camara.pessoa_em_atendimento, Pessoa) and camara.pessoa_em_atendimento.dupla != -1:
             nome_chamado = nome_chamado + ' & ' + camara.fila.get(camara.pessoa_em_atendimento.dupla).nome
 
+        # BOTÃO ABRIR CÂMARA/CHAMAR PRÓXIMO
+        if camara.estado == camara.atendendo and camara.numero_de_atendimentos < 5:
+            bt_camara = f'''<p><button type="button"><a class="btcamara" href="/chamar_proximo/{camara.numero_camara}">
+                            Chamar próximo</a></button></p>'''
+        elif camara.estado == camara.avisar:
+            bt_camara = f'''<p><button type="button"><a class="btcamara" href="/chamar_proximo/{camara.numero_camara}">
+                            Avisar que é o último!</a></button></p>'''
+        elif camara.estado == camara.fechada:
+            bt_camara = f'''<p><button type="button"><a class="btcamara" href="/abrir_camara/{camara.numero_camara}">Abrir câmara</a></button></p>'''
+        else:
+            return 'Erro'
+
         html_camara = f'''<div class='camara'><p><h3>CÂMARA {camara.numero_camara}</h3></p>
-        <p>ATENDENDO<br><h4>{nome_chamado}</h4></p>
+        <p>{camara.estado}<br><h4>{nome_chamado}</h4></p>
         <p>ATENDIMENTOS<br>
         <a class="linkbolinhas" href="/bolinhas?modo=subtracao&numero_camara={camara.numero_camara}"><b>-</b></a>{camara.bolinhas()}
         <a class="linkbolinhas" href="/bolinhas?modo=adicao&numero_camara={camara.numero_camara}"><b>+</b></a></p>
-        <p><button type="button"><a class="btcamara" href="/chamar_proximo/{camara.numero_camara}">{"Chamar próximo" if camara.numero_de_atendimentos < 5 else "Avisar fechamento!"}</a></button></p>
-        <p><button type="button"><a class="btcamara" href="/reabrir_camara/{camara.numero_camara}">Reabrir câmara</a></button></p>
+        {bt_camara}
         </div>'''
         if camara.nome_fila == fila_videncia.atividade:
             html_camaras_videncia = html_camaras_videncia + html_camara
@@ -442,8 +467,9 @@ def tv():
 @app.route("/chamar_proximo/<numero_camara>")
 def chamar_proximo_(numero_camara):
     camara = dict_camaras[numero_camara]
-    camara.chamar_atendido()
-    salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+    if camara.estado == camara.atendendo:
+        camara.chamar_atendido()
+        salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
     return redirect('/')
 
 @app.route("/adicionar_atendido")
@@ -466,11 +492,10 @@ def adicionar_atendido():
         return str(exc) + voltar
     return redirect('/')
 
-@app.route('/reabrir_camara/<numero_camara>')
-def reabrir_camara(numero_camara):
+@app.route('/abrir_camara/<numero_camara>')
+def abrir_camara(numero_camara):
     camara = dict_camaras[numero_camara]
-    camara.numero_de_atendimentos = 0
-    camara.pessoa_em_atendimento = 'Ninguém'
+    camara.abrir()
     salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
     return redirect('/')
 
@@ -483,10 +508,19 @@ def reiniciar_tudo():
 def reiniciar_tudo_confirmado():
     for camara in dict_camaras.values():
         camara.numero_de_atendimentos = 0
-        camara.pessoa_em_atendimento = 'Ninguém'
+        camara.fechar()
     fila_prece.clear()
-    fila_prece.salvar_fila()
     fila_videncia.clear()
+    # pra criar pessoas automaticamente
+    for nome in ['josé', 'maria', 'joão', 'cláudia', 'mário', 'beatriz', 'flávia']:
+        numero = fila_videncia.proximo_numero
+        pessoa = Pessoa(numero, nome)
+        fila_videncia.adicionar_pessoa(pessoa, numero)
+        numero = fila_prece.proximo_numero
+        pessoa = Pessoa(numero, nome)
+        fila_prece.adicionar_pessoa(pessoa, numero)
+    # fim -> pra criar pessoas automaticamente
+    fila_prece.salvar_fila()
     fila_videncia.salvar_fila()
     salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
     return redirect('/')
@@ -588,7 +622,11 @@ def bolinhas():
     camara = dict_camaras.get(numero_camara)
     if modo == 'adicao' and camara.numero_de_atendimentos < 5:
         camara.numero_de_atendimentos += 1
+        if camara.numero_de_atendimentos >= 5:
+            camara.estado = camara.avisar
     elif modo == 'subtracao' and camara.numero_de_atendimentos > 0:
+        if camara.estado != camara.atendendo:
+            camara.estado = camara.atendendo
         camara.numero_de_atendimentos -= 1
     salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
     return redirect('/')
