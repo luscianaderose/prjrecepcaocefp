@@ -3,234 +3,13 @@ from flask import Flask, request, redirect, send_from_directory
 from datetime import datetime, date
 import calendar  
 import locale
+from classes import Pessoa, Fila, Camara, salvar_camaras, ler_camaras
 
 locale.setlocale(locale.LC_ALL,'pt_BR')
     
 vazio = '§'
 
-
-class Pessoa:
-    def __init__(self, numero, nome, chamado=0, camara=None, dupla=-1, asterisco=0, observacao=''):
-        self.nome = nome
-        self.numero = numero
-        self.chamado = chamado
-        self.camara = camara
-        self.dupla = dupla
-        self.asterisco = asterisco
-        self.observacao = observacao
-
-    def __str__(self):
-        return self.nome
-     
-    def csv(self):
-        return f'{self.numero},{self.nome},{self.chamado},{self.camara},{self.dupla},{self.asterisco},{self.observacao}'
-    
-    def nome_exibicao(self):
-        if self.chamado == 1:
-            return f'<s>{self.nome}</s> - {self.camara}'
-        else:
-            return f'{self.nome}'
-        
-    def __repr__(self):
-        return self.nome
-    
-class Fila():
-    def __init__(self, atividade, nome_arquivo, nome_display):
-        self.atividade = atividade
-        self.nome_display = nome_display
-        self.nome_arquivo = nome_arquivo
-        self.fila = {}
-        self.proximo_numero = 1
-    
-    def __contains__(self, numero):
-        return numero in self.fila
-    
-    def adicionar_pessoa(self, pessoa, numero):
-        for p in self.fila.values():
-            if p.nome == pessoa.nome:
-                raise Exception('Não foi possível registrar porque o nome já existe.')
-        if numero in self.fila:
-            raise Exception('Não foi possível registrar porque o número já existe.')
-        self.fila[numero] = pessoa
-        self.proximo_numero += 1
-        self.salvar_fila()
-
-    def remover_pessoa(self, numero):
-        if numero not in self.fila:
-            raise Exception('Não foi possível remover porque a pessoa não existe.')
-        pessoa = self.fila[numero]
-        if pessoa.dupla != - 1:
-            self.fila[pessoa.dupla].dupla = -1
-        del self.fila[numero]
-        self.salvar_fila()
-
-    def editar_pessoa(self, numero, nome):
-        for p in self.fila.values():
-            if p.nome == nome:
-                return #Exception('Não foi possível registrar porque o nome já existe.')
-        if numero not in self.fila:
-            raise Exception('Não foi possível registrar porque o número não existe.')
-        self.fila[numero].nome = nome
-        self.salvar_fila()
-
-    def values(self):
-        return sorted(self.fila.values(), key=lambda p: p.numero)
-    
-    def clear(self):
-        self.fila.clear()
-
-    def get(self, numero):
-        if numero in self.fila:
-            return self.fila[numero]
-        return None
-    
-    def trocar_posicao(self, n1, n2, ignorar_duplas=False):
-        if n1 not in self.fila or n2 not in self.fila:
-            raise Exception('Não foi possível mover!')
-        if n2 < n1:
-            return self.trocar_posicao(n2, n1, ignorar_duplas)
-        pessoa1 = self.fila[n1]
-        pessoa2 = self.fila[n2]
-        if ignorar_duplas == False and pessoa1.dupla != n2 and (pessoa1.dupla != -1 or pessoa2.dupla != -1):
-            if pessoa1.dupla != -1 and pessoa2.dupla != -1: #p1+p2 tem dupla. Se tiver dupla e se for trocar com alguem que nao é a propria dupla
-                self.trocar_posicao(n1, pessoa2.dupla, ignorar_duplas=True)
-                self.trocar_posicao(pessoa1.dupla, n2, ignorar_duplas=True)
-            elif pessoa1.dupla != -1: #somente a p1 tem dupla
-                self.trocar_posicao(n1, n2, ignorar_duplas=True)
-                self.trocar_posicao(n1, pessoa1.dupla, ignorar_duplas=True)
-            elif pessoa2.dupla != -1: #somente a p2 tem dupla
-                self.trocar_posicao(n1, n2, ignorar_duplas=True)
-                self.trocar_posicao(n2, pessoa2.dupla, ignorar_duplas=True)
-            return 
-        if pessoa1.dupla != -1:
-            dupla = self.fila[pessoa1.dupla]
-            dupla.dupla = n2
-        if pessoa2.dupla != -1:
-            dupla = self.fila[pessoa2.dupla]
-            dupla.dupla = n1
-        pessoa1.numero = n2
-        pessoa2.numero = n1
-        self.fila[n1] = pessoa2
-        self.fila[n2] = pessoa1
-        self.salvar_fila()
-
-    def keys(self):
-        return sorted(self.fila.keys())
-    
-    def criar_dupla(self, n1, n2):
-        if n1 not in self.fila or n2 not in self.fila:
-            raise Exception('Não foi possível criar dupla!')
-        pessoa1 = self.fila[n1]
-        pessoa2 = self.fila[n2]
-        if pessoa1.dupla != -1 or pessoa2.dupla != -1:
-            raise Exception ('Não é possível criar dupla uma pessoa de outra dupla!')
-        pessoa1.dupla = n2
-        pessoa2.dupla = n1
-        self.salvar_fila()
-
-    def cancelar_dupla(self, n1):
-        if n1 not in self.fila:
-            raise Exception ('Não foi possível cancelar a dupla!')
-        pessoa1 = self.get(n1)
-        pessoa2 = self.get(pessoa1.dupla)
-        pessoa1.dupla = -1
-        pessoa2.dupla = -1
-        self.salvar_fila()
-
-    def salvar_fila(self):
-        with open(self.nome_arquivo, 'w') as f:
-            for pessoa in self.values():
-                f.write(f'{pessoa.csv()}\n')
-
-    def ler_fila(self):
-        with open(self.nome_arquivo, 'r') as f:
-            for linha in f.read().splitlines():
-                if not linha:
-                    continue
-                numero, nome, chamado, camara, dupla, asterisco, observacao = linha.split(',', 6)
-                pessoa = Pessoa(int(numero), nome, int(chamado), camara, int(dupla), int(asterisco), observacao)
-                self.adicionar_pessoa(pessoa, pessoa.numero)
-
-    def toggle_asterisco(self, numero_atendido):
-        pessoa = self.get(numero_atendido)
-        pessoa.asterisco = 0 if pessoa.asterisco else 1
-        self.salvar_fila()
-    
-    def adicionar_observacao(self, numero_atendido, observacao):
-        pessoa = self.get(numero_atendido)
-        pessoa.observacao = observacao
-        self.salvar_fila()
-
-
-class Camara:
-    fechada = '<span class="icone-fechada"></span> FECHADA'
-    atendendo = '<span class="icone-atendendo"></span> ATENDENDO'
-    avisar = '<span class="icone-avisar"></span> AVISAR ÚLTIMO'
-    avisado = '<span class="icone-avisado"></span> FOI AVISADO'
-
-    def __init__(self, numero_camara, fila, nome_fila, estado=fechada):
-        self.numero_camara = numero_camara
-        self.fila = fila
-        self.nome_fila = nome_fila
-        self.pessoa_em_atendimento = None
-        self.numero_de_atendimentos = 0
-        self.estado = estado
-
-    def fechar(self):
-        self.pessoa_em_atendimento = None
-        self.estado = self.fechada
-
-    def abrir(self):
-        self.numero_de_atendimentos = 0
-        self.estado = self.atendendo
-
-
-    def chamar_atendido(self):
-        '''Encontra a primeira pessoa da fila que não foi chamada, marca como chamada 
-        e adiciona a self.pessoa_em_atendimento. Caso a pessoa tenha uma dupla, 
-        a sua dupla também será marcada.'''
-        if self.estado != self.atendendo:
-            return self.estado
-        for pessoa in self.fila.values():
-            if not pessoa.chamado:
-                break
-        else:
-            self.estado = self.avisar
-            return self.estado
-        self.pessoa_em_atendimento = pessoa
-        self.pessoa_em_atendimento.camara = self.numero_camara
-        self.pessoa_em_atendimento.chamado = 1
-        self.numero_de_atendimentos += 1
-        if self.pessoa_em_atendimento.dupla != -1:
-            dupla = self.fila.get(self.pessoa_em_atendimento.dupla)
-            dupla.camara = self.numero_camara
-            dupla.chamado = 1
-            self.numero_de_atendimentos += 1
-
-        retorno = f'Câmara {self.numero_camara} chamando {self.pessoa_em_atendimento}.'
-        if self.numero_de_atendimentos >= 5:
-            self.estado = self.avisar
-        self.fila.salvar_fila()
-        return retorno
-    
-    def bolinhas(self):
-        bolinhas = []
-        for bola in range(0, self.numero_de_atendimentos):
-            bolinhas.append('&#9899;')
-        for bola in range(0, 5 - self.numero_de_atendimentos):
-            bolinhas.append('&#9898;')
-        return ''.join(bolinhas)
-    
-def salvar_camaras(dict_camaras, nome_arquivo):
-    with open(nome_arquivo, 'w') as f:
-        for camara in dict_camaras.values():
-            f.write(f'{camara.numero_camara},{camara.pessoa_em_atendimento},{camara.numero_de_atendimentos},{camara.estado}\n')
-
-def ler_camaras(nome_arquivo):
-    with open(nome_arquivo, 'r') as f:
-        return f.read().splitlines()
-
-
+set_audios_notificacoes = set()
 
 PASTA_ARQUIVOS = os.path.join(os.path.expanduser('~'), '.recepcao-camaras')
 if not os.path.exists(PASTA_ARQUIVOS): 
@@ -279,8 +58,6 @@ for linha in dados_camaras:
 app = Flask(__name__)
 
 
-
-
 # DATA E HORA
 dia_semana = date.today().weekday()
 #nomes = ("SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM")
@@ -297,7 +74,6 @@ mes = data_e_hora_atuais.month
 calendario = '<div class="di-calendario"><pre>' + (calendar.calendar(ano, mes)) + '</pre></div>'
 
 voltar = '<a href="/">VOLTAR</a>'
-
 
 
 def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
@@ -448,7 +224,21 @@ def get_recepcao():
 
 @app.route('/tv')
 def tv():
-    head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/tv.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
+    js_audio_notificacoes = '''
+    const sleep = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
+    async function tocarNotificacoes() {
+    ''' + '\n'.join([f'var audio = new Audio("/static/audio/{camara.audio}");\naudio.play();\nawait sleep(5000);' for camara in set_audios_notificacoes]) + \
+    '}'
+    head = f'''<head>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/tv.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <script>
+    {js_audio_notificacoes}
+    tocarNotificacoes();
+    const myTimeout = setTimeout(window.location.reload.bind(window.location), 10000);
+    </script>
+    </head>'''
     html_camaras = ''
     html_camaras_videncia = ''
     html_camaras_prece = ''
@@ -457,7 +247,7 @@ def tv():
         if isinstance(camara.pessoa_em_atendimento, Pessoa) and camara.pessoa_em_atendimento.dupla != -1:
             nome_chamado = nome_chamado + ' & ' + camara.fila.get(camara.pessoa_em_atendimento.dupla).nome
         html_camaras = f'''<div class='tv-camara'><p>CÂMARA {camara.nome_fila}<br><h1>{camara.numero_camara}</h1><br>CHAMA</p>
-        <p><h2>{nome_chamado}</h2></p></div>'''.upper()
+        <p><h2>{nome_chamado if nome_chamado != "None" else "CÂMARA VAZIA"}</h2></p></div>'''.upper()
         if camara.nome_fila == fila_videncia.atividade:
             html_camaras_videncia = html_camaras_videncia + html_camaras
         elif camara.nome_fila == fila_prece.atividade:
@@ -465,6 +255,7 @@ def tv():
     html_camaras_videncia = '<div class="tv-videncia">' + html_camaras_videncia + '</div>'
     html_camaras_prece = '<div class="tv-prece">' + html_camaras_prece + '</div>'
     voltar = '<a href="/">VOLTAR</a>'
+    set_audios_notificacoes.clear()
     return head + '<body>' + html_camaras_videncia + html_camaras_prece + '<div class="nobr">' + voltar + ' ' + data + '</div></body>' + calendario
 
 @app.route("/chamar_proximo/<numero_camara>")
@@ -472,6 +263,7 @@ def chamar_proximo(numero_camara):
     camara = dict_camaras[numero_camara]
     if camara.estado == camara.atendendo:
         camara.chamar_atendido()
+        set_audios_notificacoes.add(camara)
         salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
     return redirect('/')
 
@@ -705,7 +497,6 @@ def observacao():
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory('static', filename)
-
 
 
 app.run(debug=True)
