@@ -499,4 +499,4 @@ def serve_static(filename):
     return send_from_directory('static', filename)
 
 
-app.run(debug=True)
+app.run(debug=True, host='0.0.0.0')
