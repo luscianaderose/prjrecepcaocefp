@@ -1,6 +1,6 @@
 import os
 from flask import Flask, request, redirect, send_from_directory
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import calendar  
 import locale
 from classes import Pessoa, Fila, Camara, salvar_camaras, ler_camaras
@@ -9,6 +9,7 @@ locale.setlocale(locale.LC_ALL,'pt_BR')
     
 vazio = '§'
 
+set_audios_camaras = set()
 set_audios_notificacoes = set()
 
 PASTA_ARQUIVOS = os.path.join(os.path.expanduser('~'), '.recepcao-camaras')
@@ -59,19 +60,23 @@ app = Flask(__name__)
 
 
 # DATA E HORA
-dia_semana = date.today().weekday()
 #nomes = ("SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM")
 #nomes = ("Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo")
 nomes = ("SEGUNDA", "TERÇA", "QUARTA", "QUINTA", "SEXTA", "SÁBADO", "DOMINGO")
-data_e_hora_atuais = datetime.now()
-dia_semana_usar = nomes[dia_semana]
-data_e_hora_em_texto = data_e_hora_atuais.strftime('%d/%m %H:%M')
-data = dia_semana_usar + ' ' + data_e_hora_em_texto
+
+def get_data_hora_atual():
+    dia_semana = date.today().weekday()
+    data_e_hora_atuais = datetime.utcnow() + timedelta(hours=-3)
+    dia_semana_usar = nomes[dia_semana]
+    data_e_hora_em_texto = data_e_hora_atuais.strftime('%d/%m %H:%M')
+    return dia_semana_usar + ' ' + data_e_hora_em_texto
 
 # CALENDARIO
-ano = data_e_hora_atuais.year
-mes = data_e_hora_atuais.month
-calendario = '<div class="di-calendario"><pre>' + (calendar.calendar(ano, mes)) + '</pre></div>'
+def get_calendario():
+    data_e_hora_atuais = datetime.now()
+    ano = data_e_hora_atuais.year
+    mes = data_e_hora_atuais.month
+    return '<div class="di-calendario"><pre>' + (calendar.calendar(ano, mes)) + '</pre></div>'
 
 voltar = '<a href="/">VOLTAR</a>'
 
@@ -136,8 +141,10 @@ def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
 
 @app.route('/')
 def get_recepcao():
-    head = '<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'
-    tit_recep = '<div class="div-cabecalho"><div class="dc-congrega"><img alt="CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA" src="/static/img/cefp.png"></div>' + '<div class="dc-tit-principal"><h1>RECEPÇÃO DAS CÂMARAS</h1></div>' + '<div class="dc-data">' + data + '</div></div>'
+    head = '''<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'''
+    tit_recep = f'''<div class="div-cabecalho"><div class="dc-congrega"><img alt="CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA" src="/static/img/cefp.png"></div>
+    <div class="dc-tit-principal"><h1>TESTE RECEPÇÃO DAS CÂMARAS</h1></div><div class="dc-data">{get_data_hora_atual()}</div></div>'''
     tit_adicionar = '<div class="div-adicionar-nomes"><div class="dan-tit-form"><h5>ADICIONAR NOME NA FILA</h5></div>' #div-adicionar-nomes abrindo
     form = f'''<div class="dan-form"><form action="/adicionar_atendido">
         <div  class="dan-input-nome"><input name="nome_atendido" type="text" placeholder="Digite o nome"></div>
@@ -206,9 +213,10 @@ def get_recepcao():
 
     # MENU
     tit_menu = '<div class="dm-tit"><h3>MENU</h3></div>'
-    tv = '<div class="dm-bt-tv"><div class="vertical-center"><a href="/tv"><button>TV</button></a></div></div>'
+    bt_tv = '<div class="dm-bt-tv"><div class="vertical-center"><a href="/tv"><button>TV</button></a></div></div>'
     bt_reiniciar = '<div class="dm-bt-reiniciar"><div class="vertical-center"><a href="/reiniciar_tudo"><button>REINICAR TUDO</button></a></div></div>'
-    menu = '<div class="div-menu">' + tit_menu + tv + bt_reiniciar + '</div>'
+    bt_silencio = '<div class="dm-bt-tv"><div class="vertical-center"><a href="/silencio"><button>SILÊNCIO</button></a></div></div>'
+    menu = '<div class="div-menu">' + tit_menu + bt_tv + bt_silencio +  bt_reiniciar + '</div>'
 
     # INFO
     tit_info = '<div class=""><h3>INFORMAÇÕES</h3></div>'
@@ -218,25 +226,26 @@ def get_recepcao():
     4. Pedir para sentar no lugar correto.<br>
     5. Quando a câmara chamar, clicar em 'chamar próximo' e chamar o próximo nome. O nome é riscado, a câmara que chamou fica registrada, e uma bolinha branca fica preenchida, tudo automaticamente.<br>
     6. Quando atingir o limite de atendimentos das câmaras que é representado por cinco bolinhas cheias, avisar que a câmara fechou.<br><br><br>'''
-    info = '<div class="div-info">' + tit_info + texto + calendario + '</div>'
+    info = '<div class="div-info">' + tit_info + texto + get_calendario() + '</div>'
 
     return  head + '<body>' + tit_recep + tit_adicionar + form + camaras + menu + info + '</body>' 
 
 @app.route('/tv')
 def tv():
-    js_audio_notificacoes = '''
-    const sleep = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
-    async function tocarNotificacoes() {
-    ''' + '\n'.join([f'var audio = new Audio("/static/audio/{camara.audio}");\naudio.play();\nawait sleep(5000);' for camara in set_audios_notificacoes]) + \
-    '}'
+    js_audios_notificacoes = [f'var audio = new Audio("/static/audio/{camara.audio}");\naudio.play();\nawait sleep(5000);' for camara in set_audios_camaras]
+    if not js_audios_notificacoes:
+        js_audios_notificacoes = [f'var audio = new Audio("/static/audio/{audio}");\naudio.play();\nawait sleep(7000);' for audio in set_audios_notificacoes]
     head = f'''<head>
     <link rel="stylesheet" href="/static/css/style.css">
     <link rel="stylesheet" href="/static/css/tv.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
     <script>
-    {js_audio_notificacoes}
+    const sleep = (ms = 0) => new Promise(resolve => setTimeout(resolve, ms));
+    async function tocarNotificacoes() {{
+    {' '.join(js_audios_notificacoes)}
+    }}
     tocarNotificacoes();
-    const myTimeout = setTimeout(window.location.reload.bind(window.location), 10000);
+    const myTimeout = setTimeout(window.location.reload.bind(window.location), {'2000' if not js_audios_notificacoes else '10000'});
     </script>
     </head>'''
     html_camaras = ''
@@ -255,15 +264,16 @@ def tv():
     html_camaras_videncia = '<div class="tv-videncia">' + html_camaras_videncia + '</div>'
     html_camaras_prece = '<div class="tv-prece">' + html_camaras_prece + '</div>'
     voltar = '<a href="/">VOLTAR</a>'
+    set_audios_camaras.clear()
     set_audios_notificacoes.clear()
-    return head + '<body>' + html_camaras_videncia + html_camaras_prece + '<div class="nobr">' + voltar + ' ' + data + '</div></body>' + calendario
+    return head + '<body>' + html_camaras_videncia + html_camaras_prece + '<div class="nobr">' + voltar + '     ' + get_data_hora_atual() + '</div></body>'
 
 @app.route("/chamar_proximo/<numero_camara>")
 def chamar_proximo(numero_camara):
     camara = dict_camaras[numero_camara]
     if camara.estado == camara.atendendo:
         camara.chamar_atendido()
-        set_audios_notificacoes.add(camara)
+        set_audios_camaras.add(camara)
         salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
     return redirect('/')
 
@@ -324,13 +334,13 @@ def reiniciar_tudo_confirmado():
     fila_prece.clear()
     fila_videncia.clear()
     # pra criar pessoas automaticamente
-    for nome in ['josé', 'maria', 'joão', 'cláudia', 'mário', 'beatriz', 'flávia']:
-        numero = fila_videncia.proximo_numero
-        pessoa = Pessoa(numero, nome)
-        fila_videncia.adicionar_pessoa(pessoa, numero)
-        numero = fila_prece.proximo_numero
-        pessoa = Pessoa(numero, nome)
-        fila_prece.adicionar_pessoa(pessoa, numero)
+    # for nome in ['josé', 'maria', 'joão', 'cláudia', 'mário', 'beatriz', 'flávia']:
+    #     numero = fila_videncia.proximo_numero
+    #     pessoa = Pessoa(numero, nome)
+    #     fila_videncia.adicionar_pessoa(pessoa, numero)
+    #     numero = fila_prece.proximo_numero
+    #     pessoa = Pessoa(numero, nome)
+    #     fila_prece.adicionar_pessoa(pessoa, numero)
     # fim -> pra criar pessoas automaticamente
     fila_prece.salvar_fila()
     fila_videncia.salvar_fila()
@@ -492,6 +502,11 @@ def observacao():
     elif nome_fila == fila_prece.atividade:
         fila = fila_prece
     fila.adicionar_observacao(numero_atendido, observacao)
+    return redirect('/')
+
+@app.route('/silencio')
+def silencio():
+    set_audios_notificacoes.add('celulares_silencio.mp3')
     return redirect('/')
 
 @app.route('/static/<path:filename>')
