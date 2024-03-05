@@ -36,3 +36,7 @@ body{
     display: flex;
     flex-direction: column;
   }
+
+  .camara-chamando{
+    background-color: rgb(249, 225, 128);
+  }

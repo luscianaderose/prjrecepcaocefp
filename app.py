@@ -9,8 +9,9 @@ locale.setlocale(locale.LC_ALL,'pt_BR')
     
 vazio = '§'
 
-set_audios_camaras = set()
+set_camaras_chamando = set()
 set_audios_notificacoes = set()
+ultima_camara_chamada = None
 
 PASTA_ARQUIVOS = os.path.join(os.path.expanduser('~'), '.recepcao-camaras')
 if not os.path.exists(PASTA_ARQUIVOS): 
@@ -187,7 +188,10 @@ def get_recepcao():
         else:
             return 'Erro'
 
-        html_camara = f'''<div class='camara'><p><h3>CÂMARA {camara.numero_camara}</h3></p>
+        html_camara = f'''<div class='camara'><p><h3>CÂMARA {camara.numero_camara}
+        <a class="link-asterisco" href="/chamar_novamente/{camara.numero_camara}">
+        <img alt="Asterisco" src="/static/img/asterisco-selecionado.png" width="16" height="16"></a>
+        </h3></p>
         <p>{camara.estado}<br><h4>{nome_chamado if nome_chamado != 'None' else 'Câmara vazia'}</h4></p>
         <p>ATENDIMENTOS<br>
         <a class="linkbolinhas" href="/bolinhas?modo=subtracao&numero_camara={camara.numero_camara}"><b>-</b></a>{camara.bolinhas()}
@@ -242,7 +246,7 @@ def get_recepcao():
 
 @app.route('/tv')
 def tv():
-    js_audios_notificacoes = [f'var audio = new Audio("/static/audio/{camara.audio}");\naudio.play();\nawait sleep(5000);' for camara in set_audios_camaras]
+    js_audios_notificacoes = [f'var audio = new Audio("/static/audio/{camara.audio}");\naudio.play();\nawait sleep(5000);' for camara in set_camaras_chamando]
     if not js_audios_notificacoes:
         js_audios_notificacoes = [f'var audio = new Audio("/static/audio/{audio}");\naudio.play();\nawait sleep(7000);' for audio in set_audios_notificacoes]
     head = f'''<head>
@@ -266,7 +270,7 @@ def tv():
         if isinstance(camara.pessoa_em_atendimento, Pessoa) and camara.pessoa_em_atendimento.dupla != -1:
             nome_chamado = nome_chamado + ' & ' + camara.fila.get(camara.pessoa_em_atendimento.dupla).nome
         nome_atendido = f'{camara.fila.get_posicao(camara.pessoa_em_atendimento.numero)}. {nome_chamado}' if nome_chamado != "None" else "CÂMARA FECHADA"
-        html_camaras = f'''<div class='tv-camara'><p><h2>CÂMARA {camara.fila.nome_display}<h2>
+        html_camaras = f'''<div class='tv-camara{' camara-chamando' if camara == ultima_camara_chamada else ''}'><p><h2>CÂMARA {camara.fila.nome_display}<h2>
         <h1>{camara.numero_camara}</h1>
         <p><h2>{nome_atendido}</h2></p></div>'''.upper()
         if camara.nome_fila == fila_videncia.atividade:
@@ -276,7 +280,7 @@ def tv():
     html_camaras_videncia = '<div class="tv-videncia">' + html_camaras_videncia + '</div>'
     html_camaras_prece = '<div class="tv-prece">' + html_camaras_prece + '</div>'
     voltar = '<a href="/">VOLTAR</a>'
-    set_audios_camaras.clear()
+    set_camaras_chamando.clear()
     set_audios_notificacoes.clear()
     data = f'<div class="tv-data">{get_data_hora_atual()}</div>'
     divs_videncia_prece = f'<div class="tv-videncia-prece">{html_camaras_videncia + html_camaras_prece}</div>'
@@ -287,9 +291,21 @@ def chamar_proximo(numero_camara):
     camara = dict_camaras[numero_camara]
     if camara.estado == camara.atendendo:
         camara.chamar_atendido()
-        set_audios_camaras.add(camara)
+        set_camaras_chamando.add(camara)
         salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+        global ultima_camara_chamada
+        ultima_camara_chamada = camara
     return redirect('/')
+
+@app.route("/chamar_novamente/<numero_camara>")
+def chamar_novamente(numero_camara):
+    camara = dict_camaras[numero_camara]
+    if camara.estado == camara.atendendo or camara.estado == camara.avisar:
+        set_camaras_chamando.add(camara)
+        global ultima_camara_chamada
+        ultima_camara_chamada = camara
+    return redirect('/')
+
 
 @app.route("/avisado/<numero_camara>")
 def avisado(numero_camara):
@@ -345,6 +361,7 @@ def reiniciar_tudo_confirmado():
     for camara in dict_camaras.values():
         camara.numero_de_atendimentos = 0
         camara.fechar()
+        camara.capacidade_maxima = 5
     fila_prece.clear()
     fila_videncia.clear()
     # pra criar pessoas automaticamente
