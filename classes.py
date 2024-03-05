@@ -1,8 +1,12 @@
 class Pessoa:
-    def __init__(self, numero, nome, chamado=0, camara=None, dupla=-1, asterisco=0, observacao=''):
+    riscado = 'riscado'
+    atendendo = 'atendendo'
+    aguardando = 'aguardando'
+    
+    def __init__(self, numero, nome, estado='aguardando', camara=None, dupla=-1, asterisco=0, observacao=''):
         self.nome = nome
         self.numero = numero
-        self.chamado = chamado
+        self.estado = estado
         self.camara = camara
         self.dupla = dupla
         self.asterisco = asterisco
@@ -12,16 +16,19 @@ class Pessoa:
         return self.nome
      
     def csv(self):
-        return f'{self.numero},{self.nome},{self.chamado},{self.camara},{self.dupla},{self.asterisco},{self.observacao}'
+        return f'{self.numero},{self.nome},{self.estado},{self.camara},{self.dupla},{self.asterisco},{self.observacao}'
     
     def nome_exibicao(self):
-        if self.chamado == 1:
+        if self.estado == self.riscado:
             return f'<s>{self.nome}</s> - {self.camara}'
+        elif self.estado == self.atendendo:
+            return f'<b>{self.nome}</b> - {self.camara}'
         else:
             return f'{self.nome}'
         
     def __repr__(self):
         return self.nome
+    
     
 class Fila():
     def __init__(self, atividade, nome_arquivo, nome_display):
@@ -136,8 +143,8 @@ class Fila():
             for linha in f.read().splitlines():
                 if not linha:
                     continue
-                numero, nome, chamado, camara, dupla, asterisco, observacao = linha.split(',', 6)
-                pessoa = Pessoa(int(numero), nome, int(chamado), camara, int(dupla), int(asterisco), observacao)
+                numero, nome, estado, camara, dupla, asterisco, observacao = linha.split(',', 6)
+                pessoa = Pessoa(int(numero), nome, estado, camara, int(dupla), int(asterisco), observacao)
                 self.adicionar_pessoa(pessoa, pessoa.numero)
 
     def toggle_asterisco(self, numero_atendido):
@@ -150,6 +157,13 @@ class Fila():
         pessoa.observacao = observacao
         self.salvar_fila()
 
+    def get_posicao(self, numero):
+        if numero in self.fila:
+            for index, pessoa in enumerate(self.values()):
+                if pessoa.numero == numero:
+                    return index + 1
+        return None
+
 
 class Camara:
     fechada = '<span class="icone-fechada"></span> FECHADA'
@@ -157,7 +171,7 @@ class Camara:
     avisar = '<span class="icone-avisar"></span> AVISAR ÚLTIMO'
     avisado = '<span class="icone-avisado"></span> FOI AVISADO'
 
-    def __init__(self, numero_camara, fila, nome_fila, estado=fechada):
+    def __init__(self, numero_camara, fila, nome_fila, estado=fechada, capacidade_maxima=5):
         self.numero_camara = numero_camara
         self.fila = fila
         self.nome_fila = nome_fila
@@ -165,6 +179,7 @@ class Camara:
         self.numero_de_atendimentos = 0
         self.estado = estado
         self.audio = f'camara{numero_camara}.mp3'
+        self.capacidade_maxima = capacidade_maxima
 
     def fechar(self):
         self.pessoa_em_atendimento = None
@@ -182,23 +197,28 @@ class Camara:
         if self.estado != self.atendendo:
             return self.estado
         for pessoa in self.fila.values():
-            if not pessoa.chamado:
+            if pessoa.estado == pessoa.aguardando:
                 break
         else:
             self.estado = self.avisar
             return self.estado
+        if self.pessoa_em_atendimento:
+            self.pessoa_em_atendimento.estado = self.pessoa_em_atendimento.riscado
+            if self.pessoa_em_atendimento.dupla != -1:
+                dupla = self.fila.get(self.pessoa_em_atendimento.dupla)
+                dupla.estado = dupla.riscado
         self.pessoa_em_atendimento = pessoa
         self.pessoa_em_atendimento.camara = self.numero_camara
-        self.pessoa_em_atendimento.chamado = 1
+        self.pessoa_em_atendimento.estado = pessoa.atendendo
         self.numero_de_atendimentos += 1
         if self.pessoa_em_atendimento.dupla != -1:
             dupla = self.fila.get(self.pessoa_em_atendimento.dupla)
             dupla.camara = self.numero_camara
-            dupla.chamado = 1
+            dupla.estado = dupla.atendendo
             self.numero_de_atendimentos += 1
 
         retorno = f'Câmara {self.numero_camara} chamando {self.pessoa_em_atendimento}.'
-        if self.numero_de_atendimentos >= 5:
+        if self.numero_de_atendimentos >= self.capacidade_maxima:
             self.estado = self.avisar
         self.fila.salvar_fila()
         return retorno
@@ -206,15 +226,21 @@ class Camara:
     def bolinhas(self):
         bolinhas = []
         for bola in range(0, self.numero_de_atendimentos):
-            bolinhas.append('&#9899;')
-        for bola in range(0, 5 - self.numero_de_atendimentos):
-            bolinhas.append('&#9898;')
+            if bola > 0 and bola % 5 == 0:
+                bolinhas.append('<br>&nbsp;&#9899;')
+            else:
+                bolinhas.append('&#9899;')
+        for bola in range(self.numero_de_atendimentos, self.capacidade_maxima):
+            if  bola > 0 and bola % 5 == 0:
+                bolinhas.append('<br>&nbsp;&#9898;')
+            else:
+                bolinhas.append('&#9898;')
         return ''.join(bolinhas)
     
 def salvar_camaras(dict_camaras, nome_arquivo):
     with open(nome_arquivo, 'w') as f:
         for camara in dict_camaras.values():
-            f.write(f'{camara.numero_camara},{camara.pessoa_em_atendimento},{camara.numero_de_atendimentos},{camara.estado}\n')
+            f.write(f'{camara.numero_camara},{camara.pessoa_em_atendimento.numero if camara.pessoa_em_atendimento is not None else ""},{camara.numero_de_atendimentos},{camara.estado},{camara.capacidade_maxima}\n')
 
 def ler_camaras(nome_arquivo):
     with open(nome_arquivo, 'r') as f:

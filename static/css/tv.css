@@ -1,36 +1,38 @@
 body{
     font-size: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items:center;
+}
+
+.tv-data{
+  padding: 20px;
+  margin-top: 30px; 
+}
+
+.tv-videncia-prece{
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
 }
 
 .tv-camara{
     background-color: rgb(255, 248, 219);
-    padding: 20px;
-    padding-left: 5px;
-    border-radius: 4px;
+    margin: 20px;
+    border-radius: 10px;
     width: 370px;
     text-align: center;
   }
   
   .tv-videncia{
-    background-color: rgb(149, 243, 255);
-    padding: 10px;
-    border-radius: 5px;
+    background-color: rgb(59, 219, 255);
+    border-radius: 10px;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 800px;
+    flex-direction: column;
   }
   
   .tv-prece{
-    background-color: rgb(149, 255, 225);
-    padding: 10px;
-    border-radius: 5px;
+    background-color: rgb(96, 255, 210);
+    border-radius: 10px;
+    margin: 0px;
+    padding: 0px;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 800px;
+    flex-direction: column;
   }

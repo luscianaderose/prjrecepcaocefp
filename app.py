@@ -49,9 +49,10 @@ dict_camaras = {
 dados_camaras = ler_camaras(ARQUIVO_CAMARAS)
 
 for linha in dados_camaras:
-    numero_camara, pessoa_em_atendimento, numero_de_atendimentos, estado = linha.split(',')
+    numero_camara, pessoa_em_atendimento, numero_de_atendimentos, estado, capacidade_maxima = linha.split(',')
     camara = dict_camaras[numero_camara.strip()]
-    camara.pessoa_em_atendimento = pessoa_em_atendimento.strip()
+    camara.capacidade_maxima = int(capacidade_maxima.strip())
+    camara.pessoa_em_atendimento = camara.fila.get(int(pessoa_em_atendimento)) if pessoa_em_atendimento else None
     camara.numero_de_atendimentos = int(numero_de_atendimentos.strip())
     camara.estado = estado.strip()
 
@@ -144,7 +145,7 @@ def get_recepcao():
     head = '''<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'''
     tit_recep = f'''<div class="div-cabecalho"><div class="dc-congrega"><img alt="CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA" src="/static/img/cefp.png"></div>
-    <div class="dc-tit-principal"><h1>TESTE RECEPÇÃO DAS CÂMARAS</h1></div><div class="dc-data">{get_data_hora_atual()}</div></div>'''
+    <div class="dc-tit-principal"><h1>RECEPÇÃO DAS CÂMARAS</h1></div><div class="dc-data">{get_data_hora_atual()}</div></div>'''
     tit_adicionar = '<div class="div-adicionar-nomes"><div class="dan-tit-form"><h5>ADICIONAR NOME NA FILA</h5></div>' #div-adicionar-nomes abrindo
     form = f'''<div class="dan-form"><form action="/adicionar_atendido">
         <div  class="dan-input-nome"><input name="nome_atendido" type="text" placeholder="Digite o nome"></div>
@@ -172,7 +173,7 @@ def get_recepcao():
             nome_chamado = nome_chamado + ' & ' + camara.fila.get(camara.pessoa_em_atendimento.dupla).nome
 
         # BOTÃO ABRIR CÂMARA/CHAMAR PRÓXIMO
-        if camara.estado == camara.atendendo and camara.numero_de_atendimentos < 5:
+        if camara.estado == camara.atendendo and camara.numero_de_atendimentos < camara.capacidade_maxima:
             bt_camara = f'''<p><button type="button"><a class="btcamara" href="/chamar_proximo/{camara.numero_camara}">
                             Chamar próximo</a></button></p>'''
         elif camara.estado == camara.avisar:
@@ -217,6 +218,15 @@ def get_recepcao():
     bt_reiniciar = '<div class="dm-bt-reiniciar"><div class="vertical-center"><a href="/reiniciar_tudo"><button>REINICAR TUDO</button></a></div></div>'
     bt_silencio = '<div class="dm-bt-tv"><div class="vertical-center"><a href="/silencio"><button>SILÊNCIO</button></a></div></div>'
     menu = '<div class="div-menu">' + tit_menu + bt_tv + bt_silencio +  bt_reiniciar + '</div>'
+    menu_deschamar = f'''<div class="div-menu">
+        {''.join([f'<a href="/deschamar/{num}"><button>DESCHAMAR CAM {num}</button></a>' for num in dict_camaras])}
+        </div>'''
+    menu_aumentar_capacidade = f'''<div class="div-menu">
+        {''.join([f'<a href="/aumentar_capacidade/{num}"><button>AUMENTAR CAM {num}</button></a>' for num in dict_camaras])}
+        </div>'''
+    menu_diminuir_capacidade = f'''<div class="div-menu">
+        {''.join([f'<a href="/diminuir_capacidade/{num}"><button>DIMINUIR CAM {num}</button></a>' for num in dict_camaras])}
+        </div>'''
 
     # INFO
     tit_info = '<div class=""><h3>INFORMAÇÕES</h3></div>'
@@ -228,7 +238,7 @@ def get_recepcao():
     6. Quando atingir o limite de atendimentos das câmaras que é representado por cinco bolinhas cheias, avisar que a câmara fechou.<br><br><br>'''
     info = '<div class="div-info">' + tit_info + texto + get_calendario() + '</div>'
 
-    return  head + '<body>' + tit_recep + tit_adicionar + form + camaras + menu + info + '</body>' 
+    return  head + '<body>' + tit_recep + tit_adicionar + form + camaras + menu + menu_deschamar + menu_aumentar_capacidade + menu_diminuir_capacidade + info + '</body>' 
 
 @app.route('/tv')
 def tv():
@@ -255,8 +265,10 @@ def tv():
         nome_chamado = str(camara.pessoa_em_atendimento)
         if isinstance(camara.pessoa_em_atendimento, Pessoa) and camara.pessoa_em_atendimento.dupla != -1:
             nome_chamado = nome_chamado + ' & ' + camara.fila.get(camara.pessoa_em_atendimento.dupla).nome
-        html_camaras = f'''<div class='tv-camara'><p>CÂMARA {camara.nome_fila}<br><h1>{camara.numero_camara}</h1><br>CHAMA</p>
-        <p><h2>{nome_chamado if nome_chamado != "None" else "CÂMARA VAZIA"}</h2></p></div>'''.upper()
+        nome_atendido = f'{camara.fila.get_posicao(camara.pessoa_em_atendimento.numero)}. {nome_chamado}' if nome_chamado != "None" else "CÂMARA FECHADA"
+        html_camaras = f'''<div class='tv-camara'><p><h2>CÂMARA {camara.fila.nome_display}<h2>
+        <h1>{camara.numero_camara}</h1>
+        <p><h2>{nome_atendido}</h2></p></div>'''.upper()
         if camara.nome_fila == fila_videncia.atividade:
             html_camaras_videncia = html_camaras_videncia + html_camaras
         elif camara.nome_fila == fila_prece.atividade:
@@ -266,7 +278,9 @@ def tv():
     voltar = '<a href="/">VOLTAR</a>'
     set_audios_camaras.clear()
     set_audios_notificacoes.clear()
-    return head + '<body>' + html_camaras_videncia + html_camaras_prece + '<div class="nobr">' + voltar + '     ' + get_data_hora_atual() + '</div></body>'
+    data = f'<div class="tv-data">{get_data_hora_atual()}</div>'
+    divs_videncia_prece = f'<div class="tv-videncia-prece">{html_camaras_videncia + html_camaras_prece}</div>'
+    return head + '<body>' + data + divs_videncia_prece + '</body>'
 
 @app.route("/chamar_proximo/<numero_camara>")
 def chamar_proximo(numero_camara):
@@ -334,13 +348,13 @@ def reiniciar_tudo_confirmado():
     fila_prece.clear()
     fila_videncia.clear()
     # pra criar pessoas automaticamente
-    # for nome in ['josé', 'maria', 'joão', 'cláudia', 'mário', 'beatriz', 'flávia']:
-    #     numero = fila_videncia.proximo_numero
-    #     pessoa = Pessoa(numero, nome)
-    #     fila_videncia.adicionar_pessoa(pessoa, numero)
-    #     numero = fila_prece.proximo_numero
-    #     pessoa = Pessoa(numero, nome)
-    #     fila_prece.adicionar_pessoa(pessoa, numero)
+    for nome in ['josé', 'maria', 'joão', 'cláudia', 'mário', 'beatriz', 'flávia']:
+        numero = fila_videncia.proximo_numero
+        pessoa = Pessoa(numero, nome)
+        fila_videncia.adicionar_pessoa(pessoa, numero)
+        numero = fila_prece.proximo_numero
+        pessoa = Pessoa(numero, nome)
+        fila_prece.adicionar_pessoa(pessoa, numero)
     # fim -> pra criar pessoas automaticamente
     fila_prece.salvar_fila()
     fila_videncia.salvar_fila()
@@ -405,7 +419,7 @@ def editar_atendido():
         <input type='hidden' name='nome_fila' value='{nome_fila}'>
         <input type='hidden' name='numero_atendido' value='{numero_atendido}'>
         <button type='submit'>Confirmar</button>
-        </form>''' + (f'<br><br><a href="/desriscar?numero_atendido={numero_atendido}&nome_fila={nome_fila}">DESRISCAR</a>' if pessoa.chamado else '')
+        </form>''' + (f'<br><br><a href="/desriscar?numero_atendido={numero_atendido}&nome_fila={nome_fila}">DESRISCAR</a>' if pessoa.estado == pessoa.riscado else '')
     cancelar = '<a href="/">CANCELAR</a>'
     return cancelar
 
@@ -419,8 +433,12 @@ def desriscar():
         fila = fila_prece
     if numero_atendido in fila:
         pessoa = fila.get(numero_atendido)
-        pessoa.chamado = 0
+        pessoa.estado = pessoa.aguardando
         pessoa.camara = None
+        if pessoa.dupla != -1:
+            dupla = fila.get(pessoa.dupla)
+            dupla.estado = dupla.aguardando
+            dupla.camara = None
         fila.salvar_fila()
         return redirect('/')
     return 'Não foi possível desriscar esse nome! <br><br><a href="/">VOLTAR</a>'
@@ -442,9 +460,9 @@ def bolinhas():
     modo = request.args.get('modo')
     numero_camara = request.args.get('numero_camara')
     camara = dict_camaras.get(numero_camara)
-    if modo == 'adicao' and camara.numero_de_atendimentos < 5:
+    if modo == 'adicao' and camara.numero_de_atendimentos < camara.capacidade_maxima:
         camara.numero_de_atendimentos += 1
-        if camara.numero_de_atendimentos >= 5:
+        if camara.numero_de_atendimentos >= camara.capacidade_maxima:
             camara.estado = camara.avisar
     elif modo == 'subtracao' and camara.numero_de_atendimentos > 0:
         if camara.estado != camara.atendendo:
@@ -507,6 +525,52 @@ def observacao():
 @app.route('/silencio')
 def silencio():
     set_audios_notificacoes.add('celulares_silencio.mp3')
+    return redirect('/')
+
+@app.route("/deschamar/<numero_camara>")
+def deschamar(numero_camara):
+    camara = dict_camaras[numero_camara]
+    if not camara.pessoa_em_atendimento:
+        return f'A câmara {numero_camara} não está atendendo ninguém.'
+    pessoa = camara.pessoa_em_atendimento
+    pessoa.estado = pessoa.aguardando
+    pessoa.camara = None
+    if pessoa.dupla != -1:
+        dupla = camara.fila.get(pessoa.dupla)
+        dupla.estado = dupla.aguardando
+        dupla.camara = None
+    for pessoa in camara.fila.values()[::-1]:
+        if pessoa.estado == pessoa.riscado and pessoa.camara == numero_camara:
+            pessoa.estado = pessoa.atendendo
+            if pessoa.dupla != -1:
+                dupla = camara.fila.get(pessoa.dupla)
+                dupla.estado = dupla.atendendo
+            camara.pessoa_em_atendimento = pessoa
+            break
+    camara.numero_de_atendimentos -= 1
+    camara.estado = camara.atendendo
+    camara.fila.salvar_fila()
+    salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+    return redirect('/')
+
+@app.route("/aumentar_capacidade/<numero_camara>")
+def aumentar_capacidade(numero_camara):
+    camara = dict_camaras[numero_camara]
+    if camara.capacidade_maxima < 20:
+        camara.capacidade_maxima += 1
+        if camara.estado != camara.atendendo and camara.numero_de_atendimentos > 0:
+            camara.estado = camara.atendendo
+    salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+    return redirect('/')
+
+@app.route("/diminuir_capacidade/<numero_camara>")
+def diminuir_capacidade(numero_camara):
+    camara = dict_camaras[numero_camara]
+    if camara.capacidade_maxima > 3:
+        camara.capacidade_maxima -= 1
+        if camara.estado == camara.atendendo and camara.numero_de_atendimentos >= camara.capacidade_maxima:
+            camara.estado = camara.avisar
+    salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
     return redirect('/')
 
 @app.route('/static/<path:filename>')
