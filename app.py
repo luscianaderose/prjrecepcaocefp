@@ -116,10 +116,10 @@ def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
         <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"></a>'''
         # ASTERISCO
         if pessoa.asterisco:
-            html_fila = html_fila + f'''<a class="link-asterisco" href="/asterisco?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
+            html_fila = html_fila + f'''<a class="link-icone" href="/asterisco?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
         <img alt="Asterisco" src="/static/img/asterisco-selecionado.png" width="16" height="16"></a>'''
         else:
-            html_fila = html_fila + f'''<a class="link-asterisco" href="/asterisco?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
+            html_fila = html_fila + f'''<a class="link-icone" href="/asterisco?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
         <img alt="Asterisco" src="/static/img/asterisco.png" width="16" height="16"></a>'''
         # OBSERVAÇÃO
         if pessoa.observacao == vazio:
@@ -181,16 +181,17 @@ def get_recepcao():
             bt_camara = f'''<p><button type="button"><a class="btcamara" href="/avisado/{camara.numero_camara}">
                             Avisei que é o último!</a></button></p>'''
         elif camara.estado == camara.fechada:
-            bt_camara = f'''<p><button type="button"><a class="btcamara" href="/abrir_camara/{camara.numero_camara}">Câmara abriu</a></button></p>'''
+            bt_camara = f'''<p><button type="button"><a class="btcamara" href="/abrir_camara/{camara.numero_camara}">Abrir câmara</a></button></p>'''
         elif camara.estado == camara.avisado:
             bt_camara = f'''<p><button type="button"><a class="btcamara" href="/fechar_camara/{camara.numero_camara}">
                             Câmara fechou</a></button></p>'''
         else:
             return 'Erro'
 
+        # BT CHAMAR NOVAMENTE 3 LINHAS ABAIXO
         html_camara = f'''<div class='camara'><p><h3>CÂMARA {camara.numero_camara}
-        <a class="link-asterisco" href="/chamar_novamente/{camara.numero_camara}">
-        <img alt="Asterisco" src="/static/img/asterisco-selecionado.png" width="16" height="16"></a>
+        <a class="link-icone" href="/chamar_novamente/{camara.numero_camara}">
+        <img alt="Som" src="/static/img/som.png" width="16" height="16"></a>
         </h3></p>
         <p>{camara.estado}<br><h4>{nome_chamado if nome_chamado != 'None' else 'Câmara vazia'}</h4></p>
         <p>ATENDIMENTOS<br>
@@ -234,12 +235,15 @@ def get_recepcao():
 
     # INFO
     tit_info = '<div class=""><h3>INFORMAÇÕES</h3></div>'
-    texto = '''1. Verificar no cartão da pessoa se data da marcação é a data de hoje.<br>
-    2. Adicionar o nome na fila correspondente.<br>
-    3. Carimbar o cartão.<br>
-    4. Pedir para sentar no lugar correto.<br>
-    5. Quando a câmara chamar, clicar em 'chamar próximo' e chamar o próximo nome. O nome é riscado, a câmara que chamou fica registrada, e uma bolinha branca fica preenchida, tudo automaticamente.<br>
-    6. Quando atingir o limite de atendimentos das câmaras que é representado por cinco bolinhas cheias, avisar que a câmara fechou.<br><br><br>'''
+    texto = '''1. Verificar no comprovante de agendamento da pessoa se data da marcação é a data de hoje.<br>
+    2. Digitar o nome, escolher a fila correspondente (prece ou vidência) e clicar em 'ADICIONAR'.<br>
+    3. Carimbar o comprovante.<br>
+    4. Anotar o número da ordem de chegada no comprovante.<br>
+    5. Devolver o comprovante para a pessoa. <br>
+    6. Pedir para sentar no lugar correto.<br>
+    7. Quando a câmara chamar, clicar no botão 'CHAMAR PRÓXIMO' e chamar o próximo pelo nome da pessoa.<br>
+    8. Automaticamente o nome anterior é riscado na lista, a câmara que chamou fica registrada ao lado do nome na lista, uma bolinha vazia fica preenchida e um áudio é tocado avisando que a câmara está chamando.
+    9. Ao entrar a última, avisar ao secretário da câmara que é a última pessoa a ser atendido para que a câmara possa fazer depois dele o processo de encerramento.<br><br><br>'''
     info = '<div class="div-info">' + tit_info + texto + get_calendario() + '</div>'
 
     return  head + '<body>' + tit_recep + tit_adicionar + form + camaras + menu + menu_deschamar + menu_aumentar_capacidade + menu_diminuir_capacidade + info + '</body>' 
@@ -269,7 +273,7 @@ def tv():
         nome_chamado = str(camara.pessoa_em_atendimento)
         if isinstance(camara.pessoa_em_atendimento, Pessoa) and camara.pessoa_em_atendimento.dupla != -1:
             nome_chamado = nome_chamado + ' & ' + camara.fila.get(camara.pessoa_em_atendimento.dupla).nome
-        nome_atendido = f'{camara.fila.get_posicao(camara.pessoa_em_atendimento.numero)}. {nome_chamado}' if nome_chamado != "None" else "CÂMARA FECHADA"
+        nome_atendido = f'{camara.fila.get_posicao(camara.pessoa_em_atendimento.numero)}. {nome_chamado} {"- " + camara.estado if camara.estado == camara.avisar else ""}' if nome_chamado != "None" else "CÂMARA FECHADA"
         html_camaras = f'''<div class='tv-camara{' camara-chamando' if camara == ultima_camara_chamada else ''}'><p><h2>CÂMARA {camara.fila.nome_display}<h2>
         <h1>{camara.numero_camara}</h1>
         <p><h2>{nome_atendido}</h2></p></div>'''.upper()

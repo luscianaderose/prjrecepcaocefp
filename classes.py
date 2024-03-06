@@ -168,7 +168,7 @@ class Fila():
 class Camara:
     fechada = '<span class="icone-fechada"></span> FECHADA'
     atendendo = '<span class="icone-atendendo"></span> ATENDENDO'
-    avisar = '<span class="icone-avisar"></span> AVISAR ÚLTIMO'
+    avisar = '<span class="icone-avisar"></span> ÚLTIMO'
     avisado = '<span class="icone-avisado"></span> FOI AVISADO'
 
     def __init__(self, numero_camara, fila, nome_fila, estado=fechada, capacidade_maxima=5):
