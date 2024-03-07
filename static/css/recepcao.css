@@ -14,7 +14,7 @@
 .div-adicionar-nomes{
   background-color: rgb(255, 248, 219);
   width: 720px;
-  height: 70px;
+  height: 30px;
   padding-bottom: 10px;
   margin-bottom: 10px;
   border-radius: 10px;
@@ -93,8 +93,8 @@
 .dan-tit-form{ /* dan = div adicionar nomes*/
   width: 240px;
   padding-left: 20px;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  /* padding-top: 10px; */
+  /* padding-bottom: 30px; */
   /* border-style: solid;
   border-width: 2px;
   border-color: red; */
@@ -102,7 +102,7 @@
 
 .dan-form{
   width: 100%;
-  padding-top: 20px;
+  /* padding-top: 20px; */
   /* border-style: solid;
   border-width: 2px;
   border-color: blue; */
@@ -134,7 +134,7 @@
 
 .dan-bt-videncia-prece{
   width: 300px;
-  height: 40px;
+  /* height: 40px; */
   padding-top: 10px;
   /* border-style: solid;
   border-width: 2px;

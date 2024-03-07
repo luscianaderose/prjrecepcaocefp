@@ -149,7 +149,7 @@ def get_recepcao():
     <div class="dc-tit-principal"><h1>RECEPÇÃO DAS CÂMARAS</h1></div><div class="dc-data">{get_data_hora_atual()}</div></div>'''
     tit_adicionar = '<div class="div-adicionar-nomes"><div class="dan-tit-form"><h5>ADICIONAR NOME NA FILA</h5></div>' #div-adicionar-nomes abrindo
     form = f'''<div class="dan-form"><form action="/adicionar_atendido">
-        <div  class="dan-input-nome"><input name="nome_atendido" type="text" placeholder="Digite o nome"></div>
+        <div  class="dan-input-nome"><input name="nome_atendido" type="text" placeholder="Digite o nome aqui"></div>
         <div class="dan-bt-videncia-prece"><div class="bt-videncia-prece-radio"> 
         <input class="radio" type="radio" id="videncia" name="nome_fila" value="videncia" required>
         <label class="label1" for="videncia"><div class="radio-txt">VIDÊNCIA</div></label>
@@ -243,7 +243,10 @@ def get_recepcao():
     6. Pedir para sentar no lugar correto.<br>
     7. Quando a câmara chamar, clicar no botão 'CHAMAR PRÓXIMO' e chamar o próximo pelo nome da pessoa.<br>
     8. Automaticamente o nome anterior é riscado na lista, a câmara que chamou fica registrada ao lado do nome na lista, uma bolinha vazia fica preenchida e um áudio é tocado avisando que a câmara está chamando.
-    9. Ao entrar a última, avisar ao secretário da câmara que é a última pessoa a ser atendido para que a câmara possa fazer depois dele o processo de encerramento.<br><br><br>'''
+    9. Ao entrar a última, avisar ao secretário da câmara que é a última pessoa a ser atendido para que a câmara possa fazer depois dele o processo de encerramento.<br><br><br>
+    
+    NOMES QUE ENTRAM JUNTOS / CRIAÇÃO DE DUPLA <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"></a><br>
+    Para criar dupla: na lista de nomes da fila, clique no ícone de dupla ao lado do nome que formará dupla. Este ícone se tornará um X. Agora clique no ícone de dupla do nome que entrará na câmara junto. Pronto!'''
     info = '<div class="div-info">' + tit_info + texto + get_calendario() + '</div>'
 
     return  head + '<body>' + tit_recep + tit_adicionar + form + camaras + menu + menu_deschamar + menu_aumentar_capacidade + menu_diminuir_capacidade + info + '</body>' 

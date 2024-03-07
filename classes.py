@@ -178,7 +178,7 @@ class Camara:
         self.pessoa_em_atendimento = None
         self.numero_de_atendimentos = 0
         self.estado = estado
-        self.audio = f'camara{numero_camara}.mp3'
+        self.audio = f'camara{numero_camara}.wav'
         self.capacidade_maxima = capacidade_maxima
 
     def fechar(self):
