@@ -272,18 +272,21 @@ def tv():
     html_camaras = ''
     html_camaras_videncia = ''
     html_camaras_prece = ''
+    # O QUE APARECE EM CADA CÂMARA NA TELA DA TV
     for camara in dict_camaras.values():
         nome_chamado = str(camara.pessoa_em_atendimento)
         if isinstance(camara.pessoa_em_atendimento, Pessoa) and camara.pessoa_em_atendimento.dupla != -1:
             nome_chamado = nome_chamado + ' & ' + camara.fila.get(camara.pessoa_em_atendimento.dupla).nome
         nome_atendido = f'{camara.fila.get_posicao(camara.pessoa_em_atendimento.numero)}. {nome_chamado} {"- " + camara.estado if camara.estado == camara.avisar else ""}' if nome_chamado != "None" else "CÂMARA FECHADA"
-        html_camaras = f'''<div class='tv-camara{' camara-chamando' if camara == ultima_camara_chamada else ''}'><p><h2>CÂMARA {camara.fila.nome_display}<h2>
-        <h1>{camara.numero_camara}</h1>
+        html_camaras = f'''<div class='tv-camara{' camara-chamando' if camara == ultima_camara_chamada else ''}'><p>
+        <div class="tv-camara-fonte-num-camara"><h1>{camara.numero_camara}</h1></div>
+        <h2>CÂMARA {camara.fila.nome_display}<h2>
         <p><h2>{nome_atendido}</h2></p></div>'''.upper()
         if camara.nome_fila == fila_videncia.atividade:
             html_camaras_videncia = html_camaras_videncia + html_camaras
         elif camara.nome_fila == fila_prece.atividade:
             html_camaras_prece = html_camaras_prece + html_camaras
+    # FIM: O QUE APARECE EM CADA CÂMARA NA TELA DA TV
     html_camaras_videncia = '<div class="tv-videncia">' + html_camaras_videncia + '</div>'
     html_camaras_prece = '<div class="tv-prece">' + html_camaras_prece + '</div>'
     voltar = '<a href="/">VOLTAR</a>'
@@ -372,13 +375,13 @@ def reiniciar_tudo_confirmado():
     fila_prece.clear()
     fila_videncia.clear()
     # pra criar pessoas automaticamente
-    for nome in ['josé', 'maria', 'joão', 'cláudia', 'mário', 'beatriz', 'flávia']:
-        numero = fila_videncia.proximo_numero
-        pessoa = Pessoa(numero, nome)
-        fila_videncia.adicionar_pessoa(pessoa, numero)
-        numero = fila_prece.proximo_numero
-        pessoa = Pessoa(numero, nome)
-        fila_prece.adicionar_pessoa(pessoa, numero)
+    # for nome in ['josé', 'maria', 'joão', 'cláudia', 'mário', 'beatriz', 'flávia']:
+    #     numero = fila_videncia.proximo_numero
+    #     pessoa = Pessoa(numero, nome)
+    #     fila_videncia.adicionar_pessoa(pessoa, numero)
+    #     numero = fila_prece.proximo_numero
+    #     pessoa = Pessoa(numero, nome)
+    #     fila_prece.adicionar_pessoa(pessoa, numero)
     # fim -> pra criar pessoas automaticamente
     fila_prece.salvar_fila()
     fila_videncia.salvar_fila()

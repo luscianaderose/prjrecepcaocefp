@@ -12,4 +12,6 @@ cd prjrecepcaocefp &&\
 sudo docker build -t prjrecepcaocefp . &&\
 sudo docker ps &&\
 sudo docker stop prjrecepcaocefp-app ;\
+sudo docker wait prjrecepcaocefp-app ;\
+sudo docker rm prjrecepcaocefp-app ;\
 sudo docker run -d -p 80:5000 --name prjrecepcaocefp-app --rm prjrecepcaocefp"

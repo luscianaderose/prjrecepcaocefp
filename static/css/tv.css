@@ -22,14 +22,14 @@ body{
   }
   
   .tv-videncia{
-    background-color: rgb(59, 219, 255);
+    background-color: rgb(14, 211, 255);
     border-radius: 10px;
     display: flex;
     flex-direction: column;
   }
   
   .tv-prece{
-    background-color: rgb(96, 255, 210);
+    background-color: rgb(35, 253, 191);
     border-radius: 10px;
     margin: 0px;
     padding: 0px;
@@ -39,4 +39,13 @@ body{
 
   .camara-chamando{
     background-color: rgb(249, 225, 128);
+  }
+
+  .tv-camara-destaque-ultimo{
+    background-color: rgb(100, 223, 251);
+  }
+
+  .tv-camara-fonte-num-camara{
+    font-size: xx-large;
+    line-height: 50%;
   }

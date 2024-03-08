@@ -3,6 +3,14 @@
 
 ## Comandos para o terminal em linux:
 
+
+
+
+cd "F:\_dev aula lucas joy\prjrecepcaocefp"
+./deploy.ps1
+
+
+
 Para se conectar à VM da AWS:
 ```
 ssh -i "chave_vm_cefp.pem" ubuntu@ec2-15-228-49-245.sa-east-1.compute.amazonaws.com
