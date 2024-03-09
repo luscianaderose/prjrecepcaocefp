@@ -114,13 +114,13 @@ def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
         else:
             html_fila = html_fila + f'''<a class="link-dupla" href="/?nome_fila_dupla={nome_fila}&numero_dupla={pessoa.numero}&dupla=1">
         <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"></a>'''
-        # ASTERISCO
-        if pessoa.asterisco:
-            html_fila = html_fila + f'''<a class="link-icone" href="/asterisco?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
-        <img alt="Asterisco" src="/static/img/asterisco-selecionado.png" width="16" height="16"></a>'''
-        else:
-            html_fila = html_fila + f'''<a class="link-icone" href="/asterisco?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
-        <img alt="Asterisco" src="/static/img/asterisco.png" width="16" height="16"></a>'''
+        # ASTERISCO - NÃO USANDO
+        # if pessoa.asterisco:
+        #     html_fila = html_fila + f'''<a class="link-icone" href="/asterisco?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
+        # <img alt="Asterisco" src="/static/img/asterisco-selecionado.png" width="16" height="16"></a>'''
+        # else:
+        #     html_fila = html_fila + f'''<a class="link-icone" href="/asterisco?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
+        # <img alt="Asterisco" src="/static/img/asterisco.png" width="16" height="16"></a>'''
         # OBSERVAÇÃO
         if pessoa.observacao == vazio:
             html_fila = html_fila + f'''<a class="link-observacao" href="/observacao?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
@@ -191,7 +191,9 @@ def get_recepcao():
         # BT CHAMAR NOVAMENTE 3 LINHAS ABAIXO
         html_camara = f'''<div class='camara'><p><h3>CÂMARA {camara.numero_camara}
         <a class="link-icone" href="/chamar_novamente/{camara.numero_camara}">
-        <img alt="Som" src="/static/img/som.png" width="16" height="16"></a>
+        <img alt="Som" src="/static/img/chamar-com-som.png" width="16" height="16"></a>
+        <a class="link-icone" href="/chamar_novamente_sem_som/{camara.numero_camara}">
+        <img alt="Sem som" src="/static/img/chamar-sem-som.png" width="16" height="16"></a>
         </h3></p>
         <p>{camara.estado}<br><h4>{nome_chamado if nome_chamado != 'None' else 'Câmara vazia'}</h4></p>
         <p>ATENDIMENTOS<br>
@@ -235,18 +237,22 @@ def get_recepcao():
 
     # INFO
     tit_info = '<div class=""><h3>INFORMAÇÕES</h3></div>'
-    texto = '''1. Verificar no comprovante de agendamento da pessoa se data da marcação é a data de hoje.<br>
+    texto = '''
+    1. Verificar no comprovante de agendamento da pessoa se data da marcação é a data de hoje.<br>
     2. Digitar o nome, escolher a fila correspondente (prece ou vidência) e clicar em 'ADICIONAR'.<br>
     3. Carimbar o comprovante.<br>
     4. Anotar o número da ordem de chegada no comprovante.<br>
     5. Devolver o comprovante para a pessoa. <br>
     6. Pedir para sentar no lugar correto.<br>
     7. Quando a câmara chamar, clicar no botão 'CHAMAR PRÓXIMO' e chamar o próximo pelo nome da pessoa.<br>
-    8. Automaticamente o nome anterior é riscado na lista, a câmara que chamou fica registrada ao lado do nome na lista, uma bolinha vazia fica preenchida e um áudio é tocado avisando que a câmara está chamando.
+    8. Automaticamente o nome anterior é riscado na lista, a câmara que chamou fica registrada ao lado do nome na lista, uma bolinha vazia fica preenchida e um áudio é tocado avisando que a câmara está chamando.<br>
     9. Ao entrar a última, avisar ao secretário da câmara que é a última pessoa a ser atendido para que a câmara possa fazer depois dele o processo de encerramento.<br><br><br>
     
     NOMES QUE ENTRAM JUNTOS / CRIAÇÃO DE DUPLA <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"></a><br>
-    Para criar dupla: na lista de nomes da fila, clique no ícone de dupla ao lado do nome que formará dupla. Este ícone se tornará um X. Agora clique no ícone de dupla do nome que entrará na câmara junto. Pronto!'''
+    1. Na lista de nomes da fila, clique no ícone de dupla ao lado do nome que formará dupla.<br>
+    2. Este ícone se tornará um X. <br>
+    3. Agora clique no ícone de dupla do nome que entrará na câmara junto. Pronto!<br><br><br>'''
+
     info = '<div class="div-info">' + tit_info + texto + get_calendario() + '</div>'
 
     return  head + '<body>' + tit_recep + tit_adicionar + form + camaras + menu + menu_deschamar + menu_aumentar_capacidade + menu_diminuir_capacidade + info + '</body>' 
@@ -289,12 +295,13 @@ def tv():
     # FIM: O QUE APARECE EM CADA CÂMARA NA TELA DA TV
     html_camaras_videncia = '<div class="tv-videncia">' + html_camaras_videncia + '</div>'
     html_camaras_prece = '<div class="tv-prece">' + html_camaras_prece + '</div>'
-    voltar = '<a href="/">VOLTAR</a>'
     set_camaras_chamando.clear()
     set_audios_notificacoes.clear()
     data = f'<div class="tv-data">{get_data_hora_atual()}</div>'
     divs_videncia_prece = f'<div class="tv-videncia-prece">{html_camaras_videncia + html_camaras_prece}</div>'
-    return head + '<body>' + data + divs_videncia_prece + '</body>'
+    avisos = f'''<div class="tv-avisos"> 1.SILÊNCIO! &nbsp2.COMPROVANTE EM MÃOS &nbsp3.DESLIGUEM OS CELULARES &nbsp4.LEIA UM LIVRO DO BALCÃO</div>'''
+    voltar = '<a href="/">VOLTAR</a>'
+    return head + '<body>' + data + divs_videncia_prece + avisos + '</body><br><br><br><br>' + voltar
 
 @app.route("/chamar_proximo/<numero_camara>")
 def chamar_proximo(numero_camara):
@@ -316,6 +323,14 @@ def chamar_novamente(numero_camara):
         ultima_camara_chamada = camara
     return redirect('/')
 
+@app.route("/chamar_novamente_sem_som/<numero_camara>")
+def chamar_novamente_sem_som(numero_camara):
+    camara = dict_camaras[numero_camara]
+    if camara.estado == camara.atendendo or camara.estado == camara.avisar:
+        set_camaras_chamando.add(camara)
+        global ultima_camara_chamada
+        ultima_camara_chamada = camara
+    return redirect('/')
 
 @app.route("/avisado/<numero_camara>")
 def avisado(numero_camara):
@@ -375,13 +390,13 @@ def reiniciar_tudo_confirmado():
     fila_prece.clear()
     fila_videncia.clear()
     # pra criar pessoas automaticamente
-    # for nome in ['josé', 'maria', 'joão', 'cláudia', 'mário', 'beatriz', 'flávia']:
-    #     numero = fila_videncia.proximo_numero
-    #     pessoa = Pessoa(numero, nome)
-    #     fila_videncia.adicionar_pessoa(pessoa, numero)
-    #     numero = fila_prece.proximo_numero
-    #     pessoa = Pessoa(numero, nome)
-    #     fila_prece.adicionar_pessoa(pessoa, numero)
+    for nome in ['josé', 'maria', 'joão', 'cláudia', 'mário', 'beatriz', 'flávia']:
+        numero = fila_videncia.proximo_numero
+        pessoa = Pessoa(numero, nome)
+        fila_videncia.adicionar_pessoa(pessoa, numero)
+        numero = fila_prece.proximo_numero
+        pessoa = Pessoa(numero, nome)
+        fila_prece.adicionar_pessoa(pessoa, numero)
     # fim -> pra criar pessoas automaticamente
     fila_prece.salvar_fila()
     fila_videncia.salvar_fila()
