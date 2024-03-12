@@ -78,14 +78,15 @@ def get_calendario():
     data_e_hora_atuais = datetime.now()
     ano = data_e_hora_atuais.year
     mes = data_e_hora_atuais.month
-    return '<div class="di-calendario"><pre>' + (calendar.calendar(ano, mes)) + '</pre></div>'
+    return '<div class="di-calendario cor-fundo3"><pre>' + (calendar.calendar(ano, mes)) + '</pre></div>'
 
 voltar = '<a href="/">VOLTAR</a>'
 
 
 def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
-    tit_lista_fila = f'<h3>FILA {fila.nome_display.upper()}</h3><h6>nome - câmara - editar - remover - subir - descer - entrar juntos</h6>'#NOME - CÂMARA - EDITAR - REMOVER - SUBIR - DESCER - ENTRAR JUNTOS
-    html_fila = f'<div class="lista-{nome_fila}">' + tit_lista_fila
+    tit_lista_fila = f'''<p class="txt-tit2">FILA {fila.nome_display.upper()}</p>
+    <p class="txt-pequeno">nome - câmara - editar - remover - subir - descer - entrar juntos - observação</p>'''
+    html_fila = f'<div class="dvp-lista cor-{nome_fila}">' + tit_lista_fila
     for index, pessoa in enumerate(fila.values()):
         # EDITAR / REMOVER / REPOSICIONAR P CIMA / REPOSICIONAR P BAIXO
         html_fila = html_fila + f'''<p>{index + 1}. {pessoa.nome_exibicao()}
@@ -145,25 +146,48 @@ def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
 def get_recepcao():
     head = '''<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'''
-    tit_recep = f'''<div class="div-cabecalho"><div class="dc-congrega"><img alt="CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA" src="/static/img/cefp.png"></div>
-    <div class="dc-tit-principal"><h1>RECEPÇÃO DAS CÂMARAS</h1></div><div class="dc-data">{get_data_hora_atual()}</div></div>'''
-    tit_adicionar = '<div class="div-adicionar-nomes"><div class="dan-tit-form"><h5>ADICIONAR NOME NA FILA</h5></div>' #div-adicionar-nomes abrindo
-    form = f'''<div class="dan-form"><form action="/adicionar_atendido">
-        <div  class="dan-input-nome"><input name="nome_atendido" type="text" placeholder="Digite o nome aqui"></div>
-        <div class="dan-bt-videncia-prece"><div class="bt-videncia-prece-radio"> 
-        <input class="radio" type="radio" id="videncia" name="nome_fila" value="videncia" required>
-        <label class="label1" for="videncia"><div class="radio-txt">VIDÊNCIA</div></label>
-        <input class="radio" type="radio" id="prece" name="nome_fila" value="prece">
-        <label class="label2" for="prece"><div class="radio-txt">PRECE</div></label>
-        <div class="dan-bt-adicionar"><div class="dan-bt-adicionar-centro-vertical"><button>ADICIONAR</button></div></div>
-        </div></div>
-        </form>
-        </div></div>'''
+
+    barra_cabecalho = f'''<div class="div-cabecalho">
+        <div class="dc-logo"><img alt="CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA" src="/static/img/cefp.png" height="50"></div>
+        <div class="dc-tit txt-tit1">RECEPÇÃO DAS CÂMARAS</div>
+        <div class="dc-data">{get_data_hora_atual()}</div>
+    </div>'''
+
+    # BARRA ADICIONAR NOMES
+    barra_adicionar_nomes = f'''
+    <div class="div-adicionar-nomes cor-fundo2">
+        <div class="dan-tit txt-tit3">
+        ADICIONAR NOME NA FILA
+        </div>
+
+        <div class="dan-form">
+            <form action="/adicionar_atendido">
+                <input name="nome_atendido" type="text" placeholder="Digite o nome aqui">
+            </form>
+        </div>
+
+        <div class="dan-bt-videncia-prece">
+            <div class="bt-videncia-prece"><input class="radio" type="radio" id="videncia" name="nome_fila" value="videncia" required>
+                <label class="label1" for="videncia">
+                    <div class="radio-txt">VIDÊNCIA
+                    </div>
+                </label><input class="radio" type="radio" id="prece" name="nome_fila" value="prece">
+                <label class="label2" for="prece">
+                    <div class="radio-txt">PRECE
+                    </div>
+                </label>
+            </div>
+        </div>
+        
+        <div class="dan-bt-adicionar">
+            <button>ADICIONAR</button>
+        </div>
+    </div>'''
     
     espaco = '<div class="div-espaco"> </div>'
     
-    tit_videncia = '<div class="tit-videncia-prece"><div class="tit-videncia"><h2>VIDÊNCIA</h2></div></div>'
-    tit_prece = '<div class="tit-videncia-prece"><div class="tit-prece"><h2>PRECE</h2></div></div>'
+    tit_videncia = '<div class="dvp-tit txt-tit2 cor-videncia">CÂMARAS VIDÊNCIA</div>'
+    tit_prece = '<div class="dvp-tit txt-tit2 cor-prece">CÂMARAS PRECE</div>'
 
     # CÂMARAS
     html_camaras_videncia = ''
@@ -175,41 +199,56 @@ def get_recepcao():
 
         # BOTÃO ABRIR CÂMARA/CHAMAR PRÓXIMO
         if camara.estado == camara.atendendo and camara.numero_de_atendimentos < camara.capacidade_maxima:
-            bt_camara = f'''<p><button type="button"><a class="btcamara" href="/chamar_proximo/{camara.numero_camara}">
-                            Chamar próximo</a></button></p>'''
+            bt_camara = f'''<p><button type="button"><a class="btcamara a" href="/chamar_proximo/{camara.numero_camara}">
+                            CHAMAR PRÓXIMO</a></button></p>'''
         elif camara.estado == camara.avisar:
-            bt_camara = f'''<p><button type="button"><a class="btcamara" href="/avisado/{camara.numero_camara}">
-                            Avisei que é o último!</a></button></p>'''
+            bt_camara = f'''<p><button type="button"><a class="btcamara a" href="/avisado/{camara.numero_camara}">
+                            AVISEI QUE É O ÚLTIMO!</a></button></p>'''
         elif camara.estado == camara.fechada:
-            bt_camara = f'''<p><button type="button"><a class="btcamara" href="/abrir_camara/{camara.numero_camara}">Abrir câmara</a></button></p>'''
+            bt_camara = f'''<p><button type="button"><a class="btcamara a" href="/abrir_camara/{camara.numero_camara}">ABRIR CÂMARA</a></button></p>'''
         elif camara.estado == camara.avisado:
-            bt_camara = f'''<p><button type="button"><a class="btcamara" href="/fechar_camara/{camara.numero_camara}">
-                            Câmara fechou</a></button></p>'''
+            bt_camara = f'''<p><button type="button"><a class="btcamara a" href="/fechar_camara/{camara.numero_camara}">
+                            FECHAR CÂMARA</a></button></p>'''
         else:
             return 'Erro'
 
-        # BT CHAMAR NOVAMENTE 3 LINHAS ABAIXO
-        html_camara = f'''<div class='camara'><p><h3>CÂMARA {camara.numero_camara}
-        <a class="link-icone" href="/chamar_novamente/{camara.numero_camara}">
-        <img alt="Som" src="/static/img/chamar-com-som.png" width="16" height="16"></a>
-        <a class="link-icone" href="/chamar_novamente_sem_som/{camara.numero_camara}">
-        <img alt="Sem som" src="/static/img/chamar-sem-som.png" width="16" height="16"></a>
-        </h3></p>
-        <p>{camara.estado}<br><h4>{nome_chamado if nome_chamado != 'None' else 'Câmara vazia'}</h4></p>
-        <p>ATENDIMENTOS<br>
-        <a class="linkbolinhas" href="/bolinhas?modo=subtracao&numero_camara={camara.numero_camara}"><b>-</b></a>{camara.bolinhas()}
-        <a class="linkbolinhas" href="/bolinhas?modo=adicao&numero_camara={camara.numero_camara}"><b>+</b></a></p>
-        {bt_camara}
+        # CADA CÂMARA / BT CHAMAR NOVAMENTE 4 LINHAS ABAIXO
+        html_camara = f'''
+        <div class="dvp-camara-individual cor-fundo2{" camara-chamando" if camara == ultima_camara_chamada else ""}">
+            <p>
+            <div class="dvp-bt-num-gde-com-bt-cham-nov">
+                <a href="/chamar_proximo/{camara.numero_camara}" style="text-decoration:none";>
+                <div class="dvp-camara-numero-grande{" cor-videncia" if camara.nome_fila == fila_videncia.atividade else " cor-prece"}">{camara.numero_camara}
+                </div>
+                </a>
+                
+                <div class="dvp-bt-chamar-novamente">
+                <a class="link-icone" href="/chamar_novamente/{camara.numero_camara}">
+                <img alt="Som" src="/static/img/chamar-com-som.png" width="16" height="16"></a>
+                <a class="link-icone" href="/chamar_novamente_sem_som/{camara.numero_camara}">
+                <img alt="Sem som" src="/static/img/chamar-sem-som.png" width="16" height="16"></a>
+                </div>
+            </div>
+            </p>
+            
+            <p>{camara.estado}<br>
+            <h4>{nome_chamado if nome_chamado != "None" else "CÂMARA VAZIA"}</h4></p>
+            <p><h6 class="atendimentos">ATENDIMENTOS</h6><br>
+            <a class="linkbolinhas a" href="/bolinhas?modo=subtracao&numero_camara={camara.numero_camara}"><b>-</b></a>{camara.bolinhas()}
+            <a class="linkbolinhas a" href="/bolinhas?modo=adicao&numero_camara={camara.numero_camara}"><b>+</b></a></p>
+            {bt_camara}
         </div>'''
+
+
         if camara.nome_fila == fila_videncia.atividade:
             html_camaras_videncia = html_camaras_videncia + html_camara
         elif camara.nome_fila == fila_prece.atividade:
             html_camaras_prece = html_camaras_prece + html_camara
-    html_camaras_videncia = '<div class="camara-videncia">' + html_camaras_videncia + '</div>'
-    html_camaras_prece = '<div class="camara-prece">' + html_camaras_prece + '</div>'
+    html_camaras_videncia = '<div class="dvp-camara-total cor-videncia">' + html_camaras_videncia + '</div>'
+    html_camaras_prece = '<div class="dvp-camara-total cor-prece">' + html_camaras_prece + '</div>'
 
 
-    # LISTAS/FILAS
+    # FILAS / LISTAS
     dupla = request.args.get('dupla')
     nome_fila_dupla = request.args.get('nome_fila_dupla')
     numero_dupla = request.args.get('numero_dupla')
@@ -220,23 +259,27 @@ def get_recepcao():
     camaras = '<div class="div-videncia-prece">' + '<div class="div-videncia">' + tit_videncia + html_camaras_videncia + html_fila_videncia + '</div>' + espaco + '<div class="div-prece">' + tit_prece + html_camaras_prece + html_fila_prece + '</div></div>' #div-videncia-prece abrindo
 
     # MENU
-    tit_menu = '<div class="dm-tit"><h3>MENU</h3></div>'
-    bt_tv = '<div class="dm-bt-tv"><div class="vertical-center"><a href="/tv"><button>TV</button></a></div></div>'
-    bt_reiniciar = '<div class="dm-bt-reiniciar"><div class="vertical-center"><a href="/reiniciar_tudo"><button>REINICAR TUDO</button></a></div></div>'
-    bt_silencio = '<div class="dm-bt-tv"><div class="vertical-center"><a href="/silencio"><button>SILÊNCIO</button></a></div></div>'
-    menu = '<div class="div-menu">' + tit_menu + bt_tv + bt_silencio +  bt_reiniciar + '</div>'
-    menu_deschamar = f'''<div class="div-menu">
+    tit_menu = '<p class="txt-tit2">MENU</p>'
+    bt_tv = '<a href="/tv"><button>TV</button></a>'
+    bt_silencio = '<a href="/silencio"><button>SILÊNCIO</button></a>'
+    bt_reiniciar = '<a href="/reiniciar_tudo"><button>REINICAR TUDO</button></a>'
+    menu_deschamar = f'''
         {''.join([f'<a href="/deschamar/{num}"><button>DESCHAMAR CAM {num}</button></a>' for num in dict_camaras])}
-        </div>'''
-    menu_aumentar_capacidade = f'''<div class="div-menu">
+        '''
+    menu_aumentar_capacidade = f'''
         {''.join([f'<a href="/aumentar_capacidade/{num}"><button>AUMENTAR CAM {num}</button></a>' for num in dict_camaras])}
-        </div>'''
-    menu_diminuir_capacidade = f'''<div class="div-menu">
+        '''
+    menu_diminuir_capacidade = f'''
         {''.join([f'<a href="/diminuir_capacidade/{num}"><button>DIMINUIR CAM {num}</button></a>' for num in dict_camaras])}
-        </div>'''
+        '''
+    menu1 = '<div class="div-menu cor-fundo2">' + bt_tv + bt_silencio +  bt_reiniciar + '</div>'
+    menu2 = '<div class="div-menu cor-fundo2">' + menu_deschamar + '</div>'
+    menu3 = '<div class="div-menu cor-fundo2">' + menu_aumentar_capacidade + '</div>'
+    menu4 = '<div class="div-menu cor-fundo2">' + menu_diminuir_capacidade + '</div>'
+    menu = '<div class="div-menu-todo cor-fundo2">' + tit_menu + menu1 + menu2 + menu3 + menu4 + '</div>'
 
     # INFO
-    tit_info = '<div class=""><h3>INFORMAÇÕES</h3></div>'
+    tit_info = '<p class="txt-tit2">INFORMAÇÕES</p>'
     texto = '''
     1. Verificar no comprovante de agendamento da pessoa se data da marcação é a data de hoje.<br>
     2. Digitar o nome, escolher a fila correspondente (prece ou vidência) e clicar em 'ADICIONAR'.<br>
@@ -253,9 +296,15 @@ def get_recepcao():
     2. Este ícone se tornará um X. <br>
     3. Agora clique no ícone de dupla do nome que entrará na câmara junto. Pronto!<br><br><br>'''
 
-    info = '<div class="div-info">' + tit_info + texto + get_calendario() + '</div>'
+    info = '<div class="div-info cor-fundo2">' + tit_info + texto + get_calendario() + '</div>'
 
-    return  head + '<body>' + tit_recep + tit_adicionar + form + camaras + menu + menu_deschamar + menu_aumentar_capacidade + menu_diminuir_capacidade + info + '</body>' 
+    # OUTROS
+    tit_outros = '<div class="div-outros cor-fundo2"><p = class="txt-tit2">OUTROS</p>'
+    bt_outros = '<a href="/outros"><button>OUTROS</button></a></div>'
+    barra_outros = tit_outros + bt_outros
+
+
+    return  head + '<body>' + barra_cabecalho + barra_adicionar_nomes + camaras + menu + info + barra_outros + '</body>' 
 
 @app.route('/tv')
 def tv():
@@ -300,7 +349,7 @@ def tv():
     data = f'<div class="tv-data">{get_data_hora_atual()}</div>'
     divs_videncia_prece = f'<div class="tv-videncia-prece">{html_camaras_videncia + html_camaras_prece}</div>'
     avisos = f'''<div class="tv-avisos"> 1.SILÊNCIO! &nbsp2.COMPROVANTE EM MÃOS &nbsp3.DESLIGUEM OS CELULARES &nbsp4.LEIA UM LIVRO DO BALCÃO</div>'''
-    voltar = '<a href="/">VOLTAR</a>'
+    voltar = '<a href="/" style="text-decoration:none";>VOLTAR</a>'
     return head + '<body>' + data + divs_videncia_prece + avisos + '</body><br><br><br><br>' + voltar
 
 @app.route("/chamar_proximo/<numero_camara>")
@@ -327,7 +376,6 @@ def chamar_novamente(numero_camara):
 def chamar_novamente_sem_som(numero_camara):
     camara = dict_camaras[numero_camara]
     if camara.estado == camara.atendendo or camara.estado == camara.avisar:
-        set_camaras_chamando.add(camara)
         global ultima_camara_chamada
         ultima_camara_chamada = camara
     return redirect('/')
@@ -352,9 +400,9 @@ def fechar_camara(numero_camara):
 @app.route("/adicionar_atendido")
 def adicionar_atendido():
     nome_fila = request.args.get('nome_fila')
-    nome_atendido = request.args.get('nome_atendido')
-    if not nome_atendido:
-        return 'Não é possível adicionar nome vazio!' + '<br><br>' + voltar
+    nome_atendido = request.args.get('nome_atendido').upper()
+    # if not nome_atendido:
+    #     return 'Não é possível adicionar nome vazio!' + '<br><br>' + voltar
     if nome_fila == fila_videncia.atividade:
         fila = fila_videncia
     elif nome_fila == fila_prece.atividade:
@@ -390,7 +438,7 @@ def reiniciar_tudo_confirmado():
     fila_prece.clear()
     fila_videncia.clear()
     # pra criar pessoas automaticamente
-    for nome in ['josé', 'maria', 'joão', 'cláudia', 'mário', 'beatriz', 'flávia']:
+    for nome in ['JOSÉ', 'MARIA', 'JOÃO', 'CLÁUDIA', 'MÁRIO', 'BEATRIZ', 'FLÁVIA']:
         numero = fila_videncia.proximo_numero
         pessoa = Pessoa(numero, nome)
         fila_videncia.adicionar_pessoa(pessoa, numero)
@@ -618,6 +666,25 @@ def diminuir_capacidade(numero_camara):
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory('static', filename)
+
+@app.route('/outros')
+def outros():
+    head = f'''<head>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/recepcao.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    </head>'''
+    data = f'{get_data_hora_atual()}'
+    texto = '''
+    <p class="txt-tit1">TÍTULO 1</p>
+    <p class="txt-tit2">TÍTULO 2</p>
+    <p class="txt-tit3">TÍTULO 3</p>
+    <p class="txt-tit4">TÍTULO 4</p>
+    <p class="txt-normal">texto normal texto normal texto normal</p>
+    '''
+    voltar = '<a href="/" style="text-decoration:none";>VOLTAR</a>'
+    return head + '<body>' + data + texto + voltar + '</body>'
+
 
 
 app.run(debug=True, host='0.0.0.0')

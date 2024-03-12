@@ -13,6 +13,7 @@ body {
 } */
 
 button {
+  color: inherit; /* Inherits color from the parent element */
   background-color: rgb(255, 255, 255);
   height: 20px;
   border-radius: 5px;
@@ -33,5 +34,10 @@ button {
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
+}
+
+.a{
+  color: inherit; /* Inherits color from the parent element */
+  text-decoration: none; /* Removes underline */
 }
 
