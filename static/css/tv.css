@@ -37,10 +37,6 @@ body{
     flex-direction: column;
   }
 
-  .camara-chamando{
-    background-color: rgb(249, 225, 128);
-  }
-
   .tv-camara-destaque-ultimo{
     background-color: rgb(100, 223, 251);
   }

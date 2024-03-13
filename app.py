@@ -160,28 +160,25 @@ def get_recepcao():
         ADICIONAR NOME NA FILA
         </div>
 
-        <div class="dan-form">
-            <form action="/adicionar_atendido">
-                <input name="nome_atendido" type="text" placeholder="Digite o nome aqui">
-            </form>
-        </div>
+        <form class="dan-form" action="/adicionar_atendido">
+            <input name="nome_atendido" type="text" placeholder="Digite o nome aqui">
 
-        <div class="dan-bt-videncia-prece">
-            <div class="bt-videncia-prece"><input class="radio" type="radio" id="videncia" name="nome_fila" value="videncia" required>
-                <label class="label1" for="videncia">
-                    <div class="radio-txt">VIDÊNCIA
-                    </div>
-                </label><input class="radio" type="radio" id="prece" name="nome_fila" value="prece">
-                <label class="label2" for="prece">
-                    <div class="radio-txt">PRECE
-                    </div>
-                </label>
+            <div class="dan-bt-videncia-prece">
+                <div class="bt-videncia-prece"><input class="radio" type="radio" id="videncia" name="nome_fila" value="videncia" required>
+                    <label class="label1" for="videncia">
+                        <div class="radio-txt">VIDÊNCIA
+                        </div>
+                    </label><input class="radio" type="radio" id="prece" name="nome_fila" value="prece">
+                    <label class="label2" for="prece">
+                        <div class="radio-txt">PRECE
+                        </div>
+                    </label>
+                </div>
             </div>
-        </div>
-        
-        <div class="dan-bt-adicionar">
-            <button>ADICIONAR</button>
-        </div>
+            <div class="dan-bt-adicionar">
+                <button>ADICIONAR</button>
+            </div>
+        </form>
     </div>'''
     
     espaco = '<div class="div-espaco"> </div>'
@@ -214,7 +211,7 @@ def get_recepcao():
 
         # CADA CÂMARA / BT CHAMAR NOVAMENTE 4 LINHAS ABAIXO
         html_camara = f'''
-        <div class="dvp-camara-individual cor-fundo2{" camara-chamando" if camara == ultima_camara_chamada else ""}">
+        <div class="dvp-camara-individual cor-fundo2{" camara-chamando" if camara == ultima_camara_chamada else ""}{" camara-fechada" if camara.estado == camara.fechada else ""}">
             <p>
             <div class="dvp-bt-num-gde-com-bt-cham-nov">
                 <a href="/chamar_proximo/{camara.numero_camara}" style="text-decoration:none";>
@@ -231,11 +228,12 @@ def get_recepcao():
             </div>
             </p>
             
-            <p>{camara.estado}<br>
-            <h4>{nome_chamado if nome_chamado != "None" else "CÂMARA VAZIA"}</h4></p>
-            <p><h6 class="atendimentos">ATENDIMENTOS</h6><br>
+            {camara.estado}<br>
+            <p class="txt-destaque">{nome_chamado if nome_chamado != "None" else "CÂMARA VAZIA"}
+            </p>
+            <p class="atendimento txt-pequeno">ATENDIMENTOS</p>
             <a class="linkbolinhas a" href="/bolinhas?modo=subtracao&numero_camara={camara.numero_camara}"><b>-</b></a>{camara.bolinhas()}
-            <a class="linkbolinhas a" href="/bolinhas?modo=adicao&numero_camara={camara.numero_camara}"><b>+</b></a></p>
+            <a class="linkbolinhas a" href="/bolinhas?modo=adicao&numero_camara={camara.numero_camara}"><b>+</b></a>
             {bt_camara}
         </div>'''
 
@@ -333,7 +331,7 @@ def tv():
         if isinstance(camara.pessoa_em_atendimento, Pessoa) and camara.pessoa_em_atendimento.dupla != -1:
             nome_chamado = nome_chamado + ' & ' + camara.fila.get(camara.pessoa_em_atendimento.dupla).nome
         nome_atendido = f'{camara.fila.get_posicao(camara.pessoa_em_atendimento.numero)}. {nome_chamado} {"- " + camara.estado if camara.estado == camara.avisar else ""}' if nome_chamado != "None" else "CÂMARA FECHADA"
-        html_camaras = f'''<div class='tv-camara{' camara-chamando' if camara == ultima_camara_chamada else ''}'><p>
+        html_camaras = f'''<div class='tv-camara{' camara-chamando' if camara == ultima_camara_chamada else ''}{" camara-fechada" if camara.estado == camara.fechada else ""}'><p>
         <div class="tv-camara-fonte-num-camara"><h1>{camara.numero_camara}</h1></div>
         <h2>CÂMARA {camara.fila.nome_display}<h2>
         <p><h2>{nome_atendido}</h2></p></div>'''.upper()

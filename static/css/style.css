@@ -41,3 +41,13 @@ button {
   text-decoration: none; /* Removes underline */
 }
 
+.camara-chamando{
+  background-color: rgb(249, 225, 128) !important;
+}
+
+.camara-fechada{
+  background-color:rgb(184, 184, 184)  !important;
+  /* background-color:rgb(42, 35, 255)  !important; */
+  /* background-color: rgb(156, 232, 255) !important; */
+}
+

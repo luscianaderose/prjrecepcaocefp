@@ -119,7 +119,7 @@ class Fila():
         pessoa1 = self.fila[n1]
         pessoa2 = self.fila[n2]
         if pessoa1.dupla != -1 or pessoa2.dupla != -1:
-            raise Exception ('Não é possível criar dupla uma pessoa de outra dupla!')
+            raise Exception ('Não é possível criar dupla com uma pessoa de outra dupla!')
         pessoa1.dupla = n2
         pessoa2.dupla = n1
         self.salvar_fila()
