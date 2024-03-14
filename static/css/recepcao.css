@@ -2,30 +2,6 @@
   border-width: 2px;
   border-color: blue; */
 
-.cor-videncia{
-  background-color: rgb(100, 223, 251);
-}
-
-.cor-prece{
-  background-color: rgb(35, 253, 191);
-}
-
-.cor-fundo2{
-  background-color: rgb(255, 248, 219);
-}
-
-.cor-fundo3{
-  background-color: rgb(255, 251, 237);
-}
-
-/* .cor-videncia{
-  background-color: rgb(149, 243, 255);
-}
-
-.cor-prece{
-  background-color: rgb(149, 255, 225);
-} */
-
 .txt-tit1{
   font-size: 18pt;
   font-weight: bold;
@@ -67,6 +43,11 @@
 .txt-pequeno{
   font-size: 9pt;
   font-weight: bold;
+}
+
+.atendimentos{
+  letter-spacing: 2px;
+  padding-right: 4%;
 }
 
 /* ### DIVS GRANDES BASE DA ESTRUTURA ### */
@@ -282,16 +263,12 @@ input[type="radio"] {
   padding: 10px;
   border-radius: 8px;
   white-space: normal;
+  text-align: center;
   /* border-style: solid;
   border-width: 2px;
   border-color: blue; */
 }
 
-.atendimentos{
-  letter-spacing: 2px;
-  /* text-align: center; */
-  margin-left: 8px;
-}
 
 .btcamara{
   font-weight: bold;
@@ -314,8 +291,8 @@ input[type="radio"] {
 }
 
 .dvp-lista{
-  min-height: 500px;
-  padding: 10px;
+  min-height: 420px;
+  padding: 5 10 10 10;
   border-radius: 10px;
   /* border-style: solid;
   border-width: 2px;
@@ -385,7 +362,17 @@ input[type="radio"] {
 
 /* ### FIM DE DENTRO DE DIV-VIDENCIA-PRECE ### */
 
-
+.legenda{
+  width: 810px;
+  text-align: center;
+  /* justify-content: space-between; */
+  padding: 0 10 0 10;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  display: inline-block; /* Display each word as a block */
+  white-space: nowrap; /* Prevent words from wrapping */
+  /* margin-right: 10px; Adjust the spacing between words */
+}
 
 /* ### DENTRO DE MENU ### */
 

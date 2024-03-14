@@ -42,12 +42,41 @@ button {
 }
 
 .camara-chamando{
-  background-color: rgb(249, 225, 128) !important;
+  background-color: rgb(255, 233, 147) !important;
+}
+
+.camara-avisar{
+  background-color:rgb(230, 185, 255)  !important;
+}
+
+.camara-avisado{
+  background-color:rgb(196, 85, 255)  !important;
 }
 
 .camara-fechada{
-  background-color:rgb(184, 184, 184)  !important;
-  /* background-color:rgb(42, 35, 255)  !important; */
-  /* background-color: rgb(156, 232, 255) !important; */
+  background-color:rgb(218, 218, 218)  !important;
 }
 
+.cor-videncia{
+  background-color: rgb(100, 223, 251);
+}
+
+.cor-prece{
+  background-color: rgb(35, 253, 191);
+}
+
+.cor-fundo2{
+  background-color: rgb(255, 248, 219);
+}
+
+.cor-fundo3{
+  background-color: rgb(255, 251, 237);
+}
+
+/* .cor-videncia{
+  background-color: rgb(149, 243, 255);
+}
+
+.cor-prece{
+  background-color: rgb(149, 255, 225);
+} */

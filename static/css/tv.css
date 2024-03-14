@@ -3,8 +3,19 @@ body{
 }
 
 .tv-data{
-  padding: 20px;
-  margin-top: 30px; 
+  /* padding: 20px;
+    */
+}
+
+.tv-cabecalho{
+  width: 890px;
+  padding: 3px;
+  margin-top: 30px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Vertically center */
+  border-radius: 10px;
 }
 
 .tv-videncia-prece{

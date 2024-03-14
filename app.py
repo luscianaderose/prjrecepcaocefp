@@ -70,7 +70,7 @@ def get_data_hora_atual():
     dia_semana = date.today().weekday()
     data_e_hora_atuais = datetime.utcnow() + timedelta(hours=-3)
     dia_semana_usar = nomes[dia_semana]
-    data_e_hora_em_texto = data_e_hora_atuais.strftime('%d/%m %H:%M')
+    data_e_hora_em_texto = data_e_hora_atuais.strftime('%d %B %H:%M').upper() #('%d/%m %H:%M')
     return dia_semana_usar + ' ' + data_e_hora_em_texto
 
 # CALENDARIO
@@ -84,8 +84,7 @@ voltar = '<a href="/">VOLTAR</a>'
 
 
 def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
-    tit_lista_fila = f'''<p class="txt-tit2">FILA {fila.nome_display.upper()}</p>
-    <p class="txt-pequeno">nome - câmara - editar - remover - subir - descer - entrar juntos - observação</p>'''
+    tit_lista_fila = f'<p class="txt-tit2">FILA {fila.nome_display.upper()}</p>'
     html_fila = f'<div class="dvp-lista cor-{nome_fila}">' + tit_lista_fila
     for index, pessoa in enumerate(fila.values()):
         # EDITAR / REMOVER / REPOSICIONAR P CIMA / REPOSICIONAR P BAIXO
@@ -93,7 +92,7 @@ def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
         <a class="link-editar" href="/editar_atendido?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
         <img alt="Editar" src="/static/img/editar.png" width="16" height="16"></a>
         <a class="link-remover" href="/remover_atendido?nome_fila={nome_fila}&numero_atendido={pessoa.numero}">
-        <img alt="Remover" src="/static/img/trash.png" width="16" height="16"></a>
+        <img alt="Remover" src="/static/img/lixo.png" width="16" height="16"></a>
         <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila={nome_fila}&numero_atendido={pessoa.numero}&mover_para=cima">
         <img alt="Reposicionar" src="/static/img/seta-cima.png" width="16" height="16"></a>
         <a class="link-reposicionar" href="/reposicionar_atendido?nome_fila={nome_fila}&numero_atendido={pessoa.numero}&mover_para=baixo">
@@ -181,7 +180,6 @@ def get_recepcao():
         </form>
     </div>'''
     
-    espaco = '<div class="div-espaco"> </div>'
     
     tit_videncia = '<div class="dvp-tit txt-tit2 cor-videncia">CÂMARAS VIDÊNCIA</div>'
     tit_prece = '<div class="dvp-tit txt-tit2 cor-prece">CÂMARAS PRECE</div>'
@@ -211,7 +209,10 @@ def get_recepcao():
 
         # CADA CÂMARA / BT CHAMAR NOVAMENTE 4 LINHAS ABAIXO
         html_camara = f'''
-        <div class="dvp-camara-individual cor-fundo2{" camara-chamando" if camara == ultima_camara_chamada else ""}{" camara-fechada" if camara.estado == camara.fechada else ""}">
+        <div class="dvp-camara-individual cor-fundo2{" camara-chamando" if camara == ultima_camara_chamada else ""}
+                                                    {" camara-avisar" if camara.estado == camara.avisar else ""}
+                                                    {" camara-avisado" if camara.estado == camara.avisado else ""}
+                                                    {" camara-fechada" if camara.estado == camara.fechada else ""}">
             <p>
             <div class="dvp-bt-num-gde-com-bt-cham-nov">
                 <a href="/chamar_proximo/{camara.numero_camara}" style="text-decoration:none";>
@@ -231,11 +232,12 @@ def get_recepcao():
             {camara.estado}<br>
             <p class="txt-destaque">{nome_chamado if nome_chamado != "None" else "CÂMARA VAZIA"}
             </p>
-            <p class="atendimento txt-pequeno">ATENDIMENTOS</p>
+            <p class="atendimentos txt-pequeno">ATENDIMENTOS</p>
             <a class="linkbolinhas a" href="/bolinhas?modo=subtracao&numero_camara={camara.numero_camara}"><b>-</b></a>{camara.bolinhas()}
             <a class="linkbolinhas a" href="/bolinhas?modo=adicao&numero_camara={camara.numero_camara}"><b>+</b></a>
             {bt_camara}
         </div>'''
+#             <p class="txt-pequeno"><span class="atendimentos">ATENDIMENTOS</span></p>
 
 
         if camara.nome_fila == fila_videncia.atividade:
@@ -253,13 +255,25 @@ def get_recepcao():
 
     html_fila_videncia = gerar_html_fila(fila_videncia, fila_videncia.atividade, dupla, nome_fila_dupla, numero_dupla)
     html_fila_prece = gerar_html_fila(fila_prece, fila_prece.atividade, dupla, nome_fila_dupla, numero_dupla)
-
+    
+    espaco = '<div class="div-espaco"> </div>'
     camaras = '<div class="div-videncia-prece">' + '<div class="div-videncia">' + tit_videncia + html_camaras_videncia + html_fila_videncia + '</div>' + espaco + '<div class="div-prece">' + tit_prece + html_camaras_prece + html_fila_prece + '</div></div>' #div-videncia-prece abrindo
+
+    barra_legenda = '''<div class="legenda cor-fundo2"><p class="txt-pequeno">
+    LEGENDA: NOME - CÂMARA &nbsp;&nbsp;
+    BOTÕES: &nbsp;
+    EDITAR &nbsp;<img alt="Editar" src="/static/img/editar.png" width="12" height="12">&nbsp;&nbsp;
+    REMOVER &nbsp;<img alt="Lixeira" src="/static/img/lixo.png" width="12" height="12">&nbsp;&nbsp;
+    SUBIR POSIÇÃO &nbsp;<img alt="Editar" src="/static/img/seta-cima.png" width="12" height="12">&nbsp;&nbsp;
+    DESCER POSIÇÃO &nbsp;<img alt="Editar" src="/static/img/seta-baixo.png" width="12" height="12">&nbsp;&nbsp;
+    CRIAR DUPLA &nbsp;<img alt="Editar" src="/static/img/dupla.png" width="14" height="14">&nbsp;&nbsp;
+    OBSERVAÇÃO &nbsp;<img alt="Editar" src="/static/img/observacao.png" width="12" height="12">&nbsp;&nbsp;
+    </p></div>'''
 
     # MENU
     tit_menu = '<p class="txt-tit2">MENU</p>'
     bt_tv = '<a href="/tv"><button>TV</button></a>'
-    bt_silencio = '<a href="/silencio"><button>SILÊNCIO</button></a>'
+    bt_silencio = '<a href="/silencio"><button>PEDIR SILÊNCIO</button></a>'
     bt_reiniciar = '<a href="/reiniciar_tudo"><button>REINICAR TUDO</button></a>'
     menu_deschamar = f'''
         {''.join([f'<a href="/deschamar/{num}"><button>DESCHAMAR CAM {num}</button></a>' for num in dict_camaras])}
@@ -289,10 +303,11 @@ def get_recepcao():
     8. Automaticamente o nome anterior é riscado na lista, a câmara que chamou fica registrada ao lado do nome na lista, uma bolinha vazia fica preenchida e um áudio é tocado avisando que a câmara está chamando.<br>
     9. Ao entrar a última, avisar ao secretário da câmara que é a última pessoa a ser atendido para que a câmara possa fazer depois dele o processo de encerramento.<br><br><br>
     
-    NOMES QUE ENTRAM JUNTOS / CRIAÇÃO DE DUPLA <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"></a><br>
-    1. Na lista de nomes da fila, clique no ícone de dupla ao lado do nome que formará dupla.<br>
-    2. Este ícone se tornará um X. <br>
-    3. Agora clique no ícone de dupla do nome que entrará na câmara junto. Pronto!<br><br><br>'''
+    NOMES QUE ENTRAM JUNTOS NA CÂMARA – CRIAÇÃO DE DUPLA <br>
+    1. Na lista de nomes da fila, clique no botão CRIAR DUPLA <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"> ao lado do nome que formará dupla.<br>
+    2. Este ícone se tornará um <img alt="dupla" src="/static/img/cancelar.png" width="16" height="16">. Caso queira cancelar a ação, clique neste <img alt="dupla" src="/static/img/cancelar.png" width="16" height="16">. <br>
+    3. Agora clique no botão CRIAÇÃO DE DUPLA <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"> ao lado do nome que entrará na câmara junto. Pronto!
+    4. Se quiser desfazer, clique no botão DESFAZER DUPLA <img alt="dupla" src="/static/img/dupla_cancelar.png" width="16" height="16">.<br><br><br>'''
 
     info = '<div class="div-info cor-fundo2">' + tit_info + texto + get_calendario() + '</div>'
 
@@ -302,7 +317,7 @@ def get_recepcao():
     barra_outros = tit_outros + bt_outros
 
 
-    return  head + '<body>' + barra_cabecalho + barra_adicionar_nomes + camaras + menu + info + barra_outros + '</body>' 
+    return  head + '<body>' + barra_cabecalho + barra_adicionar_nomes + camaras + barra_legenda + menu + info + barra_outros + '</body>' 
 
 @app.route('/tv')
 def tv():
@@ -330,8 +345,11 @@ def tv():
         nome_chamado = str(camara.pessoa_em_atendimento)
         if isinstance(camara.pessoa_em_atendimento, Pessoa) and camara.pessoa_em_atendimento.dupla != -1:
             nome_chamado = nome_chamado + ' & ' + camara.fila.get(camara.pessoa_em_atendimento.dupla).nome
-        nome_atendido = f'{camara.fila.get_posicao(camara.pessoa_em_atendimento.numero)}. {nome_chamado} {"- " + camara.estado if camara.estado == camara.avisar else ""}' if nome_chamado != "None" else "CÂMARA FECHADA"
-        html_camaras = f'''<div class='tv-camara{' camara-chamando' if camara == ultima_camara_chamada else ''}{" camara-fechada" if camara.estado == camara.fechada else ""}'><p>
+        nome_atendido = f'{camara.fila.get_posicao(camara.pessoa_em_atendimento.numero)}. {nome_chamado} {"- " + camara.estado if camara.estado == camara.avisar else ""}' if nome_chamado != "None" else "FECHADA"
+        html_camaras = f'''<div class='tv-camara{' camara-chamando' if camara == ultima_camara_chamada else ''}
+            {" camara-avisar" if camara.estado == camara.avisar else ""}
+            {" camara-avisado" if camara.estado == camara.avisado else ""}
+            {" camara-fechada" if camara.estado == camara.fechada else ""}'><p>
         <div class="tv-camara-fonte-num-camara"><h1>{camara.numero_camara}</h1></div>
         <h2>CÂMARA {camara.fila.nome_display}<h2>
         <p><h2>{nome_atendido}</h2></p></div>'''.upper()
@@ -345,10 +363,11 @@ def tv():
     set_camaras_chamando.clear()
     set_audios_notificacoes.clear()
     data = f'<div class="tv-data">{get_data_hora_atual()}</div>'
+    cabecalho = f'<div class="tv-cabecalho cor-fundo2">RECEPÇÃO DAS CÂMARAS {data}</div>'
     divs_videncia_prece = f'<div class="tv-videncia-prece">{html_camaras_videncia + html_camaras_prece}</div>'
     avisos = f'''<div class="tv-avisos"> 1.SILÊNCIO! &nbsp2.COMPROVANTE EM MÃOS &nbsp3.DESLIGUEM OS CELULARES &nbsp4.LEIA UM LIVRO DO BALCÃO</div>'''
     voltar = '<a href="/" style="text-decoration:none";>VOLTAR</a>'
-    return head + '<body>' + data + divs_videncia_prece + avisos + '</body><br><br><br><br>' + voltar
+    return head + '<body>' + cabecalho + divs_videncia_prece + avisos + '</body><br><br><br><br>' + voltar
 
 @app.route("/chamar_proximo/<numero_camara>")
 def chamar_proximo(numero_camara):
