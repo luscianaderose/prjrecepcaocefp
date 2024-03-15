@@ -180,7 +180,6 @@ def get_recepcao():
         </form>
     </div>'''
     
-    
     tit_videncia = '<div class="dvp-tit txt-tit2 cor-videncia">CÂMARAS VIDÊNCIA</div>'
     tit_prece = '<div class="dvp-tit txt-tit2 cor-prece">CÂMARAS PRECE</div>'
 
@@ -237,8 +236,6 @@ def get_recepcao():
             <a class="linkbolinhas a" href="/bolinhas?modo=adicao&numero_camara={camara.numero_camara}"><b>+</b></a>
             {bt_camara}
         </div>'''
-#             <p class="txt-pequeno"><span class="atendimentos">ATENDIMENTOS</span></p>
-
 
         if camara.nome_fila == fila_videncia.atividade:
             html_camaras_videncia = html_camaras_videncia + html_camara
@@ -246,7 +243,6 @@ def get_recepcao():
             html_camaras_prece = html_camaras_prece + html_camara
     html_camaras_videncia = '<div class="dvp-camara-total cor-videncia">' + html_camaras_videncia + '</div>'
     html_camaras_prece = '<div class="dvp-camara-total cor-prece">' + html_camaras_prece + '</div>'
-
 
     # FILAS / LISTAS
     dupla = request.args.get('dupla')
@@ -293,21 +289,30 @@ def get_recepcao():
     # INFO
     tit_info = '<p class="txt-tit2">INFORMAÇÕES</p>'
     texto = '''
-    1. Verificar no comprovante de agendamento da pessoa se data da marcação é a data de hoje.<br>
-    2. Digitar o nome, escolher a fila correspondente (prece ou vidência) e clicar em 'ADICIONAR'.<br>
-    3. Carimbar o comprovante.<br>
-    4. Anotar o número da ordem de chegada no comprovante.<br>
-    5. Devolver o comprovante para a pessoa. <br>
-    6. Pedir para sentar no lugar correto.<br>
-    7. Quando a câmara chamar, clicar no botão 'CHAMAR PRÓXIMO' e chamar o próximo pelo nome da pessoa.<br>
-    8. Automaticamente o nome anterior é riscado na lista, a câmara que chamou fica registrada ao lado do nome na lista, uma bolinha vazia fica preenchida e um áudio é tocado avisando que a câmara está chamando.<br>
-    9. Ao entrar a última, avisar ao secretário da câmara que é a última pessoa a ser atendido para que a câmara possa fazer depois dele o processo de encerramento.<br><br><br>
+    <p class="txt-tit3">ROTINA DA RECEPÇÃO DAS CÂMARAS</p><ol>
+    <li>Verificar no comprovante de agendamento da pessoa se data da marcação é a data de hoje.</li>
+    <li>Digitar o nome, escolher a fila correspondente (prece ou vidência) e clicar em 'ADICIONAR'.</li>
+    <li>Carimbar o comprovante.</li>
+    <li>Anotar o número da ordem de chegada no comprovante.</li>
+    <li>Devolver o comprovante para a pessoa.</li>
+    <li>Pedir para se sentar segurando o comprovante em mãos.</li>
+    <li>Quando a câmara chamar, clicar no botão 'CHAMAR PRÓXIMO' ou na bola com número da câmara.</li>
+    <li>Automaticamente o nome anterior é riscado na lista, a câmara que chamou fica registrada ao lado do nome na lista, uma bolinha vazia fica preenchida e um áudio é tocado avisando que a câmara está chamando.</li>
+    <li>Chamar o próximo pelo nome da pessoa. Mostrar à pessoa onde é a câmara.</li>
+    <li>Nas sextas-feiras, normalmente cada câmara atende 5 pessoas. Quando 5 bolinhas forem preenchidas, é hora de avisar a câmara que é a última.</li>
+    <li>Se comparecerem menos de 10 pessoas em uma lista, tente dividir igualmente entre as câmaras. Por exemplo, se comparecerem apenas 8 pessoas para cada câmara de uma lista, direcione 4 para cada câmara para distribuir o trabalho igualmente.</li>
+    <li>Ao entrar a última pessoa da câmara, avisar ao secretário da câmara que é a última pessoa a ser atendida para que a câmara possa fazer depois dela o processo de encerramento.</li>
+    <li>Leia um trecho do Evangelho às 18:50. Falar a saudação da casa antes e depois (Graças a Deus, a Jesus e a Francisco de Paula). Se quiser pode rezar o Pai Nosso. Fale os seguintes avisos: silêncio, desligar os celulares, comprovante em mãos, pode pegar um livro do balcão para ler enquanto espera.</li></ol>
+
+    <p class="txt-tit3">REPETIR CHAMADO COM OU SEM SOM</p><ul>
+    <li>Clique em <img alt="chamar com som" src="/static/img/chamar-com-som.png" width="12" height="12"> para repetir o chamado com som.</li>
+    <li>Clique em <img alt="chamar sem som" src="/static/img/chamar-sem-som.png" width="12" height="12"> para repetir o chamado sem som, fazendo apenas o destaque visual.</li></ul>
     
-    NOMES QUE ENTRAM JUNTOS NA CÂMARA – CRIAÇÃO DE DUPLA <br>
-    1. Na lista de nomes da fila, clique no botão CRIAR DUPLA <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"> ao lado do nome que formará dupla.<br>
-    2. Este ícone se tornará um <img alt="dupla" src="/static/img/cancelar.png" width="16" height="16">. Caso queira cancelar a ação, clique neste <img alt="dupla" src="/static/img/cancelar.png" width="16" height="16">. <br>
-    3. Agora clique no botão CRIAÇÃO DE DUPLA <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"> ao lado do nome que entrará na câmara junto. Pronto!
-    4. Se quiser desfazer, clique no botão DESFAZER DUPLA <img alt="dupla" src="/static/img/dupla_cancelar.png" width="16" height="16">.<br><br><br>'''
+    <p class="txt-tit3">NOMES QUE ENTRAM JUNTOS NA CÂMARA – CRIAÇÃO DE DUPLA</p><ol>
+    <li>Na lista de nomes da fila, clique no botão CRIAR DUPLA <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"> ao lado do nome que formará dupla.</li>
+    <li>Este ícone se tornará um <img alt="x" src="/static/img/cancelar.png" width="16" height="16">. Caso queira cancelar a ação, clique neste <img alt="dupla" src="/static/img/cancelar.png" width="16" height="16">.</li>
+    <li>Agora clique no botão CRIAÇÃO DE DUPLA <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"> ao lado do nome que entrará na câmara junto. Pronto!.</li>
+    <li>Se quiser desfazer, clique no botão DESFAZER DUPLA <img alt="cancelar dupla" src="/static/img/dupla_cancelar.png" width="16" height="16">.</li></ol><br><br>'''
 
     info = '<div class="div-info cor-fundo2">' + tit_info + texto + get_calendario() + '</div>'
 
@@ -315,7 +320,6 @@ def get_recepcao():
     tit_outros = '<div class="div-outros cor-fundo2"><p = class="txt-tit2">OUTROS</p>'
     bt_outros = '<a href="/outros"><button>OUTROS</button></a></div>'
     barra_outros = tit_outros + bt_outros
-
 
     return  head + '<body>' + barra_cabecalho + barra_adicionar_nomes + camaras + barra_legenda + menu + info + barra_outros + '</body>' 
 
