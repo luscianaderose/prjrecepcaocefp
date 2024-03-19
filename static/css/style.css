@@ -15,7 +15,7 @@ body {
 button {
   color: inherit; /* Inherits color from the parent element */
   background-color: rgb(255, 255, 255);
-  height: 20px;
+  height: 24px;
   border-radius: 5px;
   border-width: 0;
   color: #333333;
@@ -80,3 +80,59 @@ button {
 .cor-prece{
   background-color: rgb(149, 255, 225);
 } */
+
+.txt-tit1{
+  font-size: 18pt;
+  font-weight: bold;
+  /* color: red; */
+}
+
+.txt-tit2{
+  font-size: 14pt;
+  font-weight: bold;
+  /* color: orange; */
+}
+
+.txt-tit3{
+  line-height: -5;
+  font-size: 10pt;
+  font-weight: bold;
+  /* color: green; */
+}
+
+.txt-tit4{
+  font-size: 8pt;
+  font-weight: bold;
+  /* color: blue; */
+}
+
+.txt-destaque{
+  height: 40px;
+  word-wrap: break-word;
+  /* word-break: break-all; */
+  font-size: 10pt;
+  font-weight: bold;
+}
+
+.txt-normal{
+  font-size: 10pt;
+}
+
+.txt-2{
+  font-size: 14pt;
+}
+
+.txt-3{
+  font-size: 22pt;
+}
+
+
+.txt-pequeno{
+  font-size: 9pt;
+  font-weight: bold;
+}
+
+.atendimentos{
+  letter-spacing: 2px;
+  padding-right: 4%;
+}

@@ -4,14 +4,22 @@ from datetime import datetime, date, timedelta
 import calendar  
 import locale
 from classes import Pessoa, Fila, Camara, salvar_camaras, ler_camaras
+import random
+
 
 locale.setlocale(locale.LC_ALL,'pt_BR')
     
 vazio = '§'
-
 set_camaras_chamando = set()
 set_audios_notificacoes = set()
 ultima_camara_chamada = None
+lista_mensagens = []
+with open('static/texto/frases.txt', encoding='utf8') as f:
+    for line in f.read().splitlines():lista_mensagens.append(line)
+random.shuffle(lista_mensagens)
+mensagem = 0
+data_ultima_mensagem = datetime.now()
+
 
 PASTA_ARQUIVOS = os.path.join(os.path.expanduser('~'), '.recepcao-camaras')
 if not os.path.exists(PASTA_ARQUIVOS): 
@@ -79,6 +87,8 @@ def get_calendario():
     ano = data_e_hora_atuais.year
     mes = data_e_hora_atuais.month
     return '<div class="di-calendario cor-fundo3"><pre>' + (calendar.calendar(ano, mes)) + '</pre></div>'
+
+
 
 voltar = '<a href="/">VOLTAR</a>'
 
@@ -344,6 +354,7 @@ def tv():
     html_camaras = ''
     html_camaras_videncia = ''
     html_camaras_prece = ''
+
     # O QUE APARECE EM CADA CÂMARA NA TELA DA TV
     for camara in dict_camaras.values():
         nome_chamado = str(camara.pessoa_em_atendimento)
@@ -362,16 +373,25 @@ def tv():
         elif camara.nome_fila == fila_prece.atividade:
             html_camaras_prece = html_camaras_prece + html_camaras
     # FIM: O QUE APARECE EM CADA CÂMARA NA TELA DA TV
+            
     html_camaras_videncia = '<div class="tv-videncia">' + html_camaras_videncia + '</div>'
     html_camaras_prece = '<div class="tv-prece">' + html_camaras_prece + '</div>'
     set_camaras_chamando.clear()
     set_audios_notificacoes.clear()
     data = f'<div class="tv-data">{get_data_hora_atual()}</div>'
-    cabecalho = f'<div class="tv-cabecalho cor-fundo2">RECEPÇÃO DAS CÂMARAS {data}</div>'
+    barra_cabecalho = f'<div class="tv-cabecalho cor-fundo2">RECEPÇÃO DAS CÂMARAS {data}</div>'
+    global mensagem
+    global data_ultima_mensagem
+    barra_mensagem = f'<div class="tv-mensagem"><p class="txt-3">{lista_mensagens[mensagem]}</p></div>'
+    if datetime.now() >= data_ultima_mensagem + timedelta(minutes=1):
+        data_ultima_mensagem = datetime.now()
+        mensagem += 1
+        if mensagem >= len(lista_mensagens):
+            mensagem = 0
     divs_videncia_prece = f'<div class="tv-videncia-prece">{html_camaras_videncia + html_camaras_prece}</div>'
     avisos = f'''<div class="tv-avisos"> 1.SILÊNCIO! &nbsp2.COMPROVANTE EM MÃOS &nbsp3.DESLIGUEM OS CELULARES &nbsp4.LEIA UM LIVRO DO BALCÃO</div>'''
     voltar = '<a href="/" style="text-decoration:none";>VOLTAR</a>'
-    return head + '<body>' + cabecalho + divs_videncia_prece + avisos + '</body><br><br><br><br>' + voltar
+    return head + '<body>' + barra_cabecalho + barra_mensagem + divs_videncia_prece + avisos + '</body><br><br><br><br>' + voltar
 
 @app.route("/chamar_proximo/<numero_camara>")
 def chamar_proximo(numero_camara):
@@ -596,7 +616,8 @@ def criar_dupla():
     indice_dupla = keys.index(numero_dupla)
     if not (indice_dupla == indice + 1 or indice_dupla == indice - 1):
         return 'Não é possível criar dupla.' + voltar
-    fila.criar_dupla(numero_atendido, numero_dupla)
+    try: fila.criar_dupla(numero_atendido, numero_dupla)
+    except Exception as exc: return str(exc) + '<br><br>' + voltar
     return redirect('/')
 
 @app.route('/cancelar_dupla')
@@ -658,6 +679,8 @@ def deschamar(numero_camara):
                 dupla.estado = dupla.atendendo
             camara.pessoa_em_atendimento = pessoa
             break
+    else:
+        camara.pessoa_em_atendimento = None
     camara.numero_de_atendimentos -= 1
     camara.estado = camara.atendendo
     camara.fila.salvar_fila()
@@ -701,7 +724,11 @@ def outros():
     <p class="txt-tit2">TÍTULO 2</p>
     <p class="txt-tit3">TÍTULO 3</p>
     <p class="txt-tit4">TÍTULO 4</p>
-    <p class="txt-normal">texto normal texto normal texto normal</p>
+    <p class="txt-destaque">texto destaque texto texto texto texto</p>
+    <p class="txt-normal">texto normal texto texto texto texto</p>
+    <p class="txt-2">texto 2 texto texto texto texto</p>
+    <p class="txt-pequeno">texto pequeno texto texto texto texto</p>
+
     '''
     voltar = '<a href="/" style="text-decoration:none";>VOLTAR</a>'
     return head + '<body>' + data + texto + voltar + '</body>'
