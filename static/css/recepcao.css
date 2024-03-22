@@ -347,6 +347,17 @@ input[type="radio"] {
   text-decoration: none;
 }
 
-.linkbolinhas {
+.linkbolinhas{
   text-decoration: none;
+}
+
+.bts-janela{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.btj{
+  margin-left: 5px;
+  margin-right: 5px;
 }

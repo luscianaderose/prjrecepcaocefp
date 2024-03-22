@@ -90,7 +90,22 @@ def get_calendario():
 
 
 
-voltar = '<a href="/">VOLTAR</a>'
+voltar = '<a href="/"><button>VOLTAR</button></a>'
+cancelar = '<a href="/"><button>CANCELAR</button></a>'
+
+# def janela(texto, href1, href2, bt1, bt2):
+#     head = f'''<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css">
+#     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'''
+#     body_inicio = '<body>'
+#     texto1 = f'''<p>{texto}</p>
+#         <div class="bts-janela"><a href='{href1}'>
+#         <button class="btj">{bt1}</button></a><a href='{href2}' '>
+#         <button class="btj">{bt2}</button></a>
+#         </div>'''
+#     body_fim = '</body>'
+#     return head + body_inicio + texto1 + body_fim
+
+
 
 
 def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
@@ -216,6 +231,19 @@ def get_recepcao():
         else:
             return 'Erro'
 
+        #PARA BOTÃO NÚMERO GRANDE
+        if camara.estado == camara.atendendo and camara.numero_de_atendimentos < camara.capacidade_maxima:
+            bt_camara_num_gde = f'''<a style="text-decoration:none" href="/chamar_proximo/{camara.numero_camara}">'''
+        elif camara.estado == camara.avisar:
+            bt_camara_num_gde = f'''<a style="text-decoration:none" href="/avisado/{camara.numero_camara}">'''
+        elif camara.estado == camara.fechada:
+            bt_camara_num_gde = f'''<a style="text-decoration:none" href="/abrir_camara/{camara.numero_camara}">'''
+        elif camara.estado == camara.avisado:
+            bt_camara_num_gde = f'''<a style="text-decoration:none" href="/fechar_camara/{camara.numero_camara}">'''
+        else:
+            return 'Erro'
+
+
         # CADA CÂMARA / BT CHAMAR NOVAMENTE 4 LINHAS ABAIXO
         html_camara = f'''
         <div class="dvp-camara-individual cor-fundo2{" camara-chamando" if camara == ultima_camara_chamada else ""}
@@ -224,7 +252,7 @@ def get_recepcao():
                                                     {" camara-fechada" if camara.estado == camara.fechada else ""}">
             <p>
             <div class="dvp-bt-num-gde-com-bt-cham-nov">
-                <a href="/chamar_proximo/{camara.numero_camara}" style="text-decoration:none";>
+                {bt_camara_num_gde}
                 <div class="dvp-camara-numero-grande{" cor-videncia" if camara.nome_fila == fila_videncia.atividade else " cor-prece"}">{camara.numero_camara}
                 </div>
                 </a>
@@ -390,7 +418,6 @@ def tv():
             mensagem = 0
     divs_videncia_prece = f'<div class="tv-videncia-prece">{html_camaras_videncia + html_camaras_prece}</div>'
     avisos = f'''<div class="tv-avisos"> 1.SILÊNCIO! &nbsp2.COMPROVANTE EM MÃOS &nbsp3.DESLIGUEM OS CELULARES &nbsp4.LEIA UM LIVRO DO BALCÃO</div>'''
-    voltar = '<a href="/" style="text-decoration:none";>VOLTAR</a>'
     return head + '<body>' + barra_cabecalho + barra_mensagem + divs_videncia_prece + avisos + '</body><br><br><br><br>' + voltar
 
 @app.route("/chamar_proximo/<numero_camara>")
@@ -496,8 +523,16 @@ def reiniciar_tudo_confirmado():
 def remover_atendido():
     nome_fila = request.args.get('nome_fila')
     numero_atendido = int(request.args.get('numero_atendido'))
-    return f'''<p>Tem certeza que deseja deletar?</p>
-            <a href='/remover_atendido_confirmado?nome_fila={nome_fila}&numero_atendido={numero_atendido}'>Sim</a><a href='/' style='margin-left:20px'>Cancelar</a>'''
+    ### JANELA ###
+    return f'''
+    <head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>
+    <body>
+    <p>Tem certeza que deseja deletar?</p>
+        <div class="bts-janela"><a href='/remover_atendido_confirmado?nome_fila={nome_fila}&numero_atendido={numero_atendido}'><button class="btj">Sim</button></a><a href='/' '><button class="btj">Cancelar</button></a>
+        </div>
+    </body>'''
+
 
 @app.route("/remover_atendido_confirmado")
 def remover_atendido_confirmado():
@@ -545,14 +580,22 @@ def editar_atendido():
         fila = fila_prece
     if numero_atendido in fila:
         pessoa = fila.get(numero_atendido)
-        return f'''<form action='/editar_atendido_confirmado'>
-        <input type='text' name='nome_atendido' value='{pessoa}'>
-        <input type='hidden' name='nome_fila' value='{nome_fila}'>
-        <input type='hidden' name='numero_atendido' value='{numero_atendido}'>
-        <button type='submit'>Confirmar</button>
-        </form>''' + (f'<br><br><a href="/desriscar?numero_atendido={numero_atendido}&nome_fila={nome_fila}">DESRISCAR</a>' if pessoa.estado == pessoa.riscado else '')
-    cancelar = '<a href="/">CANCELAR</a>'
-    return cancelar
+        ### JANELA ###
+        return f'''
+        <head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>
+        <body>
+        <p>Deseja editar o nome?</p>
+            <form action='/editar_atendido_confirmado'>
+            <input type='text' name='nome_atendido' value='{pessoa}'>
+            <input type='hidden' name='nome_fila' value='{nome_fila}'>
+            <input type='hidden' name='numero_atendido' value='{numero_atendido}'>
+            <button type='submit'>Confirmar</button>
+            </form>''' + (f'''<br>
+                            <p>Deseja desriscar o nome?</p>
+                            <a href="/desriscar?numero_atendido={numero_atendido}&nome_fila={nome_fila}">
+                            <button>DESRISCAR</button></a>''' if pessoa.estado == pessoa.riscado else '') + '</body>'
+    return cancelar + voltar
 
 @app.route('/desriscar')
 def desriscar():
@@ -572,7 +615,8 @@ def desriscar():
             dupla.camara = None
         fila.salvar_fila()
         return redirect('/')
-    return 'Não foi possível desriscar esse nome! <br><br><a href="/">VOLTAR</a>'
+    ### JANELA ###
+    return 'Não foi possível desriscar esse nome!<br><a href="/">' + voltar
 
 @app.route('/editar_atendido_confirmado')
 def editar_atendido_confirmado():
@@ -730,7 +774,6 @@ def outros():
     <p class="txt-pequeno">texto pequeno texto texto texto texto</p>
 
     '''
-    voltar = '<a href="/" style="text-decoration:none";>VOLTAR</a>'
     return head + '<body>' + data + texto + voltar + '</body>'
 
 
