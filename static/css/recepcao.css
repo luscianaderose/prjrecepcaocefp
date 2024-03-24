@@ -10,8 +10,8 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  /* padding: 10px; */
   margin-bottom: 10px;
+  /* background-color: red; */
 }
  
 .div-videncia-prece{
@@ -72,18 +72,24 @@
 /* ### DENTRO DE DIV CABEÇALHO ### º*/
 
 .dc-logo{/* dc  = div cabeçalho*/
+  position: relative;
+  top: 5px;
   /* background-color: blue; */
 }
 
 .dc-tit{
+  position: relative;
+  top: 5px;
   text-align: center;
   display: flex;
   justify-content: center; /* Horizontally center */
-  align-items: center; /* Vertically center */
+  align-items: center; /*Vertically center */
   /* background-color: yellow; */
 }
 
 .dc-data{
+  position: relative;
+  top: 5px;
   display: flex;
   justify-content: flex-end; /* Horizontally align to the right */
   align-items: center; /* Vertically center */

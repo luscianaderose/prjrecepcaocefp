@@ -167,7 +167,7 @@ def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
 @app.route('/')
 def get_recepcao():
     head = '''<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'''
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans"></head>'''
 
     barra_cabecalho = f'''<div class="div-cabecalho">
         <div class="dc-logo"><img alt="CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA" src="/static/img/cefp.png" height="50"></div>

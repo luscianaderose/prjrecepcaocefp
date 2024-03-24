@@ -247,3 +247,4 @@ def salvar_camaras(dict_camaras, nome_arquivo):
 def ler_camaras(nome_arquivo):
     with open(nome_arquivo, 'r') as f:
         return f.read().splitlines()
+    
