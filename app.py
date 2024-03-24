@@ -93,17 +93,15 @@ def get_calendario():
 voltar = '<a href="/"><button>VOLTAR</button></a>'
 cancelar = '<a href="/"><button>CANCELAR</button></a>'
 
-# def janela(texto, href1, href2, bt1, bt2):
-#     head = f'''<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css">
-#     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'''
-#     body_inicio = '<body>'
-#     texto1 = f'''<p>{texto}</p>
-#         <div class="bts-janela"><a href='{href1}'>
-#         <button class="btj">{bt1}</button></a><a href='{href2}' '>
-#         <button class="btj">{bt2}</button></a>
-#         </div>'''
-#     body_fim = '</body>'
-#     return head + body_inicio + texto1 + body_fim
+def janela(texto, bt1, href1, bt2, href2):
+    head = f'''<head><link rel="stylesheet" href="/static/css/style.css">
+    <link rel="stylesheet" href="/static/css/recepcao.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>'''
+    texto1 = f'''<p>{texto}</p>
+        <div class="bts-janela"><a href={href1}><button class="btj">{bt1}</button></a>
+        <a href={href2}><button class="btj">{bt2}</button></a>
+        </div>'''
+    return head + '<body>' + texto1 + '</body>'
 
 
 
@@ -492,10 +490,14 @@ def abrir_camara(numero_camara):
     salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
     return redirect('/')
 
+# @app.route('/reiniciar_tudo')
+# def reiniciar_tudo():
+#     return '''<p>Tem certeza que deseja deletar todas as informações?</p>
+#             <a href='/reiniciar_tudo_confirmado'>Sim</a><a href='/' style='margin-left:20px'>Cancelar</a>'''
+
 @app.route('/reiniciar_tudo')
 def reiniciar_tudo():
-    return '''<p>Tem certeza que deseja deletar todas as informações?</p>
-            <a href='/reiniciar_tudo_confirmado'>Sim</a><a href='/' style='margin-left:20px'>Cancelar</a>'''
+    return janela('Tem certeza que deseja deletar todas as informações?','Sim', '/reiniciar_tudo_confirmado', 'Cancelar', '/')
 
 @app.route('/reiniciar_tudo_confirmado')
 def reiniciar_tudo_confirmado():
@@ -519,20 +521,29 @@ def reiniciar_tudo_confirmado():
     salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
     return redirect('/')
 
+# @app.route("/remover_atendido")
+# def remover_atendido():
+#     nome_fila = request.args.get('nome_fila')
+#     numero_atendido = int(request.args.get('numero_atendido'))
+#     ### JANELA ###
+#     return f'''
+#     <head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css">
+#     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>
+#     <body>
+#     <p>Tem certeza que deseja deletar?</p>
+#         <div class="bts-janela">
+#         <a href='/remover_atendido_confirmado?nome_fila={nome_fila}&numero_atendido={numero_atendido}'>
+#         <button class="btj">Sim</button></a>
+#         <a href='/' '>
+#         <button class="btj">Cancelar</button></a>
+#         </div>
+#     </body>'''
+
 @app.route("/remover_atendido")
 def remover_atendido():
     nome_fila = request.args.get('nome_fila')
     numero_atendido = int(request.args.get('numero_atendido'))
-    ### JANELA ###
-    return f'''
-    <head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>
-    <body>
-    <p>Tem certeza que deseja deletar?</p>
-        <div class="bts-janela"><a href='/remover_atendido_confirmado?nome_fila={nome_fila}&numero_atendido={numero_atendido}'><button class="btj">Sim</button></a><a href='/' '><button class="btj">Cancelar</button></a>
-        </div>
-    </body>'''
-
+    return janela('Tem certeza que deseja deletar?', 'Sim', f'/remover_atendido_confirmado?nome_fila={nome_fila}&numero_atendido={numero_atendido}', 'Cancelar', '/')
 
 @app.route("/remover_atendido_confirmado")
 def remover_atendido_confirmado():
@@ -581,6 +592,7 @@ def editar_atendido():
     if numero_atendido in fila:
         pessoa = fila.get(numero_atendido)
         ### JANELA ###
+        linha = '<br>____________________________________________________________<br><br>'
         return f'''
         <head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>
@@ -590,12 +602,33 @@ def editar_atendido():
             <input type='text' name='nome_atendido' value='{pessoa}'>
             <input type='hidden' name='nome_fila' value='{nome_fila}'>
             <input type='hidden' name='numero_atendido' value='{numero_atendido}'>
-            <button type='submit'>Confirmar</button>
-            </form>''' + (f'''<br>
+            <button type='submit' class='btj'>CONFIRMAR</button>
+            </form>''' + (f'''{linha}
                             <p>Deseja desriscar o nome?</p>
                             <a href="/desriscar?numero_atendido={numero_atendido}&nome_fila={nome_fila}">
-                            <button>DESRISCAR</button></a>''' if pessoa.estado == pessoa.riscado else '') + '</body>'
-    return cancelar + voltar
+                            <button>DESRISCAR</button></a>''' if pessoa.estado == pessoa.riscado else '') + linha + cancelar + '</body>'
+    return cancelar
+
+# @app.route("/editar_atendido")
+# def editar_atendido():
+#     nome_fila = request.args.get('nome_fila')
+#     numero_atendido = int(request.args.get('numero_atendido'))
+#     if nome_fila == fila_videncia.atividade:
+#         fila = fila_videncia
+#     elif nome_fila == fila_prece.atividade:
+#         fila = fila_prece
+#     if numero_atendido in fila:
+#         pessoa = fila.get(numero_atendido)
+#     form =  f'''<form action='/editar_atendido_confirmado'>
+#             <input type='text' name='nome_atendido' value='{pessoa}'>
+#             <input type='hidden' name='nome_fila' value='{nome_fila}'>
+#             <input type='hidden' name='numero_atendido' value='{numero_atendido}'>
+#             <button type='submit'>Confirmar</button>
+#             </form>''' + (f'''<br>
+#                             <p>Deseja desriscar o nome?</p>
+#                             <a href="/desriscar?numero_atendido={numero_atendido}&nome_fila={nome_fila}">
+#                             <button>DESRISCAR</button></a>''' if pessoa.estado == pessoa.riscado else '') + '</body>'
+#     return janela('Deseja editar o nome?')
 
 @app.route('/desriscar')
 def desriscar():
@@ -675,16 +708,16 @@ def cancelar_dupla():
     fila.cancelar_dupla(numero_atendido)
     return redirect('/')
 
-@app.route('/asterisco')
-def asterisco():
-    nome_fila = request.args.get('nome_fila')
-    numero_atendido = int(request.args.get('numero_atendido'))
-    if nome_fila == fila_videncia.atividade:
-        fila = fila_videncia
-    elif nome_fila == fila_prece.atividade:
-        fila = fila_prece
-    fila.toggle_asterisco(numero_atendido)
-    return redirect('/')
+# @app.route('/asterisco')
+# def asterisco():
+#     nome_fila = request.args.get('nome_fila')
+#     numero_atendido = int(request.args.get('numero_atendido'))
+#     if nome_fila == fila_videncia.atividade:
+#         fila = fila_videncia
+#     elif nome_fila == fila_prece.atividade:
+#         fila = fila_prece
+#     fila.toggle_asterisco(numero_atendido)
+#     return redirect('/')
    
 @app.route('/observacao')
 def observacao():
