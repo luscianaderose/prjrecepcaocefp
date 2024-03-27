@@ -128,9 +128,11 @@ button {
   font-size: 22pt;
 }
 
-
 .txt-pequeno{
   font-size: 9pt;
+}
+
+.b{
   font-weight: bold;
 }
 

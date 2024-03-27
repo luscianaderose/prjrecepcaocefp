@@ -172,7 +172,7 @@ def get_recepcao():
     barra_cabecalho = f'''<div class="div-cabecalho">
         <div class="dc-logo"><img alt="CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA" src="/static/img/cefp.png" height="50"></div>
         <div class="dc-tit txt-tit1">RECEPÇÃO DAS CÂMARAS</div>
-        <div class="dc-data">{get_data_hora_atual()}</div>
+        <div class="dc-data"><p class="txt-normal">{get_data_hora_atual()}</p></div>
     </div>'''
 
     # BARRA ADICIONAR NOMES
@@ -197,6 +197,10 @@ def get_recepcao():
                     </label>
                 </div>
             </div>
+
+            <div class="dan-medium"><input type="checkbox" id="medium" name="medium" value="medium">MEDIUM
+            </div>
+
             <div class="dan-bt-adicionar">
                 <button>ADICIONAR</button>
             </div>
@@ -267,7 +271,7 @@ def get_recepcao():
             {camara.estado}<br>
             <p class="txt-destaque">{nome_chamado if nome_chamado != "None" else "CÂMARA VAZIA"}
             </p>
-            <p class="atendimentos txt-pequeno">ATENDIMENTOS</p>
+            <p class="atendimentos txt-pequeno b">ATENDIMENTOS</p>
             <a class="linkbolinhas a" href="/bolinhas?modo=subtracao&numero_camara={camara.numero_camara}"><b>-</b></a>{camara.bolinhas()}
             <a class="linkbolinhas a" href="/bolinhas?modo=adicao&numero_camara={camara.numero_camara}"><b>+</b></a>
             {bt_camara}
@@ -347,7 +351,7 @@ def get_recepcao():
     <p class="txt-tit3">NOMES QUE ENTRAM JUNTOS NA CÂMARA – CRIAÇÃO DE DUPLA</p><ol>
     <li>Na lista de nomes da fila, clique no botão CRIAR DUPLA <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"> ao lado do nome que formará dupla.</li>
     <li>Este ícone se tornará um <img alt="x" src="/static/img/cancelar.png" width="16" height="16">. Caso queira cancelar a ação, clique neste <img alt="dupla" src="/static/img/cancelar.png" width="16" height="16">.</li>
-    <li>Agora clique no botão CRIAÇÃO DE DUPLA <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"> ao lado do nome que entrará na câmara junto. Pronto!.</li>
+    <li>Agora clique no botão CRIAÇÃO DE DUPLA <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"> ao lado do nome que entrará na câmara junto. Pronto!</li>
     <li>Se quiser desfazer, clique no botão DESFAZER DUPLA <img alt="cancelar dupla" src="/static/img/dupla_cancelar.png" width="16" height="16">.</li></ol><br><br>'''
 
     info = '<div class="div-info cor-fundo2">' + tit_info + texto + get_calendario() + '</div>'
