@@ -5,6 +5,7 @@ import calendar
 import locale
 from classes import Pessoa, Fila, Camara, salvar_camaras, ler_camaras
 import random
+from info import texto_recepcao
 
 
 locale.setlocale(locale.LC_ALL,'pt_BR')
@@ -92,6 +93,7 @@ def get_calendario():
 
 voltar = '<a href="/"><button>VOLTAR</button></a>'
 cancelar = '<a href="/"><button>CANCELAR</button></a>'
+bt_painel = '<a href="/"><button>ACESSAR PAINEL DE CONTROLE</button></a>'
 
 def janela(texto, bt1, href1, bt2, href2):
     head = f'''<head><link rel="stylesheet" href="/static/css/style.css">
@@ -164,10 +166,16 @@ def gerar_html_fila(fila, nome_fila, dupla,nome_fila_dupla, numero_dupla):
     html_fila = html_fila + '</div>'
     return html_fila
 
+    # <script>
+    # window.onload = function() {
+    #     window.open("/tv", "_blank", "height=600,width=800");
+    # };
+    # </script>
 @app.route('/')
 def get_recepcao():
     head = '''<head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans"></head>'''
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    </head>'''
 
     barra_cabecalho = f'''<div class="div-cabecalho">
         <div class="dc-logo"><img alt="CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA" src="/static/img/cefp.png" height="50"></div>
@@ -326,42 +334,16 @@ def get_recepcao():
     menu4 = '<div class="div-menu cor-fundo2">' + menu_diminuir_capacidade + '</div>'
     menu = '<div class="div-menu-todo cor-fundo2">' + tit_menu + menu1 + menu2 + menu3 + menu4 + '</div>'
 
-    # INFO
-    tit_info = '<p class="txt-tit2">INFORMAÇÕES</p>'
-    texto = '''
-    <p class="txt-tit3">ROTINA DA RECEPÇÃO DAS CÂMARAS</p><ol>
-    <li>Verificar no comprovante de agendamento da pessoa se data da marcação é a data de hoje.</li>
-    <li>Digitar o nome, escolher a fila correspondente (prece ou vidência) e clicar em 'ADICIONAR'.</li>
-    <li>Carimbar o comprovante.</li>
-    <li>Anotar o número da ordem de chegada no comprovante.</li>
-    <li>Devolver o comprovante para a pessoa.</li>
-    <li>Pedir para se sentar segurando o comprovante em mãos.</li>
-    <li>Quando a câmara chamar, clicar no botão 'CHAMAR PRÓXIMO' ou na bola com número da câmara.</li>
-    <li>Automaticamente o nome anterior é riscado na lista, a câmara que chamou fica registrada ao lado do nome na lista, uma bolinha vazia fica preenchida e um áudio é tocado avisando que a câmara está chamando.</li>
-    <li>Chamar o próximo pelo nome da pessoa. Mostrar à pessoa onde é a câmara.</li>
-    <li>Nas sextas-feiras, normalmente cada câmara atende 5 pessoas. Quando 5 bolinhas forem preenchidas, é hora de avisar a câmara que é a última.</li>
-    <li>Se comparecerem menos de 10 pessoas em uma lista, tente dividir igualmente entre as câmaras. Por exemplo, se comparecerem apenas 8 pessoas para cada câmara de uma lista, direcione 4 para cada câmara para distribuir o trabalho igualmente.</li>
-    <li>Ao entrar a última pessoa da câmara, avisar ao secretário da câmara que é a última pessoa a ser atendida para que a câmara possa fazer depois dela o processo de encerramento.</li>
-    <li>Leia um trecho do Evangelho às 18:50. Falar a saudação da casa antes e depois (Graças a Deus, a Jesus e a Francisco de Paula). Se quiser pode rezar o Pai Nosso. Fale os seguintes avisos: silêncio, desligar os celulares, comprovante em mãos, pode pegar um livro do balcão para ler enquanto espera.</li></ol>
-
-    <p class="txt-tit3">REPETIR CHAMADO COM OU SEM SOM</p><ul>
-    <li>Clique em <img alt="chamar com som" src="/static/img/chamar-com-som.png" width="12" height="12"> para repetir o chamado com som.</li>
-    <li>Clique em <img alt="chamar sem som" src="/static/img/chamar-sem-som.png" width="12" height="12"> para repetir o chamado sem som, fazendo apenas o destaque visual.</li></ul>
-    
-    <p class="txt-tit3">NOMES QUE ENTRAM JUNTOS NA CÂMARA – CRIAÇÃO DE DUPLA</p><ol>
-    <li>Na lista de nomes da fila, clique no botão CRIAR DUPLA <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"> ao lado do nome que formará dupla.</li>
-    <li>Este ícone se tornará um <img alt="x" src="/static/img/cancelar.png" width="16" height="16">. Caso queira cancelar a ação, clique neste <img alt="dupla" src="/static/img/cancelar.png" width="16" height="16">.</li>
-    <li>Agora clique no botão CRIAÇÃO DE DUPLA <img alt="dupla" src="/static/img/dupla.png" width="16" height="16"> ao lado do nome que entrará na câmara junto. Pronto!</li>
-    <li>Se quiser desfazer, clique no botão DESFAZER DUPLA <img alt="cancelar dupla" src="/static/img/dupla_cancelar.png" width="16" height="16">.</li></ol><br><br>'''
-
-    info = '<div class="div-info cor-fundo2">' + tit_info + texto + get_calendario() + '</div>'
+    # INFO # A variável texto está no arquivo info.py.
+    tit_info = 'INFORMAÇÕES'
+    info = '<div class="div-info cor-fundo2"><details>' + '<summary class="txt-tit2">' + tit_info + '</summary>' + texto_recepcao + '</details>' + get_calendario() + '</div>'
 
     # OUTROS
     tit_outros = '<div class="div-outros cor-fundo2"><p = class="txt-tit2">OUTROS</p>'
     bt_outros = '<a href="/outros"><button>OUTROS</button></a></div>'
     barra_outros = tit_outros + bt_outros
 
-    return  head + '<body>' + barra_cabecalho + barra_adicionar_nomes + camaras + barra_legenda + menu + info + barra_outros + '</body>' 
+    return  head + '<body>' + barra_cabecalho + barra_adicionar_nomes + camaras + barra_legenda + menu + info + barra_outros + '</body>'
 
 @app.route('/tv')
 def tv():
@@ -391,36 +373,38 @@ def tv():
         if isinstance(camara.pessoa_em_atendimento, Pessoa) and camara.pessoa_em_atendimento.dupla != -1:
             nome_chamado = nome_chamado + ' & ' + camara.fila.get(camara.pessoa_em_atendimento.dupla).nome
         nome_atendido = f'{camara.fila.get_posicao(camara.pessoa_em_atendimento.numero)}. {nome_chamado} {"- " + camara.estado if camara.estado == camara.avisar else ""}' if nome_chamado != "None" else "FECHADA"
-        html_camaras = f'''<div class='tv-camara{' camara-chamando' if camara == ultima_camara_chamada else ''}
+        html_camaras = f'''<div class='tv-camara cor-fundo2{' camara-chamando' if camara == ultima_camara_chamada else ''}
             {" camara-avisar" if camara.estado == camara.avisar else ""}
             {" camara-avisado" if camara.estado == camara.avisado else ""}
             {" camara-fechada" if camara.estado == camara.fechada else ""}'><p>
-        <div class="tv-camara-fonte-num-camara"><h1>{camara.numero_camara}</h1></div>
-        <h2>CÂMARA {camara.fila.nome_display}<h2>
-        <p><h2>{nome_atendido}</h2></p></div>'''.upper()
+        <div class="tv-camara-fonte-num-camara"><p class="txt-tv1">{camara.numero_camara} - {camara.fila.nome_display}</p></div>
+        <p class="txt-tv2">{nome_atendido}</p></div>'''.upper()
         if camara.nome_fila == fila_videncia.atividade:
             html_camaras_videncia = html_camaras_videncia + html_camaras
         elif camara.nome_fila == fila_prece.atividade:
             html_camaras_prece = html_camaras_prece + html_camaras
     # FIM: O QUE APARECE EM CADA CÂMARA NA TELA DA TV
             
-    html_camaras_videncia = '<div class="tv-videncia">' + html_camaras_videncia + '</div>'
-    html_camaras_prece = '<div class="tv-prece">' + html_camaras_prece + '</div>'
+    html_camaras_videncia = '<div class="tv-videncia cor-videncia">' + html_camaras_videncia + '</div>'
+    html_camaras_prece = '<div class="tv-prece cor-prece">' + html_camaras_prece + '</div>'
     set_camaras_chamando.clear()
     set_audios_notificacoes.clear()
     data = f'<div class="tv-data">{get_data_hora_atual()}</div>'
     barra_cabecalho = f'<div class="tv-cabecalho cor-fundo2">RECEPÇÃO DAS CÂMARAS {data}</div>'
     global mensagem
     global data_ultima_mensagem
-    barra_mensagem = f'<div class="tv-mensagem"><p class="txt-3">{lista_mensagens[mensagem]}</p></div>'
+    espaco = '<div class="tv-espaco"></div>'
+    barra_mensagem = f'<div class="tv-mensagem cor-fundo2"><p class="txt-3">{lista_mensagens[mensagem]}</p></div>'
     if datetime.now() >= data_ultima_mensagem + timedelta(minutes=1):
         data_ultima_mensagem = datetime.now()
         mensagem += 1
         if mensagem >= len(lista_mensagens):
             mensagem = 0
     divs_videncia_prece = f'<div class="tv-videncia-prece">{html_camaras_videncia + html_camaras_prece}</div>'
-    avisos = f'''<div class="tv-avisos"> 1.SILÊNCIO! &nbsp2.COMPROVANTE EM MÃOS &nbsp3.DESLIGUEM OS CELULARES &nbsp4.LEIA UM LIVRO DO BALCÃO</div>'''
-    return head + '<body>' + barra_cabecalho + barra_mensagem + divs_videncia_prece + avisos + '</body><br><br><br><br>' + voltar
+    #avisos = f'''<div class="tv-avisos"> 1.SILÊNCIO &nbsp2.COMPROVANTE EM MÃOS &nbsp3.DESLIGUEM OS CELULARES &nbsp4.LEIA UM LIVRO DO BALCÃO</div>'''
+    avisos = f'''<div class="tv-avisos cor-fundo2"> SILÊNCIO &nbsp&nbspCOMPROVANTE EM MÃOS &nbsp&nbspDESLIGUEM OS CELULARES &nbsp&nbspLEIA UM LIVRO DO BALCÃO</div>'''
+
+    return head + '<body>' + espaco + divs_videncia_prece + avisos + barra_mensagem + espaco + bt_painel + '</body>'
 
 @app.route("/chamar_proximo/<numero_camara>")
 def chamar_proximo(numero_camara):

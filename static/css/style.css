@@ -1,6 +1,6 @@
 body {
     background-color: rgb(253, 242, 195);
-    font-family: 'Open Sans';
+    font-family: 'Roboto';
     display: flex;
     flex-direction: column;
     align-items:center;
@@ -80,6 +80,18 @@ button {
 .cor-prece{
   background-color: rgb(149, 255, 225);
 } */
+
+.txt-tv1{
+  font-size: 40pt;
+}
+
+.txt-tv2{
+  font-size: 30pt;
+}
+
+.txt-tv3{
+  font-size: 20pt;
+}
 
 .txt-tit1{
   font-size: 20pt;
