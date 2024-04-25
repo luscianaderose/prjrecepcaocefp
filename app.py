@@ -8,6 +8,7 @@ import random
 from info import texto_recepcao
 
 
+
 locale.setlocale(locale.LC_ALL,'pt_BR')
     
 vazio = '§'
