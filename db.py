@@ -10,9 +10,8 @@ class FilaModel(Base):
     nome=Column(String)
     atividade=Column(String)
     proximo_numero=Column(Integer)
-    camara=relationship('CamaraModel', back_populates='fila')
-    camara=relationship('PessoaModel', back_populates='fila')
-
+    camara=relationship('CamaraModel')
+    pessoa=relationship('PessoaModel')
 
 class CamaraModel(Base):
     __tablename__='camara'
@@ -22,9 +21,9 @@ class CamaraModel(Base):
     estado=Column(String)
     capacidade_maxima=Column(Integer)
     fila_id=Column(Integer, ForeignKey('fila.id'))
+    pessoa_em_atendimento=Column(Integer, nullable=True)
     fila=relationship('FilaModel', back_populates='camara')
-    pessoa_em_atendimento=Column(Integer, ForeignKey('pessoa.id'), unique=True)
-    pessoa=relationship('PessoaModel', back_populates='camara', uselist=False)
+    pessoa=relationship('PessoaModel')
 
 class PessoaModel(Base):
     __tablename__='pessoa'
@@ -33,13 +32,12 @@ class PessoaModel(Base):
     numero=Column(Integer)
     estado=Column(String)
     fila_id=Column(Integer, ForeignKey('fila.id'))
-    fila=relationship('FilaModel', back_populates='pessoa')
-    camara_id=Column(Integer, ForeignKey('camara.id'))
-    camara=relationship('CamaraModel', back_populates='pessoa')
-    dupla_id=Column(Integer, ForeignKey('pessoa.id'))
-    dupla=relationship('PessoaModel', remote_side=[id], backref='duplas')
+    camara_id=Column(Integer, ForeignKey('camara.id'), nullable=True)
+    dupla_id=Column(Integer, ForeignKey('pessoa.id'), nullable=True)
     observacao=Column(String)
-
+    fila=relationship('FilaModel', back_populates='pessoa')
+    camara=relationship('CamaraModel', back_populates='pessoa')
+    dupla=relationship('PessoaModel', remote_side=[id], backref='duplas')
 
 if __name__ == '__main__':
     engine = create_engine("sqlite:///db.sqlite3")
