@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, redirect, send_from_directory
+from flask import Flask, request, redirect, send_from_directory, jsonify
 from datetime import datetime, date, timedelta
 import calendar  
 import locale
@@ -798,6 +798,19 @@ def outros():
     '''
     return head + '<body>' + data + texto + voltar + '</body>'
 
+
+@app.route('/camara', methods=['POST'])
+def apertou_botao():
+    data = request.json
+    numero_camara = data.get('numero')
+    camara = dict_camaras[numero_camara]
+    if camara.estado == camara.atendendo:
+        camara.chamar_atendido()
+        set_camaras_chamando.add(camara)
+        salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+        global ultima_camara_chamada
+        ultima_camara_chamada = camara
+    return jsonify({'message': f'Camara: {numero_camara}'})
 
 
 app.run(debug=True, host='0.0.0.0')

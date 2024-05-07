@@ -51,3 +51,9 @@ parar container:
  sudo docker run -it -p 80:5000 prjrecepcaocefp
 
  .\deploy.ps1
+
+
+
+ESTÁ SENDO ADICIONADO O BOTÃO PARA CHAMAR O PRÓXIMO A SER ATENDIDO
+ESTE O CAMNDO QUE FUNCIONA:
+ curl -d "{\"numero\":\"2\"}" -H"Content-Type: application/json" http://127.0.0.1:5000/camara
