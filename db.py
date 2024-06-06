@@ -7,7 +7,7 @@ Base = declarative_base()
 class FilaModel(Base):
     __tablename__='fila'
     id=Column(Integer, primary_key=True)
-    nome=Column(String)
+    nome=Column(String, unique=True)
     atividade=Column(String)
     proximo_numero=Column(Integer)
     camara=relationship('CamaraModel')
@@ -16,7 +16,7 @@ class FilaModel(Base):
 class CamaraModel(Base):
     __tablename__='camara'
     id=Column(Integer, primary_key=True)
-    nome=Column(String)
+    nome=Column(String, unique=True)
     numero_de_atendimentos=Column(Integer)
     estado=Column(String)
     capacidade_maxima=Column(Integer)
@@ -38,6 +38,16 @@ class PessoaModel(Base):
     fila=relationship('FilaModel', back_populates='pessoa')
     camara=relationship('CamaraModel', back_populates='pessoa')
     dupla=relationship('PessoaModel', remote_side=[id], backref='duplas')
+
+def get_camaras(engine):
+    session = sessionmaker(bind=engine)
+    camaras = session.query(CamaraModel).all()
+    session.close()
+    return camaras
+
+
+
+
 
 if __name__ == '__main__':
     engine = create_engine("sqlite:///db.sqlite3")

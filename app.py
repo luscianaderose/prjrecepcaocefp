@@ -6,66 +6,91 @@ import locale
 from classes import Pessoa, Fila, Camara, salvar_camaras, ler_camaras
 import random
 from info import texto_recepcao
-
+from db import FilaModel, CamaraModel, PessoaModel
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
+from sqlalchemy.orm import DeclarativeBase, sessionmaker, relationship
+import db
 
 
 locale.setlocale(locale.LC_ALL,'pt_BR')
+engine = create_engine("sqlite:///db.sqlite3")
+Session = sessionmaker(bind=engine)
+
     
 vazio = '§'
 set_camaras_chamando = set()
 set_audios_notificacoes = set()
 ultima_camara_chamada = None
 lista_mensagens = []
-with open('static/texto/frases.txt', encoding='utf8') as f:
-    for line in f.read().splitlines():lista_mensagens.append(line)
-random.shuffle(lista_mensagens)
 mensagem = 0
 data_ultima_mensagem = datetime.now()
 
+def setup_banco():
+    session = Session()
 
-PASTA_ARQUIVOS = os.path.join(os.path.expanduser('~'), '.recepcao-camaras')
-if not os.path.exists(PASTA_ARQUIVOS): 
-    os.makedirs(PASTA_ARQUIVOS) 
-ARQUIVO_FILA_VIDENCIA = os.path.join(PASTA_ARQUIVOS, 'Fila-videncia.csv')
-ARQUIVO_FILA_PRECE = os.path.join(PASTA_ARQUIVOS, 'Fila-prece.csv')
-ARQUIVO_CAMARAS = os.path.join(PASTA_ARQUIVOS, 'Camaras-info.csv')
+    fila_videncia = FilaModel(
+        id=1,
+        nome="Fila Vidência",
+        atividade="videncia",
+        proximo_numero=1,
+    )
 
-for arquivo in [ARQUIVO_FILA_VIDENCIA, ARQUIVO_FILA_PRECE, ARQUIVO_CAMARAS]:
-    with open(arquivo, 'a+'):
-        pass
+    fila_prece = FilaModel(
+        id=2,
+        nome="Fila Prece",
+        atividade="prece",
+        proximo_numero=1,
+    )
 
-fila_videncia = Fila('videncia', ARQUIVO_FILA_VIDENCIA, 'Vidência')
-fila_prece = Fila('prece', ARQUIVO_FILA_PRECE, 'Prece')
+    camara2 = CamaraModel(
+        id=1,
+        nome="Câmara 2",
+        numero_de_atendimentos=0,
+        estado="fechada",
+        capacidade_maxima=5,
+        fila=fila_videncia,
+        pessoa_em_atendimento=None,
+    )
 
-fila_videncia.ler_fila()
-fila_prece.ler_fila()
+    camara4 = CamaraModel(
+        id=2,
+        nome="Câmara 4",
+        numero_de_atendimentos=0,
+        estado="fechada",
+        capacidade_maxima=5,
+        fila=fila_videncia,
+        pessoa_em_atendimento=None,
+    )
 
-if fila_videncia.fila:
-    fila_videncia.proximo_numero = fila_videncia.values()[-1].numero + 1
-if fila_prece.fila:
-    fila_prece.proximo_numero = fila_prece.values()[-1].numero + 1
+    camara3 = CamaraModel(
+        id=3,
+        nome="Câmara 3",
+        numero_de_atendimentos=0,
+        estado="fechada",
+        capacidade_maxima=5,
+        fila=fila_prece,
+        pessoa_em_atendimento=None,
+    )
 
-camara2 = Camara("2", fila_videncia, fila_videncia.atividade)
-camara4 = Camara("4", fila_videncia, fila_videncia.atividade)
-camara3 = Camara("3", fila_prece, fila_prece.atividade)
-camara3A = Camara("3A", fila_prece, fila_prece.atividade)
+    camara3a = CamaraModel(
+        id=4,
+        nome="Câmara 3A",
+        numero_de_atendimentos=0,
+        estado="fechada",
+        capacidade_maxima=5,
+        fila=fila_prece,
+        pessoa_em_atendimento=None,
+    )
 
-dict_camaras = {
-    '2':camara2,
-    '4':camara4,
-    '3':camara3,
-    '3A':camara3A,
-}
+    session.add(fila_videncia)
+    session.add(fila_prece)
+    session.add(camara2)
+    session.add(camara4)
+    session.add(camara3)
+    session.add(camara3a)
 
-dados_camaras = ler_camaras(ARQUIVO_CAMARAS)
-
-for linha in dados_camaras:
-    numero_camara, pessoa_em_atendimento, numero_de_atendimentos, estado, capacidade_maxima = linha.split(',')
-    camara = dict_camaras[numero_camara.strip()]
-    camara.capacidade_maxima = int(capacidade_maxima.strip())
-    camara.pessoa_em_atendimento = camara.fila.get(int(pessoa_em_atendimento)) if pessoa_em_atendimento else None
-    camara.numero_de_atendimentos = int(numero_de_atendimentos.strip())
-    camara.estado = estado.strip()
+    session.commit()
+    session.close()
 
 
 app = Flask(__name__)
@@ -222,7 +247,7 @@ def get_recepcao():
     # CÂMARAS
     html_camaras_videncia = ''
     html_camaras_prece = ''
-    for camara in dict_camaras.values():
+    for camara in db.get_camaras():
         nome_chamado = str(camara.pessoa_em_atendimento)
         if isinstance(camara.pessoa_em_atendimento, Pessoa) and camara.pessoa_em_atendimento.dupla != -1:
             nome_chamado = nome_chamado + ' & ' + camara.fila.get(camara.pessoa_em_atendimento.dupla).nome
@@ -264,7 +289,7 @@ def get_recepcao():
             <p>
             <div class="dvp-bt-num-gde-com-bt-cham-nov">
                 {bt_camara_num_gde}
-                <div class="dvp-camara-numero-grande{" cor-videncia" if camara.nome_fila == fila_videncia.atividade else " cor-prece"}">{camara.numero_camara}
+                <div class="dvp-camara-numero-grande{" cor-videncia" if camara.fila == fila_videncia.atividade else " cor-prece"}">{camara.numero_camara}
                 </div>
                 </a>
                 
@@ -812,5 +837,12 @@ def apertou_botao():
         ultima_camara_chamada = camara
     return jsonify({'message': f'Camara: {numero_camara}'})
 
+def main():
+    with open('static/texto/frases.txt', encoding='utf8') as f:
+        for line in f.read().splitlines():lista_mensagens.append(line)
+    random.shuffle(lista_mensagens)
+    setup_banco()
+    app.run(debug=True, host='0.0.0.0')
 
-app.run(debug=True, host='0.0.0.0')
+if __name__ == '__main__':
+    main()
