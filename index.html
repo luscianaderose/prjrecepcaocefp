@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./static/css/style.css">
+    <link rel="stylesheet" href="./static/css/recepcao.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+</head>
+
+<body>
+    <!-- barra_cabecalho   -->
+    <div class="div-cabecalho">
+        <div class="dc-logo">
+            <img alt="CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA" src="./static/img/cefp.png" height="50">
+        </div>
+        <div class="dc-tit txt-tit1">RECEPÇÃO DAS CÂMARAS</div>
+        <div class="dc-data">
+            <p class="txt-normal">QUINTA 06 JUNHO 18:33</p>
+        </div>
+    </div>
+
+    <!-- barra_adicionar_nomes -->
+    <div class="div-adicionar-nomes cor-fundo2">
+        <div class="dan-tit txt-tit3">ADICIONAR NOME NA FILA</div>
+
+        <form class="dan-form" action="/adicionar_atendido">
+            <input name="nome_atendido" type="text" placeholder="Digite o nome aqui">
+
+            <div class="dan-bt-videncia-prece">
+                <div class="bt-videncia-prece">
+                    <input class="radio" type="radio" id="videncia" name="nome_fila" value="videncia" required>
+                    <label class="label1" for="videncia">
+                        <div class="radio-txt">VIDÊNCIA</div>
+                    </label>
+                    <input class="radio" type="radio" id="prece" name="nome_fila" value="prece">
+                    <label class="label2" for="prece">
+                        <div class="radio-txt">PRECE</div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="dan-medium">
+                <input type="checkbox" id="medium" name="medium" value="medium">MEDIUM
+            </div>
+
+            <div class="dan-bt-adicionar">
+                <button>ADICIONAR</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- camaras -->
+    <div class="div-videncia-prece">
+        <div class="div-videncia">
+            <!-- tit_videncia -->
+            <div class="dvp-tit txt-tit2 cor-videncia">CÂMARAS VIDÊNCIA</div>
+
+            <!-- html_camaras_videncia -->
+            <div class="dvp-camara-total cor-videncia">
+
+                <!-- html_camaras 2 -->
+                <div class="dvp-camara-individual cor-fundo2">
+                    <p>
+                        <div class="dvp-bt-num-gde-com-bt-cham-nov">
+                            <!-- {bt_camara_num_gde} -->
+                            <a style="text-decoration:none" href="/abrir_camara/2"></a>
+
+                            <div class="dvp-camara-numero-grande cor-videncia">2</div>
+
+                            <div class="dvp-bt-chamar-novamente">
+                                <a class="link-icone" href="/chamar_novamente/2">
+                                <img alt="Som" src="./static/img/chamar-com-som.png" width="16" height="16"></a>
+                                <a class="link-icone" href="/chamar_novamente_sem_som/2">
+                                <img alt="Sem som" src="./static/img/chamar-sem-som.png" width="16" height="16"></a>
+                            </div>
+                        </div>
+                    </p>
+
+                    <!-- {camara.estado}<br> -->
+                    <span class="icone-fechada"></span> FECHADA<br>
+                    <p class="txt-destaque">CÂMARA VAZIA</p>
+                    <p class="atendimentos txt-pequeno b">ATENDIMENTOS</p>
+                    <a class="linkbolinhas a" href="/bolinhas?modo=subtracao&numero_camara=2">
+                        <b>-</b>
+                    </a>
+                    <!-- {camara.bolinhas()} -->
+                    &#9898&#9898&#9898&#9898&#9898
+                    <a class="linkbolinhas a" href="/bolinhas?modo=adicao&numero_camara=2">
+                        <b>+</b>
+                    </a>
+                    <!-- {bt_camara} -->
+                    <p>
+                        <button type="button">
+                            <a class="btcamara a" href="/abrir_camara/2">ABRIR CÂMARA</a>
+                        </button>
+                    </p>
+                </div>
+
+                <!-- html_camaras 4 -->
+                <div class="dvp-camara-individual cor-fundo2">
+                    <p>
+                        <div class="dvp-bt-num-gde-com-bt-cham-nov">
+                            <!-- {bt_camara_num_gde} -->
+                            <a style="text-decoration:none" href="/abrir_camara/4"></a>
+
+                            <div class="dvp-camara-numero-grande cor-videncia">4</div>
+
+                            <div class="dvp-bt-chamar-novamente">
+                                <a class="link-icone" href="/chamar_novamente/4">
+                                <img alt="Som" src="./static/img/chamar-com-som.png" width="16" height="16"></a>
+                                <a class="link-icone" href="/chamar_novamente_sem_som/4">
+                                <img alt="Sem som" src="./static/img/chamar-sem-som.png" width="16" height="16"></a>
+                            </div>
+                        </div>
+                    </p>
+
+                    <!-- {camara.estado}<br> -->
+                    <span class="icone-fechada"></span> FECHADA<br>
+                    <p class="txt-destaque">CÂMARA VAZIA</p>
+                    <p class="atendimentos txt-pequeno b">ATENDIMENTOS</p>
+                    <a class="linkbolinhas a" href="/bolinhas?modo=subtracao&numero_camara=4">
+                        <b>-</b>
+                    </a>
+                    <!-- {camara.bolinhas()} -->
+                    &#9898&#9898&#9898&#9898&#9898
+                    <a class="linkbolinhas a" href="/bolinhas?modo=adicao&numero_camara=4">
+                        <b>+</b>
+                    </a>
+                    <!-- {bt_camara} -->
+                    <p>
+                        <button type="button">
+                            <a class="btcamara a" href="/abrir_camara/4">ABRIR CÂMARA</a>
+                        </button>
+                    </p>
+                </div>
+            </div>
+
+            <!-- html_fila_videncia -->
+            <div class="dvp-lista cor-videncia">
+                <!-- tit_lista_fila -->
+                <p class="txt-tit2">FILA VIDÊNCIA</p>
+            </div>
+        </div>
+        
+        <!-- espaco -->
+        <div class="div-espaco"> </div>
+
+        <div class="div-prece">
+            <!-- tit_prece -->
+            <div class="dvp-tit txt-tit2 cor-prece">CÂMARAS PRECE</div>
+                <!-- html_camaras_prece -->
+                <div class="dvp-camara-total cor-prece">
+
+                    <!-- html_camaras 3 -->
+                    <div class="dvp-camara-individual cor-fundo2">
+                        <p>
+                            <div class="dvp-bt-num-gde-com-bt-cham-nov">
+                                <!-- {bt_camara_num_gde} -->
+                                <a style="text-decoration:none" href="/abrir_camara/3"></a>
+
+                                <div class="dvp-camara-numero-grande cor-prece">3</div>
+
+                                <div class="dvp-bt-chamar-novamente">
+                                    <a class="link-icone" href="/chamar_novamente/3">
+                                    <img alt="Som" src="./static/img/chamar-com-som.png" width="16" height="16"></a>
+                                    <a class="link-icone" href="/chamar_novamente_sem_som/3">
+                                    <img alt="Sem som" src="./static/img/chamar-sem-som.png" width="16" height="16"></a>
+                                </div>
+                            </div>
+                        </p>
+
+                        <!-- {camara.estado}<br> -->
+                        <span class="icone-fechada"></span> FECHADA<br>
+                        <p class="txt-destaque">CÂMARA VAZIA</p>
+                        <p class="atendimentos txt-pequeno b">ATENDIMENTOS</p>
+                        <a class="linkbolinhas a" href="/bolinhas?modo=subtracao&numero_camara=3">
+                            <b>-</b>
+                        </a>
+                        <!-- {camara.bolinhas()} -->
+                        &#9898&#9898&#9898&#9898&#9898
+                        <a class="linkbolinhas a" href="/bolinhas?modo=adicao&numero_camara=3">
+                            <b>+</b>
+                        </a>
+                        <!-- {bt_camara} -->
+                        <p>
+                            <button type="button">
+                                <a class="btcamara a" href="/abrir_camara/3">ABRIR CÂMARA</a>
+                            </button>
+                        </p>
+                    </div>
+
+                    <!-- html_camaras 3a -->
+                    <div class="dvp-camara-individual cor-fundo2">
+                        <p>
+                            <div class="dvp-bt-num-gde-com-bt-cham-nov">
+                                <!-- {bt_camara_num_gde} -->
+                                <a style="text-decoration:none" href="/abrir_camara/3a"></a>
+
+                                <div class="dvp-camara-numero-grande cor-prece">3A</div>
+
+                                <div class="dvp-bt-chamar-novamente">
+                                    <a class="link-icone" href="/chamar_novamente/3a">
+                                    <img alt="Som" src="./static/img/chamar-com-som.png" width="16" height="16"></a>
+                                    <a class="link-icone" href="/chamar_novamente_sem_som/3a">
+                                    <img alt="Sem som" src="./static/img/chamar-sem-som.png" width="16" height="16"></a>
+                                </div>
+                            </div>
+                        </p>
+
+                        <!-- {camara.estado}<br> -->
+                        <span class="icone-fechada"></span> FECHADA<br>
+                        <p class="txt-destaque">CÂMARA VAZIA</p>
+                        <p class="atendimentos txt-pequeno b">ATENDIMENTOS</p>
+                        <a class="linkbolinhas a" href="/bolinhas?modo=subtracao&numero_camara=3a">
+                            <b>-</b>
+                        </a>
+                        <!-- {camara.bolinhas()} -->
+                        &#9898&#9898&#9898&#9898&#9898
+                        <a class="linkbolinhas a" href="/bolinhas?modo=adicao&numero_camara=3a">
+                            <b>+</b>
+                        </a>
+                        <!-- {bt_camara} -->
+                        <p>
+                            <button type="button">
+                                <a class="btcamara a" href="/abrir_camara/3a">ABRIR CÂMARA</a>
+                            </button>
+                        </p>
+                    </div>
+                </div>
+
+            <!-- html_fila_prece -->
+            <div class="dvp-lista cor-prece">
+                <!-- tit_lista_fila -->
+                <p class="txt-tit2">FILA PRECE</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- barra_legenda -->
+
+
+    <!-- menu -->
+
+
+    <!-- info -->
+
+
+    <!-- barra_outros -->
+
+
+</body>
+</html>
