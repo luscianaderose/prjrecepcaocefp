@@ -1,0 +1,63 @@
+.dvpCamaraIndividual{
+    width: 170px;
+    height: 260px;
+    padding: 10px;
+    border-radius: 8px;
+    white-space: normal;
+    text-align: center;
+    /* border-style: solid;
+    border-width: 2px;
+    border-color: blue; */
+}
+ 
+.dvpBtNumGdeComBtChamNov{
+    /* background-color: green; */
+    display: flex;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.dvpCamaraNumeroGrande{
+    font-size: 25pt;
+    font-weight: bolder;
+    color: black;
+    text-decoration: none;
+    margin-top: -5%;
+    margin-bottom: -5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    width: 60px;
+    /* background-color: red; */
+    border-radius: 50%;
+}
+ 
+.dvpBtChamarNovamente{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.linkRemover, .linkEditar, .linkReposicionar, .linkDupla, .linkIcone, .linkObservacao{
+    margin-left: 4px;
+    text-decoration: none;
+}
+
+.iconeFechada {
+    height: 15px;
+    width: 15px;
+    background-color: #ff0000;
+    border-radius: 50%;
+    display: inline-block;
+}
+  
+.linkBolinhas{
+    text-decoration: none;
+}
+
+.btCamara{
+    font-weight: bold;
+    font-size: small;
+}
+  

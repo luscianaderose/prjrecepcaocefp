@@ -57,3 +57,9 @@ parar container:
 ESTÁ SENDO ADICIONADO O BOTÃO PARA CHAMAR O PRÓXIMO A SER ATENDIDO
 ESTE O CAMNDO QUE FUNCIONA:
  curl -d "{\"numero\":\"2\"}" -H"Content-Type: application/json" http://127.0.0.1:5000/camara
+
+
+
+PARA INICIAR O REACT
+  cd front
+  npm run dev

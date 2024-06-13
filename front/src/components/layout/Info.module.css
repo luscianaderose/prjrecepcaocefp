@@ -1,0 +1,14 @@
+.divInfo{
+    width: 780px;
+    padding: 30px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+
+.diCalendario{
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 10px;
+}
+  
