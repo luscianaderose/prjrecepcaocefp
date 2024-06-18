@@ -23,6 +23,9 @@ function Camaras(){
             <div className={styles.divVidencia}>
                 <div className={`${styles.dvpTit} txt-tit2 cor-videncia`}>CÂMARAS VIDÊNCIA</div>
                 <div className={`${styles.dvpCamaraTotal} cor-videncia`}>
+                    {/* {camaras && camaras.map((camara, indice) => {
+                        console.log("camara:", camara)
+                    })} */}
                     <Camara atividade="videncia" numero="2"/>
                     <Camara atividade="videncia" numero="4"/>
                 </div>

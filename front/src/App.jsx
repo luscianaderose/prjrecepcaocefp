@@ -31,8 +31,8 @@ function App() {
 
     return (
     <>
-        <p>{numero2}</p>
-        <button onClick={() => somarUmCerto()}>click</button>
+        {/* <p>{numero2}</p>
+        <button onClick={() => somarUmCerto()}>click</button> */}
         <BrowserRouter>
             <Routes>
                 <Route exact path="/" element={<Recepcao/>}/>

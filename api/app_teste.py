@@ -99,11 +99,35 @@ def calendario():
 def camaras():
     return jsonify([camara.to_dict() for camara in dict_camaras.values()])
 
+# lista_de_camaras = [camara.to_dict() for camara in dict_camaras.values()]
+
+# camaras = []
+
+# print(camaras)
+
+# for camara in dict_camaras.values():
+#     camaras.append(camara.to_dict())
+    # print(camara.to_dict())
+
+# print(lista_de_camaras)
 
     # return {
     #     "camaras": jsonify([camara.to_dict() for camara in dict_camaras.values()])
     # }
 
 print(dict_camaras["3"].to_dict())
+
+@app.route('/camara', methods=['POST'])
+def apertou_botao():
+    data = request.json
+    numero_camara = data.get('numero')
+    camara = dict_camaras[numero_camara]
+    if camara.estado == camara.atendendo:
+        camara.chamar_atendido()
+        # set_camaras_chamando.add(camara)
+        salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+        global ultima_camara_chamada
+        ultima_camara_chamada = camara
+    return jsonify({'message': f'Camara: {numero_camara}'})
 
 app.run(debug=True, host="0.0.0.0", port=5001)

@@ -26,7 +26,7 @@ function BarraCabecalho(){
             </div>
             <div className={`${styles.dcTit} txt-tit1`}>RECEPÇÃO DAS CÂMARAS</div>
             <div className={styles.dcData}>
-                <p className="txt-normal">{dataEHora}</p>
+                <p className="txt-normal">{dataEHora ? dataEHora : "Carregando..."}</p>
             </div>
         </div>
     )
