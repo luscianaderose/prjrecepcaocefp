@@ -16,9 +16,9 @@ set_camaras_chamando = set()
 set_audios_notificacoes = set()
 ultima_camara_chamada = None
 lista_mensagens = []
-with open('static/texto/frases.txt', encoding='utf8') as f:
-    for line in f.read().splitlines():lista_mensagens.append(line)
-random.shuffle(lista_mensagens)
+# with open('static/texto/frases.txt', encoding='utf8') as f:
+#     for line in f.read().splitlines():lista_mensagens.append(line)
+# random.shuffle(lista_mensagens)
 mensagem = 0
 data_ultima_mensagem = datetime.now()
 

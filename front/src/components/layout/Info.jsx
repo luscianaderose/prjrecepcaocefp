@@ -4,10 +4,25 @@ import chamarSemSomPng from "../../assets/img/chamar-sem-som.png"
 import cancelarPng from "../../assets/img/cancelar.png"
 import duplaPng from "../../assets/img/dupla.png"
 import duplaCancelarPng from "../../assets/img/dupla_cancelar.png"
+import { useState, useEffect } from "react"
+import axios from "axios"
 
 
 
 function Info(){
+    const [calendario, setCalendario] = useState()
+    useEffect(
+        () => {
+            const buscarCalendario = async () => {
+                const resposta = await axios.get("http://127.0.0.1:5001/calendario")
+                const dados = await resposta.data
+                setCalendario(dados["calendario"])
+                console.log(dados["calendario"])
+            }
+            buscarCalendario()
+        }, []
+    )
+
     return(
         <div className={`${styles.divInfo} cor-fundo2`}>
             <details>
@@ -47,43 +62,7 @@ function Info(){
             </details>
             {/* <!-- get_calendario() --> */}
             <div className={`${styles.diCalendario} cor-fundo3`}>
-                <pre>
-                                                    2024
-
-janeiro                                              fevereiro                                               março
-seg    ter    qua    qui    sex    sáb    dom         seg    ter    qua    qui    sex    sáb    dom         seg    ter    qua    qui    sex    sáb    dom
-1      2      3      4      5      6      7                                1      2      3      4                                       1      2      3
-8      9     10     11     12     13     14           5      6      7      8      9     10     11           4      5      6      7      8      9     10
-15     16     17     18     19     20     21          12     13     14     15     16     17     18          11     12     13     14     15     16     17
-22     23     24     25     26     27     28          19     20     21     22     23     24     25          18     19     20     21     22     23     24
-29     30     31                                      26     27     28     29                               25     26     27     28     29     30     31
-
- abril                                                  maio                                                 junho
-seg    ter    qua    qui    sex    sáb    dom         seg    ter    qua    qui    sex    sáb    dom         seg    ter    qua    qui    sex    sáb    dom
-1      2      3      4      5      6      7                         1      2      3      4      5                                              1      2
-8      9     10     11     12     13     14           6      7      8      9     10     11     12           3      4      5      6      7      8      9
-15     16     17     18     19     20     21          13     14     15     16     17     18     19          10     11     12     13     14     15     16
-22     23     24     25     26     27     28          20     21     22     23     24     25     26          17     18     19     20     21     22     23
-29     30                                             27     28     29     30     31                        24     25     26     27     28     29     30
-
- julho                                                 agosto                                               setembro
-seg    ter    qua    qui    sex    sáb    dom         seg    ter    qua    qui    sex    sáb    dom         seg    ter    qua    qui    sex    sáb    dom
-1      2      3      4      5      6      7                                1      2      3      4                                                     1
-8      9     10     11     12     13     14           5      6      7      8      9     10     11           2      3      4      5      6      7      8
-15     16     17     18     19     20     21          12     13     14     15     16     17     18           9     10     11     12     13     14     15
-22     23     24     25     26     27     28          19     20     21     22     23     24     25          16     17     18     19     20     21     22
-29     30     31                                      26     27     28     29     30     31                 23     24     25     26     27     28     29
-                                                                                          30
-
-outubro                                               novembro                                              dezembro
-seg    ter    qua    qui    sex    sáb    dom         seg    ter    qua    qui    sex    sáb    dom         seg    ter    qua    qui    sex    sáb    dom
-1      2      3      4      5      6                                       1      2      3                                                     1
-7      8      9     10     11     12     13           4      5      6      7      8      9     10           2      3      4      5      6      7      8
-14     15     16     17     18     19     20          11     12     13     14     15     16     17           9     10     11     12     13     14     15
-21     22     23     24     25     26     27          18     19     20     21     22     23     24          16     17     18     19     20     21     22
-28     29     30     31                               25     26     27     28     29     30                 23     24     25     26     27     28     29
-
-                </pre>
+                <pre>{calendario}</pre>
             </div>
         </div>
 
