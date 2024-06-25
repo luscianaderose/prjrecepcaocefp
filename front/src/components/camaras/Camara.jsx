@@ -1,10 +1,21 @@
 import styles from "./Camara.module.css"
 import chamarComSomPng from "../../assets/img/chamar-com-som.png"
 import chamarSemSomPng from "../../assets/img/chamar-sem-som.png"
+import CamaraBotao from "./CamaraBotao"
+import CamaraIcone from "./CamaraIcone"
+import CamaraBolinhas from "./CamaraBolinhas"
 
 function Camara(props){
+    console.log(props.numero, props.atividade)
+    const classeCamara = {
+        "fechada":"camara-fechada",
+        "atendendo":"camara-chamando",
+        "último":"camara-avisar",
+        "foi avisado":"camara-avisado"
+    }
+    console.log(props.estado.toLowerCase())
     return(
-        <div className={`${styles.dvpCamaraIndividual} cor-fundo2`}>
+        <div className={`${styles.dvpCamaraIndividual} cor-fundo2 ${classeCamara[props.estado.toLowerCase()]}`}>
             <p>
                 <div className={styles.dvpBtNumGdeComBtChamNov}>
                     {/* <!-- {bt_camara_num_gde} --> */}
@@ -26,26 +37,18 @@ function Camara(props){
             </p>
 
             {/* <!-- {camara.estado}<br> --> */}
-            <span className={styles.iconeFechada}></span> FECHADA<br></br>
+            {/* <span className={styles.iconeFechada}></span> FECHADA<br></br> */}
+            {props && <CamaraIcone estado={props.estado}/>}
             <p className="txt-destaque">CÂMARA VAZIA</p>
             <p className="atendimentos txt-pequeno b">ATENDIMENTOS</p>
-            <a className={`${styles.linkBolinhas} a`} href={`/bolinhas?modo=subtracao&numero_camara=${props.numero}`}>
-                <b>-</b>
-            </a>
-            {/* <!-- {camara.bolinhas()} --> */}
-            {String.fromCharCode(9898)}
-            {String.fromCharCode(9898)}
-            {String.fromCharCode(9898)}
-            {String.fromCharCode(9898)}
-            {String.fromCharCode(9898)}
-            <a className={`${styles.linkBolinhas} a`} href={`/bolinhas?modo=adicao&numero_camara=${props.numero}`}>
-                <b>+</b>
-            </a>
+            <CamaraBolinhas 
+                numero={props.numero}
+                capacidade={props.capacidade}
+                numeroAtendimentos={props.numeroAtendimentos}
+            />
             {/* <!-- {bt_camara} --> */}
             <p>
-                <button type="button">
-                    <a className={`${styles.btCamara} a`} href={`/abrir_camara/${props.numero}`}>ABRIR CÂMARA</a>
-                </button>
+                <CamaraBotao numero={props.numero} estado={props.estado}/>
             </p>
         </div>
     )

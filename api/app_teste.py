@@ -58,7 +58,8 @@ for linha in dados_camaras:
     camara.numero_de_atendimentos = int(numero_de_atendimentos.strip())
     camara.estado = estado.strip()
 
-
+set_camaras_chamando = set()
+set_audios_notificacoes = set()
 
 # DATA E HORA
 # nomes = ("SEG", "TER", "QUA", "QUI", "SEX", "SAB", "DOM")
@@ -115,7 +116,7 @@ def camaras():
     #     "camaras": jsonify([camara.to_dict() for camara in dict_camaras.values()])
     # }
 
-print(dict_camaras["3"].to_dict())
+# print(dict_camaras["3"].to_dict())
 
 @app.route('/camara', methods=['POST'])
 def apertou_botao():
@@ -130,4 +131,132 @@ def apertou_botao():
         ultima_camara_chamada = camara
     return jsonify({'message': f'Camara: {numero_camara}'})
 
-app.run(debug=True, host="0.0.0.0", port=5001)
+@app.route('/abrir_camara/<numero_camara>')
+def abrir_camara(numero_camara):
+    camara = dict_camaras[numero_camara]
+    camara.abrir()
+    salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+    return "camara aberta"
+
+@app.route("/chamar_proximo/<numero_camara>")
+def chamar_proximo(numero_camara):
+    camara = dict_camaras[numero_camara]
+    if camara.estado == camara.atendendo:
+        camara.chamar_atendido()
+        set_camaras_chamando.add(camara)
+        salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+        global ultima_camara_chamada
+        ultima_camara_chamada = camara
+    return "chamar próximo"
+
+@app.route("/avisado/<numero_camara>")
+def avisado(numero_camara):
+    camara = dict_camaras[numero_camara]
+    if camara.estado == camara.avisar:
+        camara.estado = camara.avisado
+        salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+    return "avisado"
+
+@app.route("/fechar_camara/<numero_camara>")
+def fechar_camara(numero_camara):
+    camara = dict_camaras[numero_camara]
+    if camara.estado == camara.avisado:
+        camara.estado = camara.fechada
+        camara.pessoa_em_atendimento = None
+        salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+    return "fechar camara"
+
+@app.route('/bolinhas')
+def bolinhas():
+    modo = request.args.get('modo')
+    numero_camara = request.args.get('numero_camara')
+    camara = dict_camaras.get(numero_camara)
+    if modo == 'adicao' and camara.numero_de_atendimentos < camara.capacidade_maxima:
+        camara.numero_de_atendimentos += 1
+        if camara.numero_de_atendimentos >= camara.capacidade_maxima:
+            camara.estado = camara.avisar
+    elif modo == 'subtracao' and camara.numero_de_atendimentos > 0:
+        if camara.estado != camara.atendendo:
+            camara.estado = camara.atendendo
+        camara.numero_de_atendimentos -= 1
+    salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+    return "bolinhas atualizadas"
+
+@app.route("/deschamar/<numero_camara>")
+def deschamar(numero_camara):
+    camara = dict_camaras[numero_camara]
+    if not camara.pessoa_em_atendimento:
+        return f'A câmara {numero_camara} não está atendendo ninguém.'
+    pessoa = camara.pessoa_em_atendimento
+    pessoa.estado = pessoa.aguardando
+    pessoa.camara = None
+    if pessoa.dupla != -1:
+        dupla = camara.fila.get(pessoa.dupla)
+        dupla.estado = dupla.aguardando
+        dupla.camara = None
+    for pessoa in camara.fila.values()[::-1]:
+        if pessoa.estado == pessoa.riscado and pessoa.camara == numero_camara:
+            pessoa.estado = pessoa.atendendo
+            if pessoa.dupla != -1:
+                dupla = camara.fila.get(pessoa.dupla)
+                dupla.estado = dupla.atendendo
+            camara.pessoa_em_atendimento = pessoa
+            break
+    else:
+        camara.pessoa_em_atendimento = None
+    camara.numero_de_atendimentos -= 1
+    camara.estado = camara.atendendo
+    camara.fila.salvar_fila()
+    salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+    return "deschamado"
+
+@app.route("/aumentar_capacidade/<numero_camara>")
+def aumentar_capacidade(numero_camara):
+    camara = dict_camaras[numero_camara]
+    if camara.capacidade_maxima < 20:
+        camara.capacidade_maxima += 1
+        if camara.estado != camara.atendendo and camara.numero_de_atendimentos > 0:
+            camara.estado = camara.atendendo
+    salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+    return "aumentando"
+
+@app.route("/diminuir_capacidade/<numero_camara>")
+def diminuir_capacidade(numero_camara):
+    camara = dict_camaras[numero_camara]
+    if camara.capacidade_maxima > 3:
+        camara.capacidade_maxima -= 1
+        if camara.estado == camara.atendendo and camara.numero_de_atendimentos >= camara.capacidade_maxima:
+            camara.estado = camara.avisar
+    salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+    return "diminuindo"
+
+@app.route('/reiniciar_tudo_confirmado')
+def reiniciar_tudo_confirmado():
+    for camara in dict_camaras.values():
+        camara.numero_de_atendimentos = 0
+        camara.fechar()
+        camara.capacidade_maxima = 5
+    fila_prece.clear()
+    fila_videncia.clear()
+    # # pra criar pessoas automaticamente
+    # for nome in ['JOSÉ', 'MARIA', 'JOÃO', 'CLÁUDIA', 'MÁRIO', 'BEATRIZ', 'FLÁVIA']:
+    #     numero = fila_videncia.proximo_numero
+    #     pessoa = Pessoa(numero, nome)
+    #     fila_videncia.adicionar_pessoa(pessoa, numero)
+    #     numero = fila_prece.proximo_numero
+    #     pessoa = Pessoa(numero, nome)
+    #     fila_prece.adicionar_pessoa(pessoa, numero)
+    # # fim -> pra criar pessoas automaticamente
+    fila_prece.salvar_fila()
+    fila_videncia.salvar_fila()
+    salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+    return "reiniciado"
+
+
+@app.route('/fila_videncia')
+def fun_fila_videncia():
+    return fila_videncia
+
+print(fila_videncia)
+
+# app.run(debug=True, host="0.0.0.0", port=5001)

@@ -44,20 +44,9 @@
     text-decoration: none;
 }
 
-.iconeFechada {
-    height: 15px;
-    width: 15px;
-    background-color: #ff0000;
-    border-radius: 50%;
-    display: inline-block;
-}
   
 .linkBolinhas{
     text-decoration: none;
 }
 
-.btCamara{
-    font-weight: bold;
-    font-size: small;
-}
   

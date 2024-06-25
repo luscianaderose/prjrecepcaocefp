@@ -63,3 +63,8 @@ ESTE O CAMNDO QUE FUNCIONA:
 PARA INICIAR O REACT
   cd front
   npm run dev
+  http://localhost:5173/
+
+PARA INICIAR A API
+  python api/app_teste.py
+  http://localhost:5001/

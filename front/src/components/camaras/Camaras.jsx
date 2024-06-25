@@ -10,9 +10,14 @@ function Camaras(){
     useEffect(
         () => {
             const buscarCamaras = async () => {
-                const resposta = await axios.get("http://127.0.0.1:5001/camaras")
-                setCamaras(resposta.data)
-                console.log(resposta.data)
+                try {
+                    const resposta = await axios.get("http://127.0.0.1:5001/camaras")
+                    const dados = await resposta.data
+                    setCamaras(dados)
+                    console.log(dados)
+                } catch(error){
+                    console.error("erro", error)
+                }
             }
             buscarCamaras()
         }
@@ -23,11 +28,17 @@ function Camaras(){
             <div className={styles.divVidencia}>
                 <div className={`${styles.dvpTit} txt-tit2 cor-videncia`}>CÂMARAS VIDÊNCIA</div>
                 <div className={`${styles.dvpCamaraTotal} cor-videncia`}>
-                    {/* {camaras && camaras.map((camara, indice) => {
-                        console.log("camara:", camara)
-                    })} */}
-                    <Camara atividade="videncia" numero="2"/>
-                    <Camara atividade="videncia" numero="4"/>
+                    {camaras && camaras.map((camara, indice) => (
+                        camara["nome_fila"] === "videncia" && (
+                            <Camara 
+                                atividade={camara["nome_fila"]} 
+                                numero={camara["numero_camara"]} 
+                                estado={camara["estado"]}
+                                capacidade={camara["capacidade_maxima"]}
+                                numeroAtendimentos={camara["numero_de_atendimentos"]}
+                            />
+                        )
+                    ))}
                 </div>
                 <Fila atividade="videncia"/>
             </div>
@@ -35,8 +46,17 @@ function Camaras(){
             <div className={styles.divPrece}>
                 <div className={`${styles.dvpTit} txt-tit2 cor-prece`}>CÂMARAS PRECE</div>
                 <div className={`${styles.dvpCamaraTotal} cor-prece`}>
-                    <Camara atividade="prece" numero="3"/>
-                    <Camara atividade="prece" numero="3A"/>
+                    {camaras && camaras.map((camara, indice) => (
+                        camara["nome_fila"] === "prece" && (
+                            <Camara 
+                                atividade={camara["nome_fila"]} 
+                                numero={camara["numero_camara"]} 
+                                estado={camara["estado"]}
+                                capacidade={camara["capacidade_maxima"]}
+                                numeroAtendimentos={camara["numero_de_atendimentos"]}
+                            />
+                        )
+                    ))}
                 </div>
                 <Fila atividade="prece"/>
             </div>
