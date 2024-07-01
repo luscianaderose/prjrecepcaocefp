@@ -6,6 +6,8 @@ import { useState, useEffect } from "react"
 
 function Camaras(){
     const [camaras, setCamaras] = useState()
+    const [filaVidencia, setFilaVidencia] = useState()
+    const [filaPrece, setFilaPrece] = useState()
 
     useEffect(
         () => {
@@ -20,6 +22,20 @@ function Camaras(){
                 }
             }
             buscarCamaras()
+
+            const buscarFilas = async () => {
+                try {
+                    const respostaFilaVidencia = await axios.get("http://127.0.0.1:5001/fila_videncia")
+                    const respostaFilaPrece = await axios.get("http://127.0.0.1:5001/fila_prece")
+                    setFilaVidencia(respostaFilaVidencia.data)
+                    setFilaPrece(respostaFilaPrece.data)
+                    console.log("respostaFilaVidencia", respostaFilaVidencia.data)
+                    console.log("respostaFilapRrece", respostaFilaPrece.data)
+                } catch(error){
+                    console.error("erro", error)
+                }
+            }
+            buscarFilas()
         }
         ,[]
     )
@@ -36,11 +52,12 @@ function Camaras(){
                                 estado={camara["estado"]}
                                 capacidade={camara["capacidade_maxima"]}
                                 numeroAtendimentos={camara["numero_de_atendimentos"]}
+                                pessoaEmAtendimento={camara["pessoa_em_atendimento"]}
                             />
                         )
                     ))}
                 </div>
-                <Fila atividade="videncia"/>
+                {filaVidencia && <Fila atividade="videncia" fila={filaVidencia}/>}
             </div>
             <div className={styles.divEspaco}> </div>
             <div className={styles.divPrece}>
@@ -54,11 +71,12 @@ function Camaras(){
                                 estado={camara["estado"]}
                                 capacidade={camara["capacidade_maxima"]}
                                 numeroAtendimentos={camara["numero_de_atendimentos"]}
+                                pessoaEmAtendimento={camara["pessoa_em_atendimento"]}
                             />
                         )
                     ))}
                 </div>
-                <Fila atividade="prece"/>
+                {filaPrece && <Fila atividade="prece" fila={filaPrece}/>}
             </div>
         </div>
     )

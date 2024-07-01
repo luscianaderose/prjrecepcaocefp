@@ -1,9 +1,14 @@
 .dvpLista{
     min-height: 420px;
-    padding: 5 10 10 10;
+    padding: 5px 10px 10px 10px;
     border-radius: 10px;
     /* border-style: solid;
     border-width: 2px;
     border-color: red; */
+}
+
+.linkRemover, .linkEditar, .linkReposicionar, .linkDupla, .linkIcone, .linkObservacao{
+    margin-left: 4px;
+    text-decoration: none;
 }
   

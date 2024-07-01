@@ -13,7 +13,7 @@ function Camara(props){
         "último":"camara-avisar",
         "foi avisado":"camara-avisado"
     }
-    console.log(props.estado.toLowerCase())
+
     return(
         <div className={`${styles.dvpCamaraIndividual} cor-fundo2 ${classeCamara[props.estado.toLowerCase()]}`}>
             <p>
@@ -39,7 +39,7 @@ function Camara(props){
             {/* <!-- {camara.estado}<br> --> */}
             {/* <span className={styles.iconeFechada}></span> FECHADA<br></br> */}
             {props && <CamaraIcone estado={props.estado}/>}
-            <p className="txt-destaque">CÂMARA VAZIA</p>
+            <p className="txt-destaque">{props.pessoaEmAtendimento ? `${props.numeroAtendimentos}. ${props.pessoaEmAtendimento["nome"]}` : "CÂMARA VAZIA"}</p>
             <p className="atendimentos txt-pequeno b">ATENDIMENTOS</p>
             <CamaraBolinhas 
                 numero={props.numero}

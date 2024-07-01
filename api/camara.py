@@ -19,7 +19,7 @@ class Camara:
             "numero_camara": self.numero_camara,
             "fila": self.fila.to_dict(),
             "nome_fila": self.nome_fila,
-            "pessoa_em_atendimento": self.pessoa_em_atendimento,
+            "pessoa_em_atendimento": self.pessoa_em_atendimento.to_dict() if self.pessoa_em_atendimento else None,
             "numero_de_atendimentos": self.numero_de_atendimentos,
             "estado": self.estado,
             "audio": self.audio,

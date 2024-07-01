@@ -1,5 +1,6 @@
 .legenda{
-    width: 810px;
+    /* width: calc(810px - 5px); */
+    width: calc(100%);
     text-align: center;
     /* justify-content: space-between; */
     padding: 0 10 0 10;

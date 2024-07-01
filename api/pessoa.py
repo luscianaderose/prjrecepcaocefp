@@ -12,6 +12,17 @@ class Pessoa:
         self.asterisco = asterisco
         self.observacao = observacao
 
+    def to_dict(self):
+        return {
+            "nome": self.nome,
+            "numero": self.numero,
+            "estado": self.estado,
+            "camara": self.camara,
+            "dupla": self.dupla,
+            "asterisco": self.asterisco,
+            "observacao": self.observacao
+        }
+
     def __str__(self):
         return self.nome
      

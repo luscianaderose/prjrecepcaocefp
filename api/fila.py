@@ -14,7 +14,7 @@ class Fila():
             "atividade": self.atividade,
             "nome_display": self.nome_display,
             "nome_arquivo": self.nome_arquivo,
-            "fila": self.fila,
+            "fila": {key:value.to_dict() for key,value in self.fila.items()},
             "proximo_numero": self.proximo_numero
         }
     

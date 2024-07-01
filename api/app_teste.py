@@ -98,7 +98,8 @@ def calendario():
 
 @app.route("/camaras")
 def camaras():
-    return jsonify([camara.to_dict() for camara in dict_camaras.values()])
+    return [camara.to_dict() for camara in dict_camaras.values()]
+
 
 # lista_de_camaras = [camara.to_dict() for camara in dict_camaras.values()]
 
@@ -255,8 +256,75 @@ def reiniciar_tudo_confirmado():
 
 @app.route('/fila_videncia')
 def fun_fila_videncia():
-    return fila_videncia
+    return fila_videncia.to_dict()
 
-print(fila_videncia)
+@app.route('/fila_prece')
+def fun_fila_prece():
+    return fila_prece.to_dict()
 
-# app.run(debug=True, host="0.0.0.0", port=5001)
+# print(fila_videncia.to_dict())
+# print("\n")
+# print(fila_videncia.to_dict()["fila"][1].to_dict())
+
+# for nome in ['JOSÉ', 'MARIA', 'JOÃO', 'CLÁUDIA', 'MÁRIO', 'BEATRIZ', 'FLÁVIA']:
+#     numero = fila_videncia.proximo_numero
+#     pessoa = Pessoa(numero, nome)
+#     fila_videncia.adicionar_pessoa(pessoa, numero)
+#     numero = fila_prece.proximo_numero
+#     pessoa = Pessoa(numero, nome)
+#     fila_prece.adicionar_pessoa(pessoa, numero)
+# fila_prece.salvar_fila()
+# fila_videncia.salvar_fila()
+# salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
+
+@app.route("/remover_atendido")
+def remover_atendido():
+    nome_fila = request.args.get('nome_fila')
+    numero_atendido = int(request.args.get('numero_atendido'))
+    # return janela('Tem certeza que deseja deletar?', 'Sim', f'/remover_atendido_confirmado?nome_fila={nome_fila}&numero_atendido={numero_atendido}', 'Cancelar', '/')
+    return 'remover atendido'
+
+# @app.route("/remover_atendido_confirmado")
+# def remover_atendido_confirmado():
+#     nome_fila = request.args.get('nome_fila')
+#     numero_atendido = int(request.args.get('numero_atendido'))
+#     if nome_fila == fila_videncia.atividade:
+#         fila = fila_videncia
+#     elif nome_fila == fila_prece.atividade:
+#         fila = fila_prece
+#     else: 
+#         return 'Fila incorreta!'
+#     fila.remover_pessoa(numero_atendido)
+#     return redirect('/')
+
+
+@app.route("/editar_atendido")
+def editar_atendido():
+    nome_fila = request.args.get('nome_fila')
+    numero_atendido = int(request.args.get('numero_atendido'))
+    if nome_fila == fila_videncia.atividade:
+        fila = fila_videncia
+    elif nome_fila == fila_prece.atividade:
+        fila = fila_prece
+    if numero_atendido in fila:
+        pessoa = fila.get(numero_atendido)
+        ### JANELA ###
+        linha = '<br>____________________________________________________________<br><br>'
+        return f'''
+        <head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>
+        <body>
+        <p>Deseja editar o nome?</p>
+            <form action='/editar_atendido_confirmado'>
+            <input type='text' name='nome_atendido' value='{pessoa}'>
+            <input type='hidden' name='nome_fila' value='{nome_fila}'>
+            <input type='hidden' name='numero_atendido' value='{numero_atendido}'>
+            <button type='submit' class='btj'>CONFIRMAR</button>
+            </form>''' + (f'''{linha}
+                            <p>Deseja desriscar o nome?</p>
+                            <a href="/desriscar?numero_atendido={numero_atendido}&nome_fila={nome_fila}">
+                            <button>DESRISCAR</button></a>''' if pessoa.estado == pessoa.riscado else '') + linha + cancelar + '</body>'
+    return cancelar
+
+
+app.run(debug=True, host="0.0.0.0", port=5001)
