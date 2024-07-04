@@ -16,7 +16,7 @@ function Camaras(){
                     const resposta = await axios.get("http://127.0.0.1:5001/camaras")
                     const dados = await resposta.data
                     setCamaras(dados)
-                    console.log(dados)
+                    // console.log(dados)
                 } catch(error){
                     console.error("erro", error)
                 }
@@ -29,8 +29,8 @@ function Camaras(){
                     const respostaFilaPrece = await axios.get("http://127.0.0.1:5001/fila_prece")
                     setFilaVidencia(respostaFilaVidencia.data)
                     setFilaPrece(respostaFilaPrece.data)
-                    console.log("respostaFilaVidencia", respostaFilaVidencia.data)
-                    console.log("respostaFilapRrece", respostaFilaPrece.data)
+                    // console.log("respostaFilaVidencia", respostaFilaVidencia.data)
+                    // console.log("respostaFilapRrece", respostaFilaPrece.data)
                 } catch(error){
                     console.error("erro", error)
                 }
@@ -53,6 +53,7 @@ function Camaras(){
                                 capacidade={camara["capacidade_maxima"]}
                                 numeroAtendimentos={camara["numero_de_atendimentos"]}
                                 pessoaEmAtendimento={camara["pessoa_em_atendimento"]}
+                                fila={filaVidencia}
                             />
                         )
                     ))}
@@ -72,6 +73,7 @@ function Camaras(){
                                 capacidade={camara["capacidade_maxima"]}
                                 numeroAtendimentos={camara["numero_de_atendimentos"]}
                                 pessoaEmAtendimento={camara["pessoa_em_atendimento"]}
+                                fila={filaPrece}
                             />
                         )
                     ))}

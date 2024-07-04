@@ -5,7 +5,7 @@ import './App.css'
 import Recepcao from './pages/Recepcao'
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
 import Tv from './pages/Tv'
-import Janela from './components/janela/Janela'
+import FormRemoverAtendido from './components/forms/FormRemoverAtendido'
 
 function App() {
     // jeito errado
@@ -13,7 +13,7 @@ function App() {
 
     const somarUm = () => {
         numero = numero + 1
-        console.log("numero:", numero)
+        // console.log("numero:", numero)
     }
 
     // jeito certo
@@ -21,14 +21,14 @@ function App() {
 
     const somarUmCerto = () => {
         setNumero2(numero2 + 1)
-        console.log("numero:", numero2)
+        // console.log("numero:", numero2)
     }
 
     // use Effect 
-    useEffect(  
+    // useEffect(  
         //função anônima
-        () => (console.log("oi")), [numero2]
-    )
+        // () => (console.log("oi")), [numero2]
+    // )
 
     return (
     <>
@@ -38,24 +38,7 @@ function App() {
             <Routes>
                 <Route exact path="/" element={<Recepcao/>}/>
                 <Route exact path="/tv" element={<Tv/>}/>
-                <Route exact path="/remover_atendido" element={
-                    <Janela 
-                        texto="Tem certeza que deseja deletar?"
-                        bt1="Sim"
-                        href1="/remover_atendido"
-                        bt2="Cancelar"
-                        href2="/"
-                    />}
-                />
-                <Route exact path="/editar_atendido" element={
-                    <Janela 
-                        texto="Tem certeza que deseja editar?"
-                        bt1="Sim"
-                        href1="/editar_atendido"
-                        bt2="Cancelar"
-                        href2="/"
-                    />}
-                />
+                <Route exact path="/remover_atendido" element={<FormRemoverAtendido/>}/>
             </Routes>
         </BrowserRouter>
     </>

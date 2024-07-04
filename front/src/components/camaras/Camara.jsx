@@ -6,7 +6,11 @@ import CamaraIcone from "./CamaraIcone"
 import CamaraBolinhas from "./CamaraBolinhas"
 
 function Camara(props){
-    console.log(props.numero, props.atividade)
+    // console.log(props.numero, props.atividade)
+    // console.log("pessoa em atendimento:", props.pessoaEmAtendimento, props.fila)
+    // if (props.pessoaEmAtendimento !== null){
+    //     console.log(props.pessoaEmAtendimento["nome"], props.pessoaEmAtendimento["dupla"])
+    // }
     const classeCamara = {
         "fechada":"camara-fechada",
         "atendendo":"camara-chamando",

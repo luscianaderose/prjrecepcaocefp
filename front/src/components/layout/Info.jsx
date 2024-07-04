@@ -17,7 +17,7 @@ function Info(){
                 const resposta = await axios.get("http://127.0.0.1:5001/calendario")
                 const dados = await resposta.data
                 setCalendario(dados["calendario"])
-                console.log(dados["calendario"])
+                // console.log(dados["calendario"])
             }
             buscarCalendario()
         }, []

@@ -10,7 +10,7 @@ function CamaraBolinhas(props){
     const bolinhaPreta = String.fromCharCode(9899)
 
 
-    console.log("ver aqui", qtdBolinhasTotais, qtdBolinhasPretas, qtdBolinhasBrancas)
+    // console.log("ver aqui", qtdBolinhasTotais, qtdBolinhasPretas, qtdBolinhasBrancas)
 
     const adicionarBolinhas = async () => {
         const resposta = await axios.get(`http://127.0.0.1:5001/bolinhas?modo=adicao&numero_camara=${props.numero}`)

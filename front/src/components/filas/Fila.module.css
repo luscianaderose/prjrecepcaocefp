@@ -11,4 +11,7 @@
     margin-left: 4px;
     text-decoration: none;
 }
-  
+
+.linkRemover:hover, .linkEditar:hover, .linkReposicionar:hover, .linkDupla:hover, .linkIcone:hover, .linkObservacao:hover{
+    cursor: pointer;
+}

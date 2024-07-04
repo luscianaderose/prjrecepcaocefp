@@ -19,7 +19,7 @@ function CamaraIcone (props) {
             "icone":styles.iconeAvisado
         }
     }
-    console.log("camara icone", props.estado.toLowerCase())
+    // console.log("camara icone", props.estado.toLowerCase())
     return (
         <>
             <span className={estadoAcoes[props.estado.toLowerCase()]["icone"]}></span>

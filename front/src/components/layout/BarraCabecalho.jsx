@@ -12,7 +12,7 @@ function BarraCabecalho(){
                 const response = await axios.get("http://127.0.0.1:5001/calendario")
                 const data = await response.data
                 setDataEHora(data["data_e_hora"])
-                console.log(data["data_e_hora"])
+                // console.log(data["data_e_hora"])
             }
             buscarDataEHora()
         }, []

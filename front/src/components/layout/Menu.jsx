@@ -18,7 +18,7 @@ function Menu(){
                     const resposta = await axios.get("http://127.0.0.1:5001/camaras")
                     const dados = await resposta.data
                     setCamaras(dados)
-                    console.log(dados)
+                    // console.log(dados)
                 } catch(error){
                     console.error("erro", error)
                 }

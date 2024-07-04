@@ -240,14 +240,14 @@ def reiniciar_tudo_confirmado():
     fila_prece.clear()
     fila_videncia.clear()
     # # pra criar pessoas automaticamente
-    # for nome in ['JOSÉ', 'MARIA', 'JOÃO', 'CLÁUDIA', 'MÁRIO', 'BEATRIZ', 'FLÁVIA']:
-    #     numero = fila_videncia.proximo_numero
-    #     pessoa = Pessoa(numero, nome)
-    #     fila_videncia.adicionar_pessoa(pessoa, numero)
-    #     numero = fila_prece.proximo_numero
-    #     pessoa = Pessoa(numero, nome)
-    #     fila_prece.adicionar_pessoa(pessoa, numero)
-    # # fim -> pra criar pessoas automaticamente
+    for nome in ['JOSÉ', 'MARIA', 'JOÃO', 'CLÁUDIA', 'MÁRIO', 'BEATRIZ', 'FLÁVIA']:
+        numero = fila_videncia.proximo_numero
+        pessoa = Pessoa(numero, nome)
+        fila_videncia.adicionar_pessoa(pessoa, numero)
+        numero = fila_prece.proximo_numero
+        pessoa = Pessoa(numero, nome)
+        fila_prece.adicionar_pessoa(pessoa, numero)
+    # fim -> pra criar pessoas automaticamente
     fila_prece.salvar_fila()
     fila_videncia.salvar_fila()
     salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
@@ -298,33 +298,103 @@ def remover_atendido():
 #     return redirect('/')
 
 
-@app.route("/editar_atendido")
-def editar_atendido():
+@app.route('/editar_atendido_confirmado')
+def editar_atendido_confirmado():
+    nome_fila = request.args.get('nome_fila')
+    numero_atendido = int(request.args.get('numero_atendido'))
+    nome_atendido = request.args.get('nome_atendido')
+    if nome_fila == fila_videncia.atividade:
+        fila = fila_videncia
+    elif nome_fila == fila_prece.atividade:
+        fila = fila_prece
+    fila.editar_pessoa(numero_atendido, nome_atendido)
+    return "atendido editado"
+
+@app.route("/remover_atendido_confirmado")
+def remover_atendido_confirmado():
     nome_fila = request.args.get('nome_fila')
     numero_atendido = int(request.args.get('numero_atendido'))
     if nome_fila == fila_videncia.atividade:
         fila = fila_videncia
     elif nome_fila == fila_prece.atividade:
         fila = fila_prece
-    if numero_atendido in fila:
-        pessoa = fila.get(numero_atendido)
-        ### JANELA ###
-        linha = '<br>____________________________________________________________<br><br>'
-        return f'''
-        <head><link rel="stylesheet" href="/static/css/style.css"><link rel="stylesheet" href="/static/css/recepcao.css">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"></head>
-        <body>
-        <p>Deseja editar o nome?</p>
-            <form action='/editar_atendido_confirmado'>
-            <input type='text' name='nome_atendido' value='{pessoa}'>
-            <input type='hidden' name='nome_fila' value='{nome_fila}'>
-            <input type='hidden' name='numero_atendido' value='{numero_atendido}'>
-            <button type='submit' class='btj'>CONFIRMAR</button>
-            </form>''' + (f'''{linha}
-                            <p>Deseja desriscar o nome?</p>
-                            <a href="/desriscar?numero_atendido={numero_atendido}&nome_fila={nome_fila}">
-                            <button>DESRISCAR</button></a>''' if pessoa.estado == pessoa.riscado else '') + linha + cancelar + '</body>'
-    return cancelar
+    else: 
+        return 'Fila incorreta!'
+    fila.remover_pessoa(numero_atendido)
+    return "atendido removido"
+
+@app.route("/reposicionar_atendido")
+def reposicionar_atendido():
+    nome_fila = request.args.get('nome_fila')
+    numero_atendido = int(request.args.get('numero_atendido'))
+    mover_para = request.args.get('mover_para')
+    if nome_fila == fila_videncia.atividade:
+        fila = fila_videncia
+    elif nome_fila == fila_prece.atividade:
+        fila = fila_prece
+    else: 
+        return 'Fila incorreta!'
+    keys = fila.keys()
+    indice = keys.index(numero_atendido)
+    if mover_para == 'cima':
+        if indice == 0:
+            return 'Não é possível subir a posição do primeiro nome da lista.' + "voltar"
+        fila.trocar_posicao(numero_atendido, keys[indice - 1])
+    elif mover_para == 'baixo':
+        if indice == len(keys) - 1:
+            return 'Não é possível descer a posição do último nome da lista.' + "voltar"
+        fila.trocar_posicao(numero_atendido, keys[indice + 1])
+    return "atendido reposicionado"
+
+@app.route('/criar_dupla')
+def criar_dupla():
+    nome_fila_dupla = request.args.get('nome_fila_dupla')
+    numero_dupla = int(request.args.get('numero_dupla'))
+    numero_atendido = int(request.args.get('numero_atendido'))
+    if nome_fila_dupla == fila_videncia.atividade:
+        fila = fila_videncia
+    elif nome_fila_dupla == fila_prece.atividade:
+        fila = fila_prece
+    keys = fila.keys()
+    indice = keys.index(numero_atendido)
+    indice_dupla = keys.index(numero_dupla)
+    if not (indice_dupla == indice + 1 or indice_dupla == indice - 1):
+        return 'Não é possível criar dupla.' + "voltar"
+    try: fila.criar_dupla(numero_atendido, numero_dupla)
+    except Exception as exc: return str(exc) + '<br><br>' + "voltar"
+    return "dupla criada"
+
+@app.route("/adicionar_atendido")
+def adicionar_atendido():
+    nome_fila = request.args.get('nome_fila')
+    nome_atendido = request.args.get('nome_atendido').upper()
+    # if not nome_atendido:
+    #     return 'Não é possível adicionar nome vazio!' + '<br><br>' + voltar
+    if nome_fila == fila_videncia.atividade:
+        fila = fila_videncia
+    elif nome_fila == fila_prece.atividade:
+        fila = fila_prece
+    else: 
+        return 'Fila incorreta!' + "voltar"
+    numero = fila.proximo_numero
+    pessoa = Pessoa(numero, nome_atendido)
+    try:
+        fila.adicionar_pessoa(pessoa, numero)
+    except Exception as exc:
+        return str(exc) + "voltar"
+    return "atendido adicionado"
+
+@app.route('/observacao')
+def observacao():
+    nome_fila = request.args.get('nome_fila')
+    numero_atendido = int(request.args.get('numero_atendido'))
+    observacao = request.args.get('observacao')
+    if nome_fila == fila_videncia.atividade:
+        fila = fila_videncia
+    elif nome_fila == fila_prece.atividade:
+        fila = fila_prece
+    fila.adicionar_observacao(numero_atendido, observacao)
+    return "observação adicionada"
 
 
 app.run(debug=True, host="0.0.0.0", port=5001)
