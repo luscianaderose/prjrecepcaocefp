@@ -10,7 +10,7 @@ function FormObservacao(props) {
     }
 
     return(
-        <form action="/observacao">
+        <form onSubmit={(evento) => adicionarObservacao(evento)}>
             <input 
                 type="text" 
                 name="observacao" 

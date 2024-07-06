@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import Recepcao from './pages/Recepcao'
+import RecepcaoPage from './pages/RecepcaoPage'
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
-import Tv from './pages/Tv'
+import TvPage from './pages/TvPage'
 import FormRemoverAtendido from './components/forms/FormRemoverAtendido'
 
 function App() {
@@ -36,8 +36,8 @@ function App() {
         <button onClick={() => somarUmCerto()}>click</button> */}
         <BrowserRouter>
             <Routes>
-                <Route exact path="/" element={<Recepcao/>}/>
-                <Route exact path="/tv" element={<Tv/>}/>
+                <Route exact path="/" element={<RecepcaoPage/>}/>
+                <Route exact path="/tv" element={<TvPage/>}/>
                 <Route exact path="/remover_atendido" element={<FormRemoverAtendido/>}/>
             </Routes>
         </BrowserRouter>

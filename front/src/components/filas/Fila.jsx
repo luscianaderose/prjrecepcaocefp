@@ -70,9 +70,9 @@ function Fila(props){
             {Object.values(props.fila["fila"]).map((pessoa, indice) => (
                 
                 <p key={indice}>
-                    {pessoa["estado"] === "riscado" && <s>{indice + 1}. {pessoa["nome"]} - {pessoa["camara"]}</s>} 
-                    {pessoa["estado"] === "atendendo" && <b>{indice + 1}. {pessoa["nome"]} - {pessoa["camara"]}</b>} 
-                    {pessoa["estado"] !== "atendendo" && pessoa["estado"] !== "riscado" && `${indice + 1}. ${pessoa["nome"]}`}
+                    {pessoa["estado"] === "riscado" && <s>{indice + 1}. {pessoa["nome"].toUpperCase()} - {pessoa["camara"]}</s>} 
+                    {pessoa["estado"] === "atendendo" && <b>{indice + 1}. {pessoa["nome"].toUpperCase()} - {pessoa["camara"]}</b>} 
+                    {pessoa["estado"] !== "atendendo" && pessoa["estado"] !== "riscado" && `${indice + 1}. ${pessoa["nome"].toUpperCase()}`}
 
                     {/* {indice + 1}. {pessoa["nome"]} */}
                     <a 
@@ -123,6 +123,7 @@ function Fila(props){
                     >
                         <img alt="Observação" src={observacaoPng} width="16" height="16"/>
                     </a>
+                    {pessoa["observacao"]}
                     {/* <a className={styles.linkDupla} href="/cancelar_dupla?numero_atendido={pessoa.numero}&nome_fila={nome_fila}">
                         <img alt="dupla" src={duplaCancelarPng} width="16" height="16"/>
                     </a>

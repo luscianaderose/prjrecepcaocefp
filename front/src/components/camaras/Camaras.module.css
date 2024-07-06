@@ -1,11 +1,11 @@
 .divVidenciaPrece{
     width: 830px;
-    /* border-style: solid;
-    border-width: 2px;
-    border-color: red; */
     margin-bottom: 10px;
     display: flex;
     flex-direction: row;
+    /* border-style: solid;
+    border-width: 2px;
+    border-color: red; */
 }
 
 .dvpTit{

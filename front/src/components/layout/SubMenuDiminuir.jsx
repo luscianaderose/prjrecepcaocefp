@@ -12,7 +12,7 @@ function SubMenuDiminuir (props) {
     return (
         <div className={`${styles.divMenu} cor-fundo2`}>
             {props.camaras.map((camara, indice) => (
-                <a onClick={() => diminuir(camara["numero_camara"].toLowerCase())}>
+                <a onClick={() => diminuir(camara["numero_camara"].toUpperCase())}>
                     <button>DIMINUIR CAM {camara["numero_camara"]}</button>
                 </a>
             ))}

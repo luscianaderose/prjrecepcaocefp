@@ -262,21 +262,6 @@ def fun_fila_videncia():
 def fun_fila_prece():
     return fila_prece.to_dict()
 
-# print(fila_videncia.to_dict())
-# print("\n")
-# print(fila_videncia.to_dict()["fila"][1].to_dict())
-
-# for nome in ['JOSÉ', 'MARIA', 'JOÃO', 'CLÁUDIA', 'MÁRIO', 'BEATRIZ', 'FLÁVIA']:
-#     numero = fila_videncia.proximo_numero
-#     pessoa = Pessoa(numero, nome)
-#     fila_videncia.adicionar_pessoa(pessoa, numero)
-#     numero = fila_prece.proximo_numero
-#     pessoa = Pessoa(numero, nome)
-#     fila_prece.adicionar_pessoa(pessoa, numero)
-# fila_prece.salvar_fila()
-# fila_videncia.salvar_fila()
-# salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
-
 @app.route("/remover_atendido")
 def remover_atendido():
     nome_fila = request.args.get('nome_fila')

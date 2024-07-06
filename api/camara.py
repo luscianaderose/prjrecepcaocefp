@@ -61,6 +61,10 @@ class Camara:
             dupla.camara = self.numero_camara
             dupla.estado = dupla.atendendo
             self.numero_de_atendimentos += 1
+            print("numero de atendimentos / capacidade maxima", self.numero_de_atendimentos, self.capacidade_maxima)
+            # if self.numero_de_atendimentos == self.capacidade_maxima +1:
+            #     print("entrou no if")
+            #     self.capacidade_maxima += 1
 
         retorno = f'Câmara {self.numero_camara} chamando {self.pessoa_em_atendimento}.'
         if self.numero_de_atendimentos >= self.capacidade_maxima:

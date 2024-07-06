@@ -9,6 +9,8 @@ function Camaras(){
     const [filaVidencia, setFilaVidencia] = useState()
     const [filaPrece, setFilaPrece] = useState()
 
+    // console.log("camaras:", camaras)
+
     useEffect(
         () => {
             const buscarCamaras = async () => {
@@ -48,7 +50,7 @@ function Camaras(){
                         camara["nome_fila"] === "videncia" && (
                             <Camara 
                                 atividade={camara["nome_fila"]} 
-                                numero={camara["numero_camara"]} 
+                                numeroCamara={camara["numero_camara"]} 
                                 estado={camara["estado"]}
                                 capacidade={camara["capacidade_maxima"]}
                                 numeroAtendimentos={camara["numero_de_atendimentos"]}
@@ -68,7 +70,7 @@ function Camaras(){
                         camara["nome_fila"] === "prece" && (
                             <Camara 
                                 atividade={camara["nome_fila"]} 
-                                numero={camara["numero_camara"]} 
+                                numeroCamara={camara["numero_camara"]} 
                                 estado={camara["estado"]}
                                 capacidade={camara["capacidade_maxima"]}
                                 numeroAtendimentos={camara["numero_de_atendimentos"]}

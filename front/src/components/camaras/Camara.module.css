@@ -44,9 +44,10 @@
     text-decoration: none;
 }
 
-  
 .linkBolinhas{
     text-decoration: none;
 }
 
-  
+.linkIcone:hover{
+    cursor: pointer;
+}

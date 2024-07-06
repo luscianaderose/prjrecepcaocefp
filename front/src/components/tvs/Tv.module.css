@@ -1,0 +1,12 @@
+.tvCamara{
+    margin: 10px;
+    border-radius: 10px;
+    width: 590px;
+    min-height: 300px;
+    text-align: center;
+}
+
+.tvCamaraFonteNumCamara{
+    font-size: xx-large;
+    line-height: 50%;
+}
