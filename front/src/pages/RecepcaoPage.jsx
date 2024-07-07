@@ -3,8 +3,6 @@ import BarraAdicionarNomes from '../components/layout/BarraAdicionarNomes'
 import Camaras from '../components/camaras/Camaras'
 import BarraLegenda from '../components/layout/BarraLegenda'
 import Menu from '../components/layout/Menu'
-import Info from '../components/layout/Info'
-
 
 
 function RecepcaoPage(){
@@ -15,7 +13,6 @@ function RecepcaoPage(){
         <Camaras/>
         <BarraLegenda/>
         <Menu/>
-        <Info/>
     </>
     )
 }

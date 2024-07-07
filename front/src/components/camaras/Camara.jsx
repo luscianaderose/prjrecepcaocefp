@@ -8,6 +8,8 @@ import audioCamara2Wav from "../../assets/audio/camara2.wav"
 import audioCamara3Wav from "../../assets/audio/camara3.wav"
 import audioCamara3AWav from "../../assets/audio/camara3A.wav"
 import audioCamara4Wav from "../../assets/audio/camara4.wav"
+import { useState } from "react"
+import CamaraBola from "./CamaraBola"
 
 const audiosCamara = {
     "2":audioCamara2Wav,
@@ -16,31 +18,19 @@ const audiosCamara = {
     "3A":audioCamara3AWav
 }
 
+
 function Camara(props){
-    // console.log(props.numeroCamara, props.atividade)
-    // console.log("pessoa em atendimento:", props.pessoaEmAtendimento, props.fila)
-    // if (props.pessoaEmAtendimento !== null){
-    //     console.log(props.pessoaEmAtendimento["nome"], props.pessoaEmAtendimento["dupla"])
-    // }
-
-    // console.log("propriedades:", props.pessoaEmAtendimento)
-
     var nomeDupla = ""
     var numeroAtendidoNaFila = ""
+    console.log("teste", props.pessoaEmAtendimento)
     if (typeof props.fila === "object" && "fila" in props.fila && props.pessoaEmAtendimento !== null){
         numeroAtendidoNaFila = Object.keys(props.fila["fila"]).indexOf(props.pessoaEmAtendimento["numero"].toString()) + 1
-        // console.log("numero atendido na fila:", props.pessoaEmAtendimento["numero"])
-        // console.log("número do atendido oficial:", Object.keys(props.fila["fila"]).indexOf(props.pessoaEmAtendimento["numero"].toString()) + 1)
-        // console.log("lista do numero das pessoas:", Object.keys(props.fila["fila"]))
     }
-
+    
     if (props.pessoaEmAtendimento && props.pessoaEmAtendimento["dupla"] !== -1) {
-        // console.log("pessoa em atendimento com dupla")
         if (typeof props.fila === "object" && "fila" in props.fila){
             const indice = props.pessoaEmAtendimento["dupla"]
-            // console.log("indice:", indice)
             nomeDupla = props.fila["fila"][indice]["nome"]
-            // console.log("nome dupla:", nomeDupla)
         }
     }
 
@@ -63,9 +53,14 @@ function Camara(props){
                     {/* <!-- {bt_camara_num_gde} --> */}
                     <a style={{textDecoration:"none"}} href={`/abrir_camara/${props.numeroCamara}`}></a>
 
-                    <div className={`${styles.dvpCamaraNumeroGrande} cor-${props.atividade}`}>
+                    {/* <div className={`${styles.dvpCamaraNumeroGrande} cor-${props.atividade}`}>
                         {props.numeroCamara}
-                    </div>
+                    </div> */}
+
+                    <CamaraBola
+                        className={`cor-${props.atividade}`}
+                        numeroCamara={props.numeroCamara}
+                    />
 
                     <div className={styles.dvpBtChamarNovamente}>
                         <a className={styles.linkIcone} onClick={() => chamarNovamente()}>
@@ -93,7 +88,13 @@ function Camara(props){
             />
             {/* <!-- {bt_camara} --> */}
             <p>
-                <CamaraBotao numero={props.numeroCamara} estado={props.estado}/>
+                <CamaraBotao 
+                    numero={props.numeroCamara} 
+                    estado={props.estado} 
+                    mudarCamaras={props.mudarCamaras}
+                    nomeFila={props.atividade}
+                    mudarFila={props.mudarFila}
+                />
             </p>
         </div>
     )

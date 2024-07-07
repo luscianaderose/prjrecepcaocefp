@@ -4,7 +4,7 @@ import styles from "./Tvs.module.css"
 import Tv from "./Tv"
 
 
-function Tvs () {
+function Tvs (props) {
     const [camaras, setCamaras] = useState()
     const [filaVidencia, setFilaVidencia] = useState()
     const [filaPrece, setFilaPrece] = useState()
@@ -23,7 +23,7 @@ function Tvs () {
 
 
     return (
-        <div className={styles.tvVidenciaPrece}>
+        <div className={`${styles.tvVidenciaPrece} ${props.className}`}>
             <div className={`${styles.tvVidencia} cor-videncia`}>
                 {/* TV VIDENCIA */}
                 {/* <Tv numero="2" atividade="videncia"/>
@@ -35,7 +35,8 @@ function Tvs () {
                     camara["nome_fila"] === "videncia" && 
                     <Tv 
                         numero={camara["numero_camara"]} 
-                        atividade={camara["fila"]["nome_display"]} 
+                        label={camara["fila"]["nome_display"]} 
+                        atividade={camara["nome_fila"]}
                         estado={camara["estado"]}
                         pessoaAtendida={camara["pessoa_em_atendimento"]}
                         fila={filaVidencia}
@@ -48,7 +49,8 @@ function Tvs () {
                     camara["nome_fila"] === "prece" && 
                     <Tv 
                         numero={camara["numero_camara"]} 
-                        atividade={camara["fila"]["nome_display"]} 
+                        label={camara["fila"]["nome_display"]} 
+                        atividade={camara["nome_fila"]}
                         estado={camara["estado"]}
                         pessoaAtendida={camara["pessoa_em_atendimento"]}
                         fila={filaPrece}

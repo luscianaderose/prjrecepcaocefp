@@ -1,26 +1,18 @@
 import styles from "./TvPage.module.css"
 import Tvs from "../components/tvs/Tvs"
+import Botao from "../components/botoes/Botao"
+import ContainerBotoes from "../components/botoes/ContainerBotoes"
+
 
 function TvPage(){
 
-    console.log("styles", styles.tvPainel)
-
     return(
         <>
-            {/* <!-- espaco --> */}
-            <div className={styles.tvEspaco}></div>
+            <Tvs className={styles.tvs}/>
 
-            <Tvs/>
-
-            {/* <!-- espaco --> */}
-            <div className={styles.tvEspaco}></div>
-
-            {/* <!-- bt_painel --> */}
-            <div className={styles.tvPainel}>
-                <a href="/">
-                    <button>ACESSAR PAINEL DE CONTROLE</button>
-                </a>
-            </div>
+            <ContainerBotoes>
+                <Botao href="/" nomeDoBotao="VOLTAR PARA PAINEL DE CONTROLE"/>
+            </ContainerBotoes>
 
         </>
     )

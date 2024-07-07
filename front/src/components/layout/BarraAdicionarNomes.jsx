@@ -1,6 +1,9 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
 import styles from "./BarraAdicionarNomes.module.css"
+import InputText from "../inputs/InputText"
+import InputRadio from "../inputs/InputRadio"
+import BotaoSubmit from "../botoes/BotaoSubmit"
 
 function BarraAdicionarNomes(){
     const [nomeAtendido, setNomeAtendido] = useState()
@@ -17,8 +20,6 @@ function BarraAdicionarNomes(){
         }
         buscarFilas()
     },[])
-    // console.log("fila videncia:", filaVidencia)
-    // console.log("fila prece:", filaPrece)
     const adicionarNomeNaFila = async (evento) => {
         evento.preventDefault()
         if (
@@ -50,9 +51,8 @@ function BarraAdicionarNomes(){
             <div className="txt-tit3">ADICIONAR NOME NA FILA</div>
 
             <form className={styles.danForm} onSubmit={adicionarNomeNaFila}>
-                <input 
+                <InputText 
                     name="nome_atendido" 
-                    type="text" 
                     placeholder="Digite o nome aqui"
                     value={nomeAtendido}
                     onChange={(evento) => setNomeAtendido(evento.target.value)}
@@ -60,28 +60,24 @@ function BarraAdicionarNomes(){
 
                 <div>
                     <div className={styles.btVidenciaPrece}>
-                        <input 
+                        <InputRadio
                             className={styles.radio} 
                             type="radio" 
                             id="videncia" 
                             name="nome_fila" 
+                            label="vidência"
                             value="videncia"
                             onChange={(evento) => setNomeFila(evento.target.value)} 
                         />
-                        <label className={styles.label1} for="videncia">
-                            <div className={styles.radioTxt}>VIDÊNCIA</div>
-                        </label>
-                        <input 
+                        <InputRadio 
                             className={styles.radio} 
                             type="radio" 
                             id="prece" 
                             name="nome_fila" 
+                            label="prece"
                             value="prece"
                             onChange={(evento) => setNomeFila(evento.target.value)}
                         />
-                        <label className={styles.label2} for="prece">
-                            <div className={styles.radioTxt}>PRECE</div>
-                        </label>
                     </div>
                 </div>
 
@@ -90,9 +86,8 @@ function BarraAdicionarNomes(){
                     <input type="checkbox" id="medium" name="medium" value="medium"/>MEDIUM
                 </div> */}
 
-                <div>
-                    <button>ADICIONAR</button>
-                </div>
+                <BotaoSubmit label="ADICIONAR"/>
+                    {/* <button>ADICIONAR</button> */}
             </form>
         </div>
     )

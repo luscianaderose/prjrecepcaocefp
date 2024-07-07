@@ -20,10 +20,17 @@ function CamaraBotao (props) {
 
     const chamarProximo = async () => {
         const audio = new Audio(audiosCamara[props.numero])
-        audio.play()
         const resposta = await axios.get(`http://127.0.0.1:5001/chamar_proximo/${props.numero}`)
-        console.log("props.numero, audiosCamara[props.numero]", props.numero, audiosCamara[props.numero])
-        // window.location.reload()
+        const respostaCamaras = await axios.get("http://127.0.0.1:5001/camaras")
+        props.mudarCamaras(respostaCamaras.data)
+        if (props.nomeFila === "videncia"){
+            const respostaFila = await axios.get("http://127.0.0.1:5001/fila_videncia")
+            props.mudarFila(respostaFila.data)
+        }else if (props.nomeFila === "prece"){
+            const respostaFila = await axios.get("http://127.0.0.1:5001/fila_prece")
+            props.mudarFila(respostaFila.data)
+        }
+        audio.play()
     }
 
     const avisar = async () => {

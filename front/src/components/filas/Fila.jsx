@@ -9,6 +9,7 @@ import observacaoPng from "../../assets/img/observacao.png"
 import FormAtendido from "../forms/FormAtendido"
 import FilaDupla from "./FilaDupla"
 import FormObservacao from "../forms/FormObservacao"
+import Icone from "../icones/Icone"
 
 function Fila(props){
     const [abertoEditar, setAbertoEditar] = useState({})
@@ -74,41 +75,32 @@ function Fila(props){
                     {pessoa["estado"] === "atendendo" && <b>{indice + 1}. {pessoa["nome"].toUpperCase()} - {pessoa["camara"]}</b>} 
                     {pessoa["estado"] !== "atendendo" && pessoa["estado"] !== "riscado" && `${indice + 1}. ${pessoa["nome"].toUpperCase()}`}
 
-                    {/* {indice + 1}. {pessoa["nome"]} */}
                     <a 
                         className={styles.linkEditar} 
                         onClick={() => editarAtendido(pessoa["nome"])}
-                        // href="/editar_atendido?nome_fila={nome_fila}&numero_atendido={pessoa.numero}"
                     >
-                        <img alt="Editar" src={editarPng} width="16" height="16"/>
+                        <Icone alt="Editar" src={editarPng}/>
                     </a>
                     
                     <a 
                         className={styles.linkRemover} 
                         href={`/remover_atendido?nome_fila=${props.fila["atividade"]}&numero_atendido=${pessoa["numero"]}`}
                     >
-                        <img alt="Remover" src={lixoPng} width="16" height="16"/>
+                        <Icone alt="Remover" src={lixoPng}/>
                     </a>
                     <a 
                         className={styles.linkReposicionar} 
-                        // href="/reposicionar_atendido?nome_fila={nome_fila}&numero_atendido={pessoa.numero}&mover_para=cima"
                         onClick={() => reposicionar(props.fila["atividade"], pessoa["numero"], "cima")}
                     >
-                        <img alt="Reposicionar" src={setaCimaPng} width="16" height="16"/>
+                        <Icone alt="Reposicionar" src={setaCimaPng}/>
                     </a>
                     <a 
                         className={styles.linkReposicionar} 
-                        // href="/reposicionar_atendido?nome_fila={nome_fila}&numero_atendido={pessoa.numero}&mover_para=baixo"
                         onClick={() => reposicionar(props.fila["atividade"], pessoa["numero"], "baixo")}
                     >
-                        <img alt="Reposicionar" src={setaBaixoPng} width="16" height="16"/>
+                        <Icone alt="Reposicionar" src={setaBaixoPng}/>
                     </a>
 
-                    {/* <a 
-                        className={styles.linkDupla} 
-                        href="/dupla?numero_atendido={pessoa.numero}&nome_fila={nome_fila}">
-                        <img alt="dupla" src={duplaPng} width="16" height="16"/>
-                    </a> */}
                     <FilaDupla 
                         dupla={pessoa["dupla"]}
                         numeroAtendido={pessoa["numero"]}
@@ -118,21 +110,17 @@ function Fila(props){
 
                     <a 
                         className={styles.linkObservacao} 
-                        // href="/observacao?nome_fila={nome_fila}&numero_atendido={pessoa.numero}"
                         onClick={() => adicionarObservacao(pessoa["nome"])}
                     >
-                        <img alt="Observação" src={observacaoPng} width="16" height="16"/>
+                        <Icone alt="Observação" src={observacaoPng}/>
                     </a>
-                    {pessoa["observacao"]}
-                    {/* <a className={styles.linkDupla} href="/cancelar_dupla?numero_atendido={pessoa.numero}&nome_fila={nome_fila}">
-                        <img alt="dupla" src={duplaCancelarPng} width="16" height="16"/>
-                    </a>
-                    <a className={styles.linkDupla}>
-                        <img alt="dupla de cima" src={duplaCimaPng} width="16" height="16"/>
-                    </a>
-                    <a className={styles.linkDupla}>
-                        <img alt="dupla de baixo" src={duplaBaixoPng} width="16" height="16"/>
-                    </a> */}
+                    {
+                        pessoa["observacao"] && 
+                        <p className={styles.textoObservacao}>
+                            <Icone alt="Observação" src={observacaoPng}/>
+                            {pessoa["observacao"]}
+                        </p>
+                    }
 
                     {abertoEditar[pessoa["nome"]] && <FormAtendido 
                         pessoaEstado={pessoa["estado"]} 

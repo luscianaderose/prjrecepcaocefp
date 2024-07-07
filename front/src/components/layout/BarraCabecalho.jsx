@@ -1,7 +1,7 @@
-import cefpPng from "../../assets/img/cefp.png"
-import styles from "./BarraCabecalho.module.css"
-import { useState, useEffect } from "react"
 import axios from "axios"
+import { useState, useEffect } from "react"
+import styles from "./BarraCabecalho.module.css"
+import cefpPng from "../../assets/img/cefp.png"
 
 
 function BarraCabecalho(){
@@ -12,12 +12,10 @@ function BarraCabecalho(){
                 const response = await axios.get("http://127.0.0.1:5001/calendario")
                 const data = await response.data
                 setDataEHora(data["data_e_hora"])
-                // console.log(data["data_e_hora"])
             }
             buscarDataEHora()
         }, []
     )
-
 
     return(
         <div className={styles.divCabecalho}>

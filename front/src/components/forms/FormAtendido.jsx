@@ -9,19 +9,13 @@ function FormAtendido (props) {
         window.location.reload()
     }
 
+    const desriscar = async () => {
+        const resposta = await axios.get(`http://127.0.0.1:5001/desriscar?numero_atendido=${props.numeroAtendido}&nome_fila=${props.nomeFila}`)
+        window.location.reload()
+    }
+
     const linha = (
         <><br></br>____________________________________________________________<br></br><br></br></>
-    )
-    const desriscar = (
-        <>
-        {linha}
-        <p>Deseja desriscar o nome?</p>
-        <a href="/desriscar?numero_atendido={numero_atendido}&nome_fila={nome_fila}">
-            <button>DESRISCAR</button>
-        </a>
-        {linha}
-        Cancelar
-        </>
     )
 
     return (
@@ -38,7 +32,19 @@ function FormAtendido (props) {
                 <input type='hidden' name='numero_atendido' value={props.numeroAtendido}/>
                 <button type='submit' className='btj'>CONFIRMAR</button>
             </form>
-            {desriscar ? props.pessoaEstado === "riscado" : ""}
+            {
+                props.pessoaEstado === "riscado" && (
+                    <>
+                    {linha}
+                    <p>Deseja desriscar o nome?</p>
+                    <a onClick={() => desriscar()}>
+                        <button>DESRISCAR</button>
+                    </a>
+                    {linha}
+                    Cancelar
+                    </>
+                )
+            }
         </>
     )
 }

@@ -20,10 +20,16 @@ function SubMenuGeral (props) {
                 <a href="/tv">
                     <button>TV</button>
                 </a>
+
+                <a href="/info">
+                    <button>INFORMAÇÕES</button>
+                </a>
+
                 {/* <!-- bt_silencio --> */}
                 <a onClick={() => pedirSilencio()}>
                     <button>PEDIR SILÊNCIO</button>
                 </a>
+
                 {/* <!-- bt_reiniciar --> */}
                 <a onClick={() => reinicarTudo()}>
                     <button>REINICAR TUDO</button>

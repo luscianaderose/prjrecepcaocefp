@@ -148,7 +148,7 @@ def chamar_proximo(numero_camara):
         salvar_camaras(dict_camaras, ARQUIVO_CAMARAS)
         global ultima_camara_chamada
         ultima_camara_chamada = camara
-    return "chamar próximo"
+    return camara.pessoa_em_atendimento.to_dict()
 
 @app.route("/avisado/<numero_camara>")
 def avisado(numero_camara):
@@ -380,6 +380,27 @@ def observacao():
         fila = fila_prece
     fila.adicionar_observacao(numero_atendido, observacao)
     return "observação adicionada"
+
+@app.route('/desriscar')
+def desriscar():
+    nome_fila = request.args.get('nome_fila')
+    numero_atendido = int(request.args.get('numero_atendido'))
+    if nome_fila == fila_videncia.atividade:
+        fila = fila_videncia
+    elif nome_fila == fila_prece.atividade:
+        fila = fila_prece
+    if numero_atendido in fila:
+        pessoa = fila.get(numero_atendido)
+        pessoa.estado = pessoa.aguardando
+        pessoa.camara = None
+        if pessoa.dupla != -1:
+            dupla = fila.get(pessoa.dupla)
+            dupla.estado = dupla.aguardando
+            dupla.camara = None
+        fila.salvar_fila()
+        return "desriscado"
+    ### JANELA ###
+    return 'Não foi possível desriscar esse nome!<br><a href="/">' + "voltar"
 
 
 app.run(debug=True, host="0.0.0.0", port=5001)
