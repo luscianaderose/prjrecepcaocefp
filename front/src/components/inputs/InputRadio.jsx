@@ -20,15 +20,3 @@ function InputRadio(props){
 }
 
 export default InputRadio
-
-{/* <input 
-className={styles.radio} 
-type="radio" 
-id="videncia" 
-name="nome_fila" 
-value="videncia"
-onChange={(evento) => setNomeFila(evento.target.value)} 
-/>
-<label className={styles.label1} for="videncia">
-<div className={styles.radioTxt}>VIDÊNCIA</div>
-</label> */}

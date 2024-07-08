@@ -1,5 +1,5 @@
-import styles from "./CamaraBotao.module.css"
 import axios from "axios"
+import styles from "./CamaraBotao.module.css"
 import audioCamara2Wav from "../../assets/audio/camara2.wav"
 import audioCamara3Wav from "../../assets/audio/camara3.wav"
 import audioCamara3AWav from "../../assets/audio/camara3A.wav"
@@ -13,6 +13,7 @@ const audiosCamara = {
 }
 
 function CamaraBotao (props) {
+
     const abrirCamara = async () => {
         const resposta = await axios.get(`http://127.0.0.1:5001/abrir_camara/${props.numero}`)
         window.location.reload()
@@ -67,7 +68,6 @@ function CamaraBotao (props) {
             <a 
                 className={`${styles.btCamara} a`} 
                 onClick={estadoAcoes[props.estado.toLowerCase()]["acao"]}
-                // href={`/abrir_camara/${props.numero}`}
             >
                 {estadoAcoes[props.estado.toLowerCase()]["descricao"]}
             </a>

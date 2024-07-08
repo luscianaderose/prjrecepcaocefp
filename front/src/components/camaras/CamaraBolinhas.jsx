@@ -1,5 +1,6 @@
-import styles from "./CamaraBolinhas.module.css"
 import axios from "axios"
+import styles from "./CamaraBolinhas.module.css"
+
 
 function CamaraBolinhas(props){
 
@@ -8,7 +9,6 @@ function CamaraBolinhas(props){
     const qtdBolinhasBrancas = qtdBolinhasTotais - qtdBolinhasPretas
     const bolinhaBranca = String.fromCharCode(9898)
     const bolinhaPreta = String.fromCharCode(9899)
-
 
     const adicionarBolinhas = async () => {
         const resposta = await axios.get(`http://127.0.0.1:5001/bolinhas?modo=adicao&numero_camara=${props.numero}`)

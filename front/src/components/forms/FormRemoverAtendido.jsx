@@ -1,6 +1,7 @@
-import Janela from "../janela/Janela"
-import {useSearchParams} from "react-router-dom"
 import axios from "axios"
+import {useSearchParams} from "react-router-dom"
+import Janela from "../janela/Janela"
+
 
 function FormRemoverAtendido(){
     const [parametros] = useSearchParams()

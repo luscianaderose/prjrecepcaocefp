@@ -1,15 +1,14 @@
 import styles from "./Camara.module.css"
-import chamarComSomPng from "../../assets/img/chamar-com-som.png"
-import chamarSemSomPng from "../../assets/img/chamar-sem-som.png"
 import CamaraBotao from "./CamaraBotao"
 import CamaraIcone from "./CamaraIcone"
 import CamaraBolinhas from "./CamaraBolinhas"
+import CamaraBola from "./CamaraBola"
+import chamarComSomPng from "../../assets/img/chamar-com-som.png"
+import chamarSemSomPng from "../../assets/img/chamar-sem-som.png"
 import audioCamara2Wav from "../../assets/audio/camara2.wav"
 import audioCamara3Wav from "../../assets/audio/camara3.wav"
 import audioCamara3AWav from "../../assets/audio/camara3A.wav"
 import audioCamara4Wav from "../../assets/audio/camara4.wav"
-import { useState } from "react"
-import CamaraBola from "./CamaraBola"
 
 const audiosCamara = {
     "2":audioCamara2Wav,
@@ -18,18 +17,17 @@ const audiosCamara = {
     "3A":audioCamara3AWav
 }
 
-
 function Camara(props){
     var nomeDupla = ""
     var numeroAtendidoNaFila = ""
-    console.log("teste", props.pessoaEmAtendimento)
-    if (typeof props.fila === "object" && "fila" in props.fila && props.pessoaEmAtendimento !== null){
-        numeroAtendidoNaFila = Object.keys(props.fila["fila"]).indexOf(props.pessoaEmAtendimento["numero"].toString()) + 1
+
+    if (typeof props.fila === "object" && "fila" in props.fila && props.camara["pessoa_em_atendimento"] !== null){
+        numeroAtendidoNaFila = Object.keys(props.fila["fila"]).indexOf(props.camara["pessoa_em_atendimento"]["numero"].toString()) + 1
     }
     
-    if (props.pessoaEmAtendimento && props.pessoaEmAtendimento["dupla"] !== -1) {
+    if (props.camara["pessoa_em_atendimento"] && props.camara["pessoa_em_atendimento"]["dupla"] !== -1) {
         if (typeof props.fila === "object" && "fila" in props.fila){
-            const indice = props.pessoaEmAtendimento["dupla"]
+            const indice = props.camara["pessoa_em_atendimento"]["dupla"]
             nomeDupla = props.fila["fila"][indice]["nome"]
         }
     }
@@ -42,57 +40,49 @@ function Camara(props){
     }
 
     const chamarNovamente = () => {
-        const audio = new Audio(audiosCamara[props.numeroCamara])
+        const audio = new Audio(audiosCamara[props.camara["numero_camara"]])
         audio.play()
     }
 
     return(
-        <div className={`${styles.dvpCamaraIndividual} cor-fundo2 ${classeCamara[props.estado.toLowerCase()]}`}>
+        <div className={`${styles.dvpCamaraIndividual} cor-fundo2 ${classeCamara[props.camara["estado"].toLowerCase()]}`}>
             <p>
                 <div className={styles.dvpBtNumGdeComBtChamNov}>
-                    {/* <!-- {bt_camara_num_gde} --> */}
-                    <a style={{textDecoration:"none"}} href={`/abrir_camara/${props.numeroCamara}`}></a>
-
-                    {/* <div className={`${styles.dvpCamaraNumeroGrande} cor-${props.atividade}`}>
-                        {props.numeroCamara}
-                    </div> */}
+                    <a style={{textDecoration:"none"}} href={`/abrir_camara/${props.camara["numero_camara"]}`}></a>
 
                     <CamaraBola
-                        className={`cor-${props.atividade}`}
-                        numeroCamara={props.numeroCamara}
+                        className={`cor-${props.camara["nome_fila"]}`}
+                        numeroCamara={props.camara["numero_camara"]}
                     />
 
                     <div className={styles.dvpBtChamarNovamente}>
                         <a className={styles.linkIcone} onClick={() => chamarNovamente()}>
                             <img alt="Som" src={chamarComSomPng} width="16" height="16"/>
                         </a>
-                        <a className={styles.linkIcone} href={`/chamar_novamente_sem_som/${props.numeroCamara}`}>
+                        <a className={styles.linkIcone} href={`/chamar_novamente_sem_som/${props.camara["numero_camara"]}`}>
                             <img alt="Sem som" src={chamarSemSomPng} width="16" height="16"/>
                         </a>
                     </div>
                 </div>
             </p>
 
-            {/* <!-- {camara.estado}<br> --> */}
-            {/* <span className={styles.iconeFechada}></span> FECHADA<br></br> */}
-            {props && <CamaraIcone estado={props.estado}/>}
+            {<CamaraIcone estado={props.camara["estado"]}/>}
             <p className="txt-destaque">
-                {props.pessoaEmAtendimento ? `${numeroAtendidoNaFila}. ${props.pessoaEmAtendimento["nome"].toUpperCase()}` : "CÂMARA VAZIA"}
+                {props.camara["pessoa_em_atendimento"] ? `${numeroAtendidoNaFila}. ${props.camara["pessoa_em_atendimento"]["nome"].toUpperCase()}` : "CÂMARA VAZIA"}
                 {nomeDupla && ` & ${nomeDupla}`}
             </p>
             <p className="atendimentos txt-pequeno b">ATENDIMENTOS</p>
             <CamaraBolinhas 
-                numero={props.numeroCamara}
-                capacidade={props.capacidade}
-                numeroAtendimentos={props.numeroAtendimentos}
+                numero={props.camara["numero_camara"]}
+                capacidade={props.camara["capacidade_maxima"]}
+                numeroAtendimentos={props.camara["numero_de_atendimentos"]}
             />
-            {/* <!-- {bt_camara} --> */}
             <p>
                 <CamaraBotao 
-                    numero={props.numeroCamara} 
-                    estado={props.estado} 
+                    numero={props.camara["numero_camara"]} 
+                    estado={props.camara["estado"]} 
                     mudarCamaras={props.mudarCamaras}
-                    nomeFila={props.atividade}
+                    nomeFila={props.camara["nome_fila"]}
                     mudarFila={props.mudarFila}
                 />
             </p>

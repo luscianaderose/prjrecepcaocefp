@@ -11,15 +11,13 @@ function BarraAdicionarNomes(){
     const [filaVidencia, setFilaVidencia] = useState()
     const [filaPrece, setFilaPrece] = useState()
 
-    useEffect(() => {
-        const buscarFilas = async () => {
-            const respostaVidencia = await axios.get("http://127.0.0.1:5001/fila_videncia")
-            const respostaPrece = await axios.get("http://127.0.0.1:5001/fila_prece")
-            setFilaVidencia(respostaVidencia.data)
-            setFilaPrece(respostaPrece.data)
-        }
-        buscarFilas()
-    },[])
+    const buscarFilas = async () => {
+        const respostaVidencia = await axios.get("http://127.0.0.1:5001/fila_videncia")
+        const respostaPrece = await axios.get("http://127.0.0.1:5001/fila_prece")
+        setFilaVidencia(respostaVidencia.data)
+        setFilaPrece(respostaPrece.data)
+    }
+
     const adicionarNomeNaFila = async (evento) => {
         evento.preventDefault()
         if (
@@ -45,6 +43,10 @@ function BarraAdicionarNomes(){
             window.location.reload()
         }
     }
+
+    useEffect(() => {
+        buscarFilas()
+    },[])
 
     return(
         <div className={`${styles.divAdicionarNomes} cor-fundo2`}>
@@ -80,14 +82,7 @@ function BarraAdicionarNomes(){
                         />
                     </div>
                 </div>
-
-                {/* BOTAO DO MÉDIUM PRA FAZER DEPOIS */}
-                {/* <div>
-                    <input type="checkbox" id="medium" name="medium" value="medium"/>MEDIUM
-                </div> */}
-
                 <BotaoSubmit label="ADICIONAR"/>
-                    {/* <button>ADICIONAR</button> */}
             </form>
         </div>
     )

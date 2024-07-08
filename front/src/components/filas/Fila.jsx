@@ -1,15 +1,16 @@
 import axios from "axios"
 import { useState, useEffect } from 'react'
 import styles from "./Fila.module.css"
+import FormAtendido from "../forms/FormAtendido"
+import FilaDupla from "./FilaDupla"
+import FormObservacao from "../forms/FormObservacao"
+import Icone from "../icones/Icone"
 import editarPng from "../../assets/img/editar.png"
 import lixoPng from "../../assets/img/lixo.png"
 import setaCimaPng from "../../assets/img/seta-cima.png"
 import setaBaixoPng from "../../assets/img/seta-baixo.png"
 import observacaoPng from "../../assets/img/observacao.png"
-import FormAtendido from "../forms/FormAtendido"
-import FilaDupla from "./FilaDupla"
-import FormObservacao from "../forms/FormObservacao"
-import Icone from "../icones/Icone"
+
 
 function Fila(props){
     const [abertoEditar, setAbertoEditar] = useState({})
@@ -42,7 +43,6 @@ function Fila(props){
         }
     }
 
-
     const reposicionar = async (nomeFila, numeroAtendido, moverPara) => {
         const resposta = await axios.get(`http://127.0.0.1:5001/reposicionar_atendido?nome_fila=${nomeFila}&numero_atendido=${numeroAtendido}&mover_para=${moverPara}`)
         window.location.reload()
@@ -61,8 +61,6 @@ function Fila(props){
             }))
         })
     }, [props.fila])
-
-    // console.log("abertoEditar:", abertoEditar, props.fila["atividade"])
 
     return(
         <div className={`${styles.dvpLista} cor-${props.atividade}`}>
@@ -127,6 +125,7 @@ function Fila(props){
                         pessoaNome={pessoa["nome"]}
                         nomeFila={props.fila["atividade"]}
                         numeroAtendido={pessoa["numero"]}
+                        onCancelar={() => editarAtendido(pessoa["nome"])}
                     />}
                     {abertoObservacao[pessoa["nome"]] && <FormObservacao
                         observacao={pessoa["observacao"]}

@@ -1,5 +1,5 @@
-import styles from "./Menu.module.css"
 import axios from "axios"
+import styles from "./Menu.module.css"
 import audioSilencioMp3 from "../../assets/audio/celulares_silencio.mp3"
 
 
@@ -25,12 +25,10 @@ function SubMenuGeral (props) {
                     <button>INFORMAÇÕES</button>
                 </a>
 
-                {/* <!-- bt_silencio --> */}
                 <a onClick={() => pedirSilencio()}>
                     <button>PEDIR SILÊNCIO</button>
                 </a>
 
-                {/* <!-- bt_reiniciar --> */}
                 <a onClick={() => reinicarTudo()}>
                     <button>REINICAR TUDO</button>
                 </a>

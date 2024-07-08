@@ -19,20 +19,13 @@ function Tvs (props) {
             setFilaPrece(respostaFilaPrece.data)
         }
         buscarDados()
-        // setInterval(buscarDados, 90000)
     }, [])
-
 
     return (
         <div className={`${styles.tvVidenciaPrece} ${props.className}`}>
             <div className={`${styles.tvVidencia} cor-videncia`}>
-                {/* TV VIDENCIA */}
-                {/* <Tv numero="2" atividade="videncia"/>
-                <Tv numero="4" atividade="videncia"/> */}
                 {camaras && Object.values(camaras).map((camara, indice) => (
                     
-                    // console.log("camara nome fila, numero camara, nome display, estado", camara["nome_fila"], camara["numero_camara"], camara["fila"]["nome_display"], camara["estado"])
-
                     camara["nome_fila"] === "videncia" && 
                     <Tv 
                         numero={camara["numero_camara"]} 
@@ -45,7 +38,6 @@ function Tvs (props) {
                 ))}
             </div>
             <div className={`${styles.tvPrece} cor-prece`}>
-                {/* TV PRECE */}
                 {camaras && Object.values(camaras).map((camara, indice) => (
                     camara["nome_fila"] === "prece" && 
                     <Tv 
@@ -58,7 +50,6 @@ function Tvs (props) {
                     />
                 ))}
             </div>
-
         </div>
     )
 }

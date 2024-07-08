@@ -28,7 +28,6 @@ function FilaDupla(props) {
             window.history.back(1)
         }    
     }
-    // console.log("props.dupla", props.dupla)
     const linkDupla = () => {
         if (props.dupla !== -1) {
             return (

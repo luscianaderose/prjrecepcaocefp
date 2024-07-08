@@ -1,5 +1,5 @@
 function BotaoSubmit(props){
-    return <button>{props.label.toUpperCase()}</button>
+    return <button className={props.className}>{props.label.toUpperCase()}</button>
 }
 
 export default BotaoSubmit

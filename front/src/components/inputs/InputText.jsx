@@ -1,6 +1,3 @@
-
-
-
 function InputText (props) {
     return (
         <input 
