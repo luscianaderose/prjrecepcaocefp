@@ -1,6 +1,16 @@
 # APLICAÇÃO DA RECEPÇÃO DE CÂMARAS 
 ## CONGREGAÇÃO ESPÍRITA FRANCISCO DE PAULA
 
+LINKS DA ENTREGA DO TRABALHO
+VÍDEO: 
+FRONT GITHUB: https://github.com/luscianaderose/prjrecepcaocefp/tree/react
+FIGMA: https://www.figma.com/proto/4WaxuFjrOhR8aIHIlHXuIP/prj-recepcao-cefp-01?node-id=0-1&t=XGYyK7bsqyAa5qK2-1
+
+OBJETIVO DA APLICAÇÃO
+
+
+
+
 ## Comandos para o terminal em linux:
 
 

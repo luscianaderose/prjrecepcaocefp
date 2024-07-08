@@ -27,25 +27,29 @@ function Tv (props) {
         "fechada":"camara-fechada",
         "atendendo":"camara-chamando",
         "último":"camara-avisar",
-        "foi avisado":"camara-avisando"
+        "foi avisado":"camara-avisado"
     }
 
     return (
         <div className={`${styles.tvCamara} cor-fundo2 ${classeDaCamara[props.estado.toLowerCase()]}`}>
-            <CamaraBola 
-                className={`cor-${props.atividade} ${styles.camaraBolaTv}`}
-                numeroCamara={props.numero}
-            />
-            <div className={styles.tvCamaraConteudo}>
-                <div className={styles.tvCamaraFonteNumCamara}>
-                    <div className={`txt-tv1 ${styles.bolaEAtividade}`}>
-                        {props.label.toUpperCase()}
+            <div className={styles.tvBolaAtividade}>
+                <CamaraBola 
+                    className={`cor-${props.atividade} ${styles.camaraBolaTv}`}
+                    numeroCamara={props.numero}
+                />
+                <div className={styles.tvCamaraConteudo}>
+                    <div className={styles.tvCamaraFonteNumCamara}>
+                        <div className={`txt-tv1 ${styles.bolaEAtividade}`}>
+                            {props.label.toUpperCase()}
+                        </div>
                     </div>
+                    <p className="txt-tv3">{props.estado.toUpperCase()}</p>
                 </div>
-                <p className="txt-tv2">{props.estado.toUpperCase()}</p>
+            </div>
+            <div className={styles.tvNomeAtendido}>
                 <p className="txt-tv2">
-                    {nomeAtendido !== "" && `${numeroAtendido + 1}. ${nomeAtendido}`}
-                    {nomeDupla !== "" && ` & ${nomeDupla}`}
+                    {nomeAtendido !== "" && `${numeroAtendido + 1}. ${nomeAtendido}`.toUpperCase()}
+                    {nomeDupla !== "" && ` & ${nomeDupla}`.toUpperCase()}
                     {numeroAtendido === "" && "CÂMARA VAZIA"}
                 </p>
             </div>

@@ -77,7 +77,7 @@ function Camara(props){
             {/* <span className={styles.iconeFechada}></span> FECHADA<br></br> */}
             {props && <CamaraIcone estado={props.estado}/>}
             <p className="txt-destaque">
-                {props.pessoaEmAtendimento ? `${numeroAtendidoNaFila}. ${props.pessoaEmAtendimento["nome"]}` : "CÂMARA VAZIA"}
+                {props.pessoaEmAtendimento ? `${numeroAtendidoNaFila}. ${props.pessoaEmAtendimento["nome"].toUpperCase()}` : "CÂMARA VAZIA"}
                 {nomeDupla && ` & ${nomeDupla}`}
             </p>
             <p className="atendimentos txt-pequeno b">ATENDIMENTOS</p>

@@ -42,9 +42,16 @@ function InfoPage(){
                     <li>Automaticamente o nome anterior é riscado na lista, a câmara que chamou fica registrada ao lado do nome na lista, uma bolinha vazia fica preenchida e um áudio é tocado avisando que a câmara está chamando.</li>
                     <li>Chamar o próximo pelo nome da pessoa. Mostrar à pessoa onde é a câmara.</li>
                     <li>Nas sextas-feiras, normalmente cada câmara atende 5 pessoas. Quando 5 bolinhas forem preenchidas, é hora de avisar a câmara que é a última.</li>
-                    <li>Se comparecerem menos de 10 pessoas em uma lista, tente dividir igualmente entre as câmaras. Por exemplo, se comparecerem apenas 8 pessoas para cada câmara de uma lista, direcione 4 para cada câmara para distribuir o trabalho igualmente.</li>
-                    <li>Ao entrar a última pessoa da câmara, avisar ao secretário da câmara que é a última pessoa a ser atendida para que a câmara possa fazer depois dela o processo de encerramento.</li>
-                    <li>Leia um trecho do Evangelho às 18:50. Falar a saudação da casa antes e depois (Graças a Deus, a Jesus e a Francisco de Paula). Se quiser pode rezar o Pai Nosso. Fale os seguintes avisos: silêncio, desligar os celulares, comprovante em mãos, pode pegar um livro do balcão para ler enquanto espera.</li>
+                    <li>Tente distribuir os atendimentos nas câmaras igualmente. Por exemplo, se comparecerem apenas 8 de uma lista com 10 pessoas, direcione 4 para cada câmara.</li>
+                    <li>Ao entrar a última pessoa da câmara, avisar ao secretário da câmara que é a última pessoa a ser atendida para que a câmara possa fazer depois do atendimento o processo de encerramento.</li>
+                    <li>Leia um trecho do Evangelho às 18:50. Falar a saudação da casa antes e depois (Graças a Deus, a Jesus e a Francisco de Paula). Se quiser pode rezar o Pai Nosso. </li>
+                    <li>Fale os seguintes avisos: silêncio, desligar os celulares, comprovante em mãos, pode pegar um livro.</li>
+                    <ol>
+                        <li>Por favor, faça silêncio para permanecer concentrado, em oração.</li>
+                        <li>Desligue os celulares. Não é permitido uso de eletrônicos. O uso causa desconcentração e atrapalha os trabalhos nas câmaras.</li>
+                        <li>Permaneça com o comprovante em mãos para não ter que procurar quando entrar na câmara atrapalhando a concentração.</li>
+                        <li>Pode pegar um livro do balcão para ler enquanto espera.</li>
+                    </ol>
                 </ol>
             
                 <p className="txt-tit3">REPETIR CHAMADO COM OU SEM SOM</p>

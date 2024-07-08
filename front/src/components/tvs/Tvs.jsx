@@ -19,6 +19,7 @@ function Tvs (props) {
             setFilaPrece(respostaFilaPrece.data)
         }
         buscarDados()
+        // setInterval(buscarDados, 90000)
     }, [])
 
 

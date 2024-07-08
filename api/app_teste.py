@@ -11,7 +11,7 @@ from camara import Camara, salvar_camaras, ler_camaras
 from info import texto_recepcao
 
 
-locale.setlocale(locale.LC_ALL,'pt_BR')
+# locale.setlocale(locale.LC_ALL,'pt_BR.utf8')
 
 
 PASTA_ARQUIVOS = os.path.join(os.path.expanduser('~'), '.recepcao-camaras')

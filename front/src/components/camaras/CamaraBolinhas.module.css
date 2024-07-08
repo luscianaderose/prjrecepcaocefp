@@ -1,0 +1,7 @@
+.linkBolinhas{
+    margin: 0 5px;
+}
+
+.linkBolinhas:hover{
+    cursor: pointer;
+}

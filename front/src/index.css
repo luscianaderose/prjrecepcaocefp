@@ -83,6 +83,7 @@ background-color: rgb(149, 255, 225);
 
 .txt-tv1{
 font-size: 40pt;
+margin-bottom: 40px;
 }
 
 .txt-tv2{
@@ -90,7 +91,8 @@ font-size: 30pt;
 }
 
 .txt-tv3{
-font-size: 20pt;
+font-size: 24pt;
+line-height: 20%;
 }
 
 .txt-tit1{

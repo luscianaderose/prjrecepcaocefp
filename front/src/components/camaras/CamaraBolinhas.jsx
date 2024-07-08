@@ -10,8 +10,6 @@ function CamaraBolinhas(props){
     const bolinhaPreta = String.fromCharCode(9899)
 
 
-    // console.log("bolinhas totais / pretas", qtdBolinhasTotais, qtdBolinhasPretas, qtdBolinhasBrancas)
-
     const adicionarBolinhas = async () => {
         const resposta = await axios.get(`http://127.0.0.1:5001/bolinhas?modo=adicao&numero_camara=${props.numero}`)
         window.location.reload()
@@ -27,17 +25,14 @@ function CamaraBolinhas(props){
             <a 
                 className={`${styles.linkBolinhas} a`} 
                 onClick={subtrairBolinhas}
-                // href={`/bolinhas?modo=subtracao&numero_camara=${props.numero}`}
             >
                 <b>-</b>
             </a>
-            {/* <!-- {camara.bolinhas()} --> */}
             {bolinhaPreta.repeat(qtdBolinhasPretas)}
             {bolinhaBranca.repeat(qtdBolinhasBrancas)}
             <a 
                 className={`${styles.linkBolinhas} a`} 
                 onClick={adicionarBolinhas}
-                // href={`/bolinhas?modo=adicao&numero_camara=${props.numero}`}
             >
                 <b>+</b>
             </a>
