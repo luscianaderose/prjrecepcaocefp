@@ -8,32 +8,27 @@ A Congregação Espírita Francisco de Paula oferece tratamentos espirituais de 
 
 ## INSTALAÇÃO
 ### PRÉ-REQUISITOS
-- Instalar Pyhton3; 
-- Instalar Node;
-- Instalar Docker.
+- Instalar Pyhton3: https://www.python.org/downloads/
+- Instalar Pip3: https://www.activestate.com/resources/quick-reads/how-to-install-and-use-pip3/
+- Instalar Node: https://nodejs.org/en/download/package-manager
 
 ### PARA INICIAR O REACT
 Digite os seguintes comandos no terminal:
 ```
 cd front
 npm run dev
-http://localhost:5173/
 ```
+Para acessar no navegador:
+http://localhost:5173/
 
 ### PARA INICIAR A API
 Digite os seguintes comandos no terminal:
 ```
+pip install -r requirements.txt
 python api/app.py
+```
+Para acessar no navegador:
 http://localhost:5001/
-```
-
-### Comandos para o terminal em linux:
-```bash
-cd "F:\_dev aula lucas joy\prjrecepcaocefp"
-./deploy.ps1
-```
-
-### Comandos para instalar no Windows:
 
 
 ## LINKS DO PROJETO
