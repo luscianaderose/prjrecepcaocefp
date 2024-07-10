@@ -1,5 +1,6 @@
 import axios from "axios"
 import styles from "./Menu.module.css"
+import Botao from "../botoes/Botao"
 
 
 function SubMenuDiminuir (props) {
@@ -12,9 +13,11 @@ function SubMenuDiminuir (props) {
     return (
         <div className={`${styles.divMenu} cor-fundo2`}>
             {props.camaras.map((camara, indice) => (
-                <a onClick={() => diminuir(camara["numero_camara"].toUpperCase())}>
-                    <button>DIMINUIR CAM {camara["numero_camara"]}</button>
-                </a>
+                <Botao
+                    className={styles.botao}
+                    onClick={() => diminuir(camara["numero_camara"].toUpperCase())}
+                    nomeDoBotao={`DIMINUIR CAM ${camara["numero_camara"]}`}
+                />
             ))}
         </div>
     

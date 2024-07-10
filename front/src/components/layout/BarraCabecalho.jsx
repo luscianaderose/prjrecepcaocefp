@@ -6,13 +6,15 @@ import cefpPng from "../../assets/img/cefp.png"
 
 function BarraCabecalho(){
     const [dataEHora, setDataEHora] = useState()
+    
+    const buscarDataEHora = async () => {
+        const response = await axios.get("http://127.0.0.1:5001/calendario")
+        const data = await response.data
+        setDataEHora(data["data_e_hora"])
+    }
+    
     useEffect(
         () => {
-            const buscarDataEHora = async () => {
-                const response = await axios.get("http://127.0.0.1:5001/calendario")
-                const data = await response.data
-                setDataEHora(data["data_e_hora"])
-            }
             buscarDataEHora()
         }, []
     )

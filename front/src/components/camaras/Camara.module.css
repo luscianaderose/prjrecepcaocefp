@@ -23,15 +23,6 @@
     justify-content: space-evenly;
 }
 
-.linkRemover, .linkEditar, .linkReposicionar, .linkDupla, .linkIcone, .linkObservacao{
-    margin-left: 4px;
-    text-decoration: none;
-}
-
 .linkBolinhas{
     text-decoration: none;
-}
-
-.linkIcone:hover{
-    cursor: pointer;
 }

@@ -21,5 +21,9 @@
 }
   
 .divMenu > a{
-width: 180px;
+    width: 180px;
+}
+
+.botao button{
+    margin-top: 0;
 }

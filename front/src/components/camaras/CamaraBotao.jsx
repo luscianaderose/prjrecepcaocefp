@@ -4,6 +4,8 @@ import audioCamara2Wav from "../../assets/audio/camara2.wav"
 import audioCamara3Wav from "../../assets/audio/camara3.wav"
 import audioCamara3AWav from "../../assets/audio/camara3A.wav"
 import audioCamara4Wav from "../../assets/audio/camara4.wav"
+import Botao from "../botoes/Botao"
+
 
 const audiosCamara = {
     "2":audioCamara2Wav,
@@ -64,15 +66,11 @@ function CamaraBotao (props) {
     }
 
     return (
-        <button type="button">
-            <a 
-                className={`${styles.btCamara} a`} 
-                onClick={estadoAcoes[props.estado.toLowerCase()]["acao"]}
-            >
-                {estadoAcoes[props.estado.toLowerCase()]["descricao"]}
-            </a>
-        </button>
-
+        <Botao
+            className={`${styles.btCamara}`}
+            nomeDoBotao={estadoAcoes[props.estado.toLowerCase()]["descricao"]}
+            onClick={estadoAcoes[props.estado.toLowerCase()]["acao"]}
+        />
     )
 }
 

@@ -1,17 +1,20 @@
+import axios from "axios"
+import { useState, useEffect } from "react"
 import styles from "./Camaras.module.css"
 import Camara from "./Camara"
 import Fila from "../filas/Fila"
-import axios from "axios"
-import { useState, useEffect } from "react"
+import {APIURL} from "../../services/api"
+
 
 function Camaras(){
     const [camaras, setCamaras] = useState()
     const [filaVidencia, setFilaVidencia] = useState()
     const [filaPrece, setFilaPrece] = useState()
+    console.log("api url", APIURL)
 
     const buscarCamaras = async () => {
         try {
-            const resposta = await axios.get("http://127.0.0.1:5001/camaras")
+            const resposta = await axios.get(`http://127.0.0.1:5001/camaras`)
             const dados = await resposta.data
             setCamaras(dados)
         } catch(error){

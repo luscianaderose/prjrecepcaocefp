@@ -2,6 +2,7 @@ import axios from "axios"
 import { useState } from "react"
 import styles from "./FormAtendido.module.css"
 import InputText from "../inputs/InputText"
+import Botao from "../botoes/Botao"
 import BotaoCancelar from "../botoes/BotaoCancelar"
 import BotaoSubmit from "../botoes/BotaoSubmit"
 
@@ -40,9 +41,11 @@ function FormAtendido (props) {
                 props.pessoaEstado === "riscado" && (
                     <div className={styles.form}>
                         <p>Deseja desriscar o nome?
-                            <a className={styles.botao} onClick={() => desriscar()}>
-                                <button>DESRISCAR</button>
-                            </a>
+                            <Botao
+                                className={styles.botao}
+                                nomeDoBotao="DESRISCAR"
+                                onClick={() => desriscar()}
+                            />
                         </p>
                     </div>
                 )

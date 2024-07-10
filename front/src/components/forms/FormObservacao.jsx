@@ -1,5 +1,9 @@
 import axios from "axios"
 import { useState } from "react"
+import styles from "./FormObservacao.module.css"
+import InputText from "../inputs/InputText"
+import BotaoSubmit from "../botoes/BotaoSubmit"
+
 
 function FormObservacao(props) {
     const [observacao, setObservacao] = useState(props.observacao)
@@ -11,14 +15,14 @@ function FormObservacao(props) {
 
     return(
         <form onSubmit={(evento) => adicionarObservacao(evento)}>
-            <input 
-                type="text" 
+            <InputText
                 name="observacao" 
-                value={observacao} 
                 placeholder="Digite a observação"
+                valor={observacao}
                 onChange={(evento) => setObservacao(evento.target.value)}
+
             />
-            <button type="submit">OK</button>
+            <BotaoSubmit label="OK" className={styles.botao}/>
         </form>
     )
 }

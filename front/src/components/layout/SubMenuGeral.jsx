@@ -1,6 +1,7 @@
 import axios from "axios"
 import styles from "./Menu.module.css"
 import audioSilencioMp3 from "../../assets/audio/celulares_silencio.mp3"
+import Botao from "../botoes/Botao"
 
 
 function SubMenuGeral (props) {
@@ -17,21 +18,29 @@ function SubMenuGeral (props) {
 
     return (
         <div className={`${styles.divMenu} cor-fundo2`}>
-                <a href="/tv">
-                    <button>TV</button>
-                </a>
+            <Botao
+                className={styles.botao}
+                href="/tv"
+                nomeDoBotao="TV"
+            />
 
-                <a href="/info">
-                    <button>INFORMAÇÕES</button>
-                </a>
+            <Botao
+                className={styles.botao}
+                href="/info"
+                nomeDoBotao="INFORMAÇÕES"
+            />
 
-                <a onClick={() => pedirSilencio()}>
-                    <button>PEDIR SILÊNCIO</button>
-                </a>
+            <Botao
+                className={styles.botao}
+                onClick={() => pedirSilencio()}
+                nomeDoBotao="PEDIR SILÊNCIO"
+            />
 
-                <a onClick={() => reinicarTudo()}>
-                    <button>REINICAR TUDO</button>
-                </a>
+            <Botao
+                className={styles.botao}
+                onClick={() => reinicarTudo()}
+                nomeDoBotao="REINICAR TUDO"
+            />
         </div>
     
     )

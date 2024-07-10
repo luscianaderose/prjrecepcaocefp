@@ -1,5 +1,6 @@
 import axios from "axios"
 import styles from "./Menu.module.css"
+import Botao from "../botoes/Botao"
 
 
 function SubMenuDeschamar (props) {
@@ -18,9 +19,11 @@ function SubMenuDeschamar (props) {
     return (
         <div className={`${styles.divMenu} cor-fundo2`}>
             {props.camaras.map((camara, indice) => (
-                <a onClick={() => deschamar(camara["numero_camara"].toUpperCase(), camara["estado"].toUpperCase(), camara["pessoa_em_atendimento"])}>
-                    <button>DESCHAMAR CAM {camara["numero_camara"]}</button>
-                </a>
+                <Botao
+                    className={styles.botao}
+                    onClick={() => deschamar(camara["numero_camara"].toUpperCase(), camara["estado"].toUpperCase(), camara["pessoa_em_atendimento"])}
+                    nomeDoBotao={`DESCHAMAR CAM ${camara["numero_camara"]}`}
+                />
             ))}
         </div>
     

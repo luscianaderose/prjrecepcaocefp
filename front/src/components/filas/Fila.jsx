@@ -5,6 +5,7 @@ import FormAtendido from "../forms/FormAtendido"
 import FilaDupla from "./FilaDupla"
 import FormObservacao from "../forms/FormObservacao"
 import Icone from "../icones/Icone"
+import BotaoIcone from "../botoes/BotaoIcone"
 import editarPng from "../../assets/img/editar.png"
 import lixoPng from "../../assets/img/lixo.png"
 import setaCimaPng from "../../assets/img/seta-cima.png"
@@ -73,31 +74,26 @@ function Fila(props){
                     {pessoa["estado"] === "atendendo" && <b>{indice + 1}. {pessoa["nome"].toUpperCase()} - {pessoa["camara"]}</b>} 
                     {pessoa["estado"] !== "atendendo" && pessoa["estado"] !== "riscado" && `${indice + 1}. ${pessoa["nome"].toUpperCase()}`}
 
-                    <a 
-                        className={styles.linkEditar} 
+                    <BotaoIcone
+                        alt="Editar"
+                        src={editarPng}
                         onClick={() => editarAtendido(pessoa["nome"])}
-                    >
-                        <Icone alt="Editar" src={editarPng}/>
-                    </a>
-                    
-                    <a 
-                        className={styles.linkRemover} 
+                    />
+                   <BotaoIcone
+                        alt="Remover"
+                        src={lixoPng}
                         href={`/remover_atendido?nome_fila=${props.fila["atividade"]}&numero_atendido=${pessoa["numero"]}`}
-                    >
-                        <Icone alt="Remover" src={lixoPng}/>
-                    </a>
-                    <a 
-                        className={styles.linkReposicionar} 
+                    />
+                   <BotaoIcone
+                        alt="Reposicionar"
+                        src={setaCimaPng}
                         onClick={() => reposicionar(props.fila["atividade"], pessoa["numero"], "cima")}
-                    >
-                        <Icone alt="Reposicionar" src={setaCimaPng}/>
-                    </a>
-                    <a 
-                        className={styles.linkReposicionar} 
+                    />
+                   <BotaoIcone
+                        alt="Reposicionar"
+                        src={setaBaixoPng}
                         onClick={() => reposicionar(props.fila["atividade"], pessoa["numero"], "baixo")}
-                    >
-                        <Icone alt="Reposicionar" src={setaBaixoPng}/>
-                    </a>
+                    />
 
                     <FilaDupla 
                         dupla={pessoa["dupla"]}
@@ -106,12 +102,11 @@ function Fila(props){
                         nomeFila={props.fila["atividade"]}
                     />
 
-                    <a 
-                        className={styles.linkObservacao} 
+                   <BotaoIcone
+                        alt="Observação"
+                        src={observacaoPng}
                         onClick={() => adicionarObservacao(pessoa["nome"])}
-                    >
-                        <Icone alt="Observação" src={observacaoPng}/>
-                    </a>
+                    />
                     {
                         pessoa["observacao"] && 
                         <p className={styles.textoObservacao}>

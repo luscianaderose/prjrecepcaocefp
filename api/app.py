@@ -296,6 +296,17 @@ def criar_dupla():
     except Exception as exc: return str(exc) + '<br><br>'
     return 'dupla criada'
 
+@app.route('/cancelar_dupla')
+def cancelar_dupla():
+    nome_fila = request.args.get('nome_fila')
+    numero_atendido = int(request.args.get('numero_atendido'))
+    if nome_fila == fila_videncia.atividade:
+        fila = fila_videncia
+    elif nome_fila == fila_prece.atividade:
+        fila = fila_prece
+    fila.cancelar_dupla(numero_atendido)
+    return 'Dupla cancelada'
+
 @app.route('/adicionar_atendido')
 def adicionar_atendido():
     nome_fila = request.args.get('nome_fila')

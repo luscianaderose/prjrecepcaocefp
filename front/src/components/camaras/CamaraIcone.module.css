@@ -1,31 +1,24 @@
 .iconeFechada {
-    height: 15px;
-    width: 15px;
     background-color: #ff0000;
-    border-radius: 50%;
-    display: inline-block;
 }
 
 .iconeAtendendo {
-height: 15px;
-width: 15px;
-background-color: green;
-border-radius: 50%;
-display: inline-block;
+    background-color: green;
 }
   
 .iconeAvisar {
-height: 15px;
-width: 15px;
-background-color: yellow;
-border-radius: 50%;
-display: inline-block;
+    background-color: yellow;
 }
 
 .iconeAvisado {
-height: 15px;
-width: 15px;
-background-color: blue;
-border-radius: 50%;
-display: inline-block;
+    background-color: blue;
+}
+
+.iconeAtendendo, .iconeFechada, .iconeAvisar, .iconeAvisado{
+    margin-right: 5px;
+    margin-top: 2px;
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    display: inline-block;
 }

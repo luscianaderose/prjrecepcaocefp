@@ -9,6 +9,8 @@ import audioCamara2Wav from "../../assets/audio/camara2.wav"
 import audioCamara3Wav from "../../assets/audio/camara3.wav"
 import audioCamara3AWav from "../../assets/audio/camara3A.wav"
 import audioCamara4Wav from "../../assets/audio/camara4.wav"
+import BotaoIcone from "../botoes/BotaoIcone"
+
 
 const audiosCamara = {
     "2":audioCamara2Wav,
@@ -56,12 +58,16 @@ function Camara(props){
                     />
 
                     <div className={styles.dvpBtChamarNovamente}>
-                        <a className={styles.linkIcone} onClick={() => chamarNovamente()}>
-                            <img alt="Som" src={chamarComSomPng} width="16" height="16"/>
-                        </a>
-                        <a className={styles.linkIcone} href={`/chamar_novamente_sem_som/${props.camara["numero_camara"]}`}>
-                            <img alt="Sem som" src={chamarSemSomPng} width="16" height="16"/>
-                        </a>
+                        <BotaoIcone 
+                            alt="Som"
+                            src={chamarComSomPng}
+                            onClick={() => chamarNovamente()}
+                        />
+                        <BotaoIcone 
+                            alt="Sem som"
+                            src={chamarSemSomPng}
+                            onClick={() => {console.log("Funcionalidade em construção: Chamando sem som")}}
+                        />
                     </div>
                 </div>
             </p>

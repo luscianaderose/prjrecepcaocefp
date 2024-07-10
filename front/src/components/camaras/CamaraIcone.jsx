@@ -23,7 +23,6 @@ function CamaraIcone (props) {
         <>
             <span className={estadoAcoes[props.estado.toLowerCase()]["icone"]}></span>
             {estadoAcoes[props.estado.toLowerCase()]["descricao"]}
-            <br></br>
         </>
     )
 }

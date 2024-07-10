@@ -4,8 +4,12 @@
     justify-content: space-between;
 }
 
-.btj{
+.botao{
     margin-left: 5px;
     margin-right: 5px;
+}
+
+.botao button{
+    margin-top: 0;
 }
   

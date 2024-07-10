@@ -1,5 +1,7 @@
 import axios from "axios"
 import styles from "./CamaraBolinhas.module.css"
+import Botao from "../botoes/Botao"
+// import APIURL from "../../services/api"
 
 
 function CamaraBolinhas(props){
@@ -22,20 +24,18 @@ function CamaraBolinhas(props){
 
     return (
         <>
-            <a 
-                className={`${styles.linkBolinhas} a`} 
+            <Botao
+                className={`${styles.linkBolinhas} a`}
                 onClick={subtrairBolinhas}
-            >
-                <b>-</b>
-            </a>
+                nomeDoBotao={<b>-</b>}
+            />
             {bolinhaPreta.repeat(qtdBolinhasPretas)}
             {bolinhaBranca.repeat(qtdBolinhasBrancas)}
-            <a 
-                className={`${styles.linkBolinhas} a`} 
+            <Botao
+                className={`${styles.linkBolinhas} a`}
                 onClick={adicionarBolinhas}
-            >
-                <b>+</b>
-            </a>
+                nomeDoBotao={<b>+</b>}
+            />
         </>
     )
 }
