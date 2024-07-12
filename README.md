@@ -35,6 +35,7 @@ http://localhost:5001/
 
 ## LINKS DO PROJETO
 VÍDEO
+https://www.youtube.com/watch?v=d2XidcDOZGQ
 
 FRONT GITHUB
 https://github.com/luscianaderose/prjrecepcaocefp/tree/react-versao-final
