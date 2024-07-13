@@ -43,8 +43,5 @@ https://github.com/luscianaderose/prjrecepcaocefp/tree/main
 FIGMA
 https://www.figma.com/proto/4WaxuFjrOhR8aIHIlHXuIP/prj-recepcao-cefp-01?node-id=0-1&t=XGYyK7bsqyAa5qK2-1
 
-LINK DA AWS
-http://ec2-15-228-49-245.sa-east-1.compute.amazonaws.com/
-
 
 
